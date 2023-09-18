@@ -67,3 +67,5 @@ To run Dockerfile - `Instructions here`
 **Notebooks** 
 This folder contains code that is not part of container - for e.g: EDA, any 🔍 🕵️‍♀️ 🕵️‍♂️ crucial insights, reports or visualizations. 
 
+----
+You may adjust this template as appropriate for your project.
