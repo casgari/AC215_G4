@@ -18,7 +18,7 @@ Project Organization
             │   └── requirements.txt
             └── validation
                   ├── Dockerfile
-                  ├── cv_dvc.py
+                  ├── cv_val.py
                   └── requirements.txt
 
 
