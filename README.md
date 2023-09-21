@@ -26,13 +26,13 @@ Project Organization
 # AC215 - Milestone2 - ButterFlyer
 
 **Team Members**
-Pavlov Protovief, Paolo Primopadre and Pablo El Padron
+Cyrus Asgari, Ben Ray, Caleb Saul, Warren Sunada Wong, Chase Van Amburg
 
 **Group Name**
-Awesome Group
+Pavlos Perceptrons
 
 **Project**
-In this project we aim to develop an application that can identify various species of butterflies in the wild using computer vision and offer educational content through a chatbot interface.
+In this project we aim to develop an application that can process lecture videos to generate transcripts with key-word highlighting and offer auto-generated question and answer flashcards.
 
 ### Milestone2 ###
 
