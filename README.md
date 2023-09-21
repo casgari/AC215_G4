@@ -1,4 +1,4 @@
-AC215-Template (Final Milestone)
+AC215-Template (Milestone2)
 ==============================
 
 AC215 - Milestone2
