@@ -36,7 +36,7 @@ def download():
     blobs = bucket.list_blobs(prefix=input_videos + "/")
     for blob in blobs:
         print(blob.name)
-        if blob.name.endswith(".txt"):
+        if blob.name.endswith(".mp4"):
             blob.download_to_filename(blob.name)
 
 
@@ -67,7 +67,7 @@ def upload():
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
 
-    # Get the list of text file
+    # Get the list of audio files
     converted_audio_files = os.listdir(audio_files)
 
     for audio_file in converted_audio_files:
