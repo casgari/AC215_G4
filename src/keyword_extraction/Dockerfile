@@ -31,4 +31,3 @@ ENTRYPOINT ["/bin/bash"]
 
 # Get into the pipenv shell
 CMD ["-c", "pipenv shell"]
-FROM python:3.8-slim-buster
