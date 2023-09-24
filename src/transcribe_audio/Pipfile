@@ -8,8 +8,8 @@ verify_ssl = true
 [packages]
 google-cloud-storage = "*"
 ffmpeg-python = "*"
-git+https://github.com/sanchit-gandhi/whisper-jax.git = "*"
-cached_property = "*
+whisper-jax = {git = "git+https://github.com/sanchit-gandhi/whisper-jax.git"}
+cached_property = "*"
 
 [requires]
 python_version = "3.8"
