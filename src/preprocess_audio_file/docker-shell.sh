@@ -4,7 +4,7 @@
 set -e
 
 # Define some environment variables
-export IMAGE_NAME="ppp-transcribe-audio"
+export IMAGE_NAME="ppp-preprocess-audio-files"
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../secrets/
 export PERSISTENT_DIR=$(pwd)/../persistent-folder/
