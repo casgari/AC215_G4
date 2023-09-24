@@ -1,5 +1,5 @@
 # Use the official Debian-hosted Python image
-FROM python:3.9-slim-buster
+FROM python:3.8-slim-buster
 
 # Tell pipenv where the shell is. 
 # This allows us to use "pipenv shell" as a container entry point.
@@ -31,4 +31,4 @@ ENTRYPOINT ["/bin/bash"]
 
 # Get into the pipenv shell
 CMD ["-c", "pipenv shell"]
-FROM python:3.9-slim-buster
+FROM python:3.8-slim-buster
