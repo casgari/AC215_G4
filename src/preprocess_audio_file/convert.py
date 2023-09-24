@@ -10,8 +10,8 @@ from moviepy.editor import VideoFileClip
 # Generate the inputs arguments parser
 parser = argparse.ArgumentParser(description="Command description.")
 
-gcp_project = "ac215-project"
-bucket_name = "mega-pipeline-bucket"
+gcp_project = "AC215 Group 4"
+bucket_name = "mega-ppp"
 input_videos = "input_videos"
 audio_files = "audio_files"
 
