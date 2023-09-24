@@ -6,16 +6,18 @@ import io
 import argparse
 import shutil
 from google.cloud import storage
-import openai
 import ffmpeg
 from tempfile import TemporaryDirectory
+from jax.experimental.compilation_cache import compilation_cache as cc
+from whisper_jax import FlaxWhisperPipline
+import jax.numpy as jnp
 
 # Generate the inputs arguments parser
 parser = argparse.ArgumentParser(description="Command description.")
 
 gcp_project = "ac215-project"
 bucket_name = "ppp-bucket"
-input_audios = "input_audios"
+input_audios = "audio_files"
 text_prompts = "text_prompts"
 
 
@@ -44,6 +46,9 @@ def download():
 def transcribe():
     print("transcribe")
     makedirs()
+    cc.initialize_cache("./jax_cache")
+
+    pipeline = FlaxWhisperPipline("openai/whisper-small", dtype=jnp.bfloat16, batch_size=16)
 
     # Get the list of audio file
     audio_files = os.listdir(input_audios)
@@ -66,11 +71,11 @@ def transcribe():
             audio_file = open(flac_path, "rb")
 
             # Transcribe
-            audio = openai.Audio.transcribe("whisper-1", audio_file)
+            text = pipeline(audio_file)
 
             # Save the transcription
             with open(text_file, "w") as f:
-                f.write(audio['text'])
+                f.write(text['text'])
 
 
 def upload():
