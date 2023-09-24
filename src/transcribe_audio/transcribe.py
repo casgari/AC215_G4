@@ -2,12 +2,9 @@
 Module that contains the command line app.
 """
 import os
-import io
 import argparse
 import shutil
 from google.cloud import storage
-import ffmpeg
-from tempfile import TemporaryDirectory
 from jax.experimental.compilation_cache import compilation_cache as cc
 from whisper_jax import FlaxWhisperPipline
 import jax.numpy as jnp
@@ -20,11 +17,9 @@ bucket_name = "mega-ppp"
 input_audios = "audio_files"
 text_prompts = "text_prompts"
 
-
 def makedirs():
     os.makedirs(input_audios, exist_ok=True)
     os.makedirs(text_prompts, exist_ok=True)
-
 
 def download():
     print("download")
@@ -41,7 +36,6 @@ def download():
         print(blob.name)
         if not blob.name.endswith("/"):
             blob.download_to_filename(blob.name)
-
 
 def transcribe():
     print("transcribe")
@@ -68,7 +62,6 @@ def transcribe():
         with open(text_file, "w") as f:
             f.write(text['text'])
 
-
 def upload():
     print("upload")
     makedirs()
@@ -87,7 +80,6 @@ def upload():
         blob = bucket.blob(destination_blob_name)
 
         blob.upload_from_filename(file_path)
-
 
 def main(args=None):
     print("Args:", args)

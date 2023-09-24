@@ -4,15 +4,18 @@
 set -e
 
 # Define some environment variables
-export IMAGE_NAME="ppp-transcribe-audio"
+export IMAGE_NAME="transcribe-audio"
 export BASE_DIR=$(pwd)
-export SECRETS_DIR=$(pwd)/../secrets/
-export PERSISTENT_DIR=$(pwd)/../persistent-folder/
-export GOOGLE_APPLICATION_CREDENTIALS=/secrets/mega-pipeline.json
+export SECRETS_DIR=$(pwd)/../secrets
+export SECRETS_FILE_NAME=mega-ppp.json
+export CONTAINER_SECRETS_DIR=/secrets
 
 # Build the image based on the Dockerfile
 docker build -t $IMAGE_NAME -f Dockerfile .
 
 # Run the container
 docker run --rm --name $IMAGE_NAME -ti \
---mount type=bind,source="$BASE_DIR",target=/app $IMAGE_NAME
+--mount type=bind,source="$BASE_DIR",target=/app \
+--mount type=bind,source="$SECRETS_DIR",target=$CONTAINER_SECRETS_DIR \
+-e GOOGLE_APPLICATION_CREDENTIALS=$CONTAINER_SECRETS_DIR/$SECRETS_FILE_NAME \
+$IMAGE_NAME
