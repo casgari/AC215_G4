@@ -15,8 +15,8 @@ import jax.numpy as jnp
 # Generate the inputs arguments parser
 parser = argparse.ArgumentParser(description="Command description.")
 
-gcp_project = "ac215-project"
-bucket_name = "ppp-bucket"
+gcp_project = "AC215 Group 4"
+bucket_name = "mega-ppp"
 input_audios = "audio_files"
 text_prompts = "text_prompts"
 
@@ -62,20 +62,11 @@ def transcribe():
             continue
 
         print("Transcribing:", audio_path)
-        with TemporaryDirectory() as audio_dir:
-            flac_path = os.path.join(audio_dir, "audio.flac")
-            stream = ffmpeg.input(audio_path)
-            stream = ffmpeg.output(stream, flac_path)
-            ffmpeg.run(stream)
+        text = pipeline(audio_path)
 
-            audio_file = open(flac_path, "rb")
-
-            # Transcribe
-            text = pipeline(audio_file)
-
-            # Save the transcription
-            with open(text_file, "w") as f:
-                f.write(text['text'])
+        # Save the transcription
+        with open(text_file, "w") as f:
+            f.write(text['text'])
 
 
 def upload():

@@ -10,6 +10,8 @@ google-cloud-storage = "*"
 ffmpeg-python = "*"
 whisper-jax = {git = "git+https://github.com/sanchit-gandhi/whisper-jax.git"}
 cached_property = "*"
+jax = "*"
+jaxlib = "*"
 
 [requires]
 python_version = "3.8"
