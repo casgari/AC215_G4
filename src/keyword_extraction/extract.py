@@ -60,7 +60,6 @@ def extract():
 
         with open(text_path) as f:
             this_file = f.read()
-            print(this_file)
             
             # Extract top 10 keywords
             keywords_list = kw_model.extract_keywords(this_file,
