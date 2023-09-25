@@ -7,14 +7,14 @@ import argparse
 import shutil
 from google.cloud import storage
 from keybert import KeyBERT
-from tempfile import TemporaryDirectory
+
 
 # Generate the inputs arguments parser
 parser = argparse.ArgumentParser(description="Command description.")
 
-gcp_project = "ac215-project"
-bucket_name = "ppp-bucket"
-input_transcripts = "input_transcripts"
+gcp_project = "AC215 Group 4"
+bucket_name = "mega-ppp"
+input_transcripts = "text_prompts"
 keywords = "keywords"
 
 
@@ -57,16 +57,22 @@ def extract():
             continue
 
         print("Extracting:", text_path)
-        with TemporaryDirectory() as text_dir:
-            this_file = open(text_path, "rb")
 
-            # Extract top 20 keywords
-            keywords = kw_model.extract_keywords(this_file.read(), keyphrase_ngram_range=(1, 3), 
-                                                 use_maxsum=True, nr_candidates=20, top_n=20)
+        with open(text_path) as f:
+            this_file = f.read()
+            print(this_file)
+            
+            # Extract top 10 keywords
+            keywords_list = kw_model.extract_keywords(this_file,
+                                                      keyphrase_ngram_range=(1, 3),
+                                                      top_n=10)
+            
+            #convert key word list to str of keywords to output
+            keywords_str = ''.join([''.join(str(x[0])+'\n') for x in keywords_list])
 
             # Save the transcription
             with open(text_file, "w") as f:
-                f.write(keywords)
+                f.write(keywords_str)
 
 
 def upload():
@@ -94,7 +100,7 @@ def main(args=None):
 
     if args.download:
         download()
-    if args.transcribe:
+    if args.extract:
         extract()
     if args.upload:
         upload()
