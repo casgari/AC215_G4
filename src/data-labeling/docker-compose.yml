@@ -1,0 +1,35 @@
+version: "3.8"
+networks:
+    default:
+        name: data-labeling-network
+        external: true
+services:
+    data-label-cli:
+        image: data-label-cli
+        container_name: data-label-cli
+        volumes:
+            - ../secrets:/secrets
+            - ../data-labeling:/app
+        environment:
+            GOOGLE_APPLICATION_CREDENTIALS: /secrets/scheduler-0-396422-4eedaf4a7bd7.json
+            GCP_PROJECT: "scheduler-0-396422"
+            GCP_ZONE: "us-central1-a"
+            GCS_BUCKET_NAME: "mushroom-app-data-demo"
+            LABEL_STUDIO_URL: "http://data-label-studio:8080"
+        depends_on:
+            - data-label-studio
+    data-label-studio:
+        image: heartexlabs/label-studio:latest
+        container_name: data-label-studio
+        ports:
+            - 8080:8080
+        volumes:
+            - ./docker-volumes/label-studio:/label-studio/data
+            - ../secrets:/secrets
+        environment:
+            LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK: "true"
+            LABEL_STUDIO_USERNAME: "cvanamburg@college.harvard.edu"
+            LABEL_STUDIO_PASSWORD: "super_cool"
+            GOOGLE_APPLICATION_CREDENTIALS: /secrets/scheduler-0-396422-4eedaf4a7bd7.json
+            GCP_PROJECT: "scheduler-0-396422"
+            GCP_ZONE: "us-central1-a"
