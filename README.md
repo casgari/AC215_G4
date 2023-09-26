@@ -14,11 +14,29 @@ Project Organization
       ├── requirements.txt
       ├── setup.py
       └── src
+            ├── preprocess_audio_file
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── docker-shell.sh
+            │   └── convert.py
+            ├── transcribe_audio
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── docker-shell.sh
+            │   └── transcribe.py
             ├── generate_quiz
             │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── docker-shell.sh
             │   └── generate.py
             └── keyword_extraction
                   ├── Dockerfile
+                  ├── Pipfile
+                  ├── Pipfile.lock
+                  ├── docker-shell.sh
                   └── extract.py
 
 
