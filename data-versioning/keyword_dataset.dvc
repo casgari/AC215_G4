@@ -3,4 +3,4 @@ outs:
   size: 746029
   nfiles: 4
   hash: md5
-  path: mushroom_dataset
+  path: keyword_dataset

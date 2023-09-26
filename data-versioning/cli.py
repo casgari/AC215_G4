@@ -20,23 +20,23 @@ def download_data():
     bucket_name = GCS_BUCKET_NAME
 
     # Clear dataset folders
-    dataset_prep_folder = "mushroom_dataset_prep"
+    dataset_prep_folder = "keyword_dataset_prep"
     shutil.rmtree(dataset_prep_folder, ignore_errors=True, onerror=None)
     os.makedirs(dataset_prep_folder, exist_ok=True)
-    dataset_folder = "mushroom_dataset"
+    dataset_folder = "keyword_dataset"
     shutil.rmtree(dataset_folder, ignore_errors=True, onerror=None)
     os.makedirs(dataset_folder, exist_ok=True)
 
     # Initiate Storage client
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
-    blobs = bucket.list_blobs(prefix="mushrooms_labeled/")
+    blobs = bucket.list_blobs(prefix="keywords/")
 
     # Download annotations
     for blob in blobs:
         print("Annotation file:", blob.name)
 
-        if not blob.name.endswith("mushrooms_labeled/"):
+        if not blob.name.endswith("keywords/"):
             filename = os.path.basename(blob.name)
             local_file_path = os.path.join(dataset_prep_folder, filename)
             blob.download_to_filename(local_file_path)

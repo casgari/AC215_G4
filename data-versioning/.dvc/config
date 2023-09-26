@@ -1,4 +1,4 @@
 [core]
-    remote = mushroom_dataset
-['remote "mushroom_dataset"']
-    url = gs://mushroom-app-data-demo/dvc_store
+    remote = keyword_dataset
+['remote "keyword_dataset"']
+    url = gs://mega-ppp/dvc_store
