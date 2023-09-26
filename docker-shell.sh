@@ -3,7 +3,7 @@
 set -e
 
 export BASE_DIR=$(pwd)
-export SECRETS_DIR=$(pwd)/../secrets/
+export SECRETS_DIR=$(pwd)/secrets/
 export GCS_BUCKET_NAME="mega-ppp"
 export GCP_PROJECT="ac215-group-4"
 export GCP_ZONE="us-central1-a"

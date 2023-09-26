@@ -11,10 +11,10 @@ services:
             - ../secrets:/secrets
             - ../data-labeling:/app
         environment:
-            GOOGLE_APPLICATION_CREDENTIALS: /secrets/scheduler-0-396422-4eedaf4a7bd7.json
-            GCP_PROJECT: "scheduler-0-396422"
+            GOOGLE_APPLICATION_CREDENTIALS: /secrets/mega-ppp.json
+            GCP_PROJECT: "ac215-group-4"
             GCP_ZONE: "us-central1-a"
-            GCS_BUCKET_NAME: "mushroom-app-data-demo"
+            GCS_BUCKET_NAME: "mega-ppp"
             LABEL_STUDIO_URL: "http://data-label-studio:8080"
         depends_on:
             - data-label-studio
@@ -30,6 +30,6 @@ services:
             LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK: "true"
             LABEL_STUDIO_USERNAME: "cvanamburg@college.harvard.edu"
             LABEL_STUDIO_PASSWORD: "super_cool"
-            GOOGLE_APPLICATION_CREDENTIALS: /secrets/scheduler-0-396422-4eedaf4a7bd7.json
-            GCP_PROJECT: "scheduler-0-396422"
+            GOOGLE_APPLICATION_CREDENTIALS: /secrets/mega-ppp.json
+            GCP_PROJECT: "ac215-group-4"
             GCP_ZONE: "us-central1-a"

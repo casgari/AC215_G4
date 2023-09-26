@@ -130,3 +130,9 @@ dmypy.json
 
 # secrets
 secrets/
+
+# misc
+.DS_Store
+/docker-volumes
+/keyword_dataset_prep
+/keyword_dataset
