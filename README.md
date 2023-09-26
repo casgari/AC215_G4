@@ -13,6 +13,7 @@ Project Organization
       ├── references
       ├── requirements.txt
       ├── setup.py
+      ├── .dvc      
       └── src
             ├── preprocess_audio_file
             │   ├── Dockerfile
