@@ -12,24 +12,24 @@ parser = argparse.ArgumentParser(description="Command description.")
 
 gcp_project = "AC215 Group 4"
 bucket_name = "mega-ppp"
-input_prompts = "text_prompts"
+text_prompts = "text_prompts"
 generated_quizzes = "generated_quizzes"
 
 def makedirs():
-    os.makedirs(input_prompts, exist_ok=True)
+    os.makedirs(text_prompts, exist_ok=True)
     os.makedirs(generated_quizzes, exist_ok=True)
 
 def download():
     print("download")
 
     # Clear
-    shutil.rmtree(input_prompts, ignore_errors=True, onerror=None)
+    shutil.rmtree(text_prompts, ignore_errors=True, onerror=None)
     makedirs()
 
     client = storage.Client()
     bucket = client.get_bucket(bucket_name)
 
-    blobs = bucket.list_blobs(prefix=input_prompts + "/")
+    blobs = bucket.list_blobs(prefix=text_prompts + "/")
     for blob in blobs:
         print(blob.name)
         if not blob.name.endswith("/"):
@@ -37,6 +37,26 @@ def download():
 
 def generate():
     print("generate")
+    text_files = os.listdir(text_prompts)
+
+    with open("secrets/openai_api_key.txt") as f:
+        openai.api_key = f.read()
+
+    for text_file in text_files:
+        uuid = text_file.replace(".txt", "")
+        file_path = os.path.join(text_prompts, text_file)
+        quiz_path = os.path.join(generated_quizzes, uuid + "_quiz.txt")
+
+        with open(file_path, "r") as f:
+            lecture_transcript = f.read()
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "user", "content": f"Please generate some multiple choice questions for the following lecture: {lecture_transcript[:3800]}"}
+            ])
+        quiz = response.choices[0].message.content
+        with open(quiz_path, "w") as f:
+            f.write(quiz)
 
 def upload():
     print("upload")
@@ -47,10 +67,10 @@ def upload():
     bucket = storage_client.bucket(bucket_name)
 
     # Get the list of text file
-    text_files = os.listdir(text_prompts)
+    quiz_files = os.listdir(generated_quizzes)
 
-    for text_file in text_files:
-        file_path = os.path.join(text_prompts, text_file)
+    for quiz_file in quiz_files:
+        file_path = os.path.join(generated_quizzes, quiz_file)
 
         destination_blob_name = file_path
         blob = bucket.blob(destination_blob_name)

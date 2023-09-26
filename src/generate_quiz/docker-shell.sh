@@ -9,6 +9,7 @@ export BASE_DIR=$(pwd)
 export SECRETS_FILE_NAME=mega-ppp.json
 export CONTAINER_SECRETS_DIR=secrets
 
+
 # Build the image based on the Dockerfile
 docker build -t $IMAGE_NAME -f Dockerfile .
 
