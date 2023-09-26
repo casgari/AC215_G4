@@ -23,7 +23,7 @@ Project Organization
 
 
 --------
-# AC215 - Milestone2 - ButterFlyer
+# AC215 - Milestone2 - Learning Tools for Transcribed Lecture Audio
 
 **Team Members**
 Cyrus Asgari, Ben Ray, Caleb Saul, Warren Sunada Wong, Chase Van Amburg
