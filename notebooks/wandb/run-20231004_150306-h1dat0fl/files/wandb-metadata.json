@@ -1,0 +1,36 @@
+{
+    "os": "macOS-13.5-arm64-arm-64bit",
+    "python": "3.10.10",
+    "heartbeatAt": "2023-10-04T19:03:07.354853",
+    "startedAt": "2023-10-04T19:03:06.583707",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "notebooks/initial_model_construction.ipynb",
+    "codePathLocal": null,
+    "root": "/Users/chasevanamburg/World/Courses/ac215/proj/AC215_G4",
+    "git": {
+        "remote": "https://github.com/casgari/AC215_G4.git",
+        "commit": "c0aa6c91d230a1c742060e8b07f038bf530626f2"
+    },
+    "email": "cvanamburg@college.harvard.edu",
+    "host": "dhcp-10-250-156-148.harvard.edu",
+    "username": "chasevanamburg",
+    "executable": "/Users/chasevanamburg/micromamba/envs/custy/bin/python",
+    "cpu_count": 8,
+    "cpu_count_logical": 8,
+    "disk": {
+        "/": {
+            "total": 1858.1917190551758,
+            "used": 703.6848564147949
+        }
+    },
+    "gpuapple": {
+        "type": "arm",
+        "vendor": "Apple"
+    },
+    "memory": {
+        "total": 16.0
+    }
+}
