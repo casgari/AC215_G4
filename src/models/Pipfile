@@ -6,7 +6,12 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-
+numpy = "*"
+wandb = "*"
+seqeval = "*"
+evaluate = "*"
+datasets = "*"
+transformers = {extras = ["torch"], version = "*"}
 
 [requires]
 python_version = "3.8"

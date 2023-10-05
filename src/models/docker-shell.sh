@@ -4,7 +4,7 @@
 set -e
 
 # Define some environment variables
-export IMAGE_NAME="model_trainer"
+export IMAGE_NAME="model_train"
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../secrets
 export SECRETS_FILE_NAME=mega-ppp.json
