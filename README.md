@@ -4,41 +4,23 @@ Project Organization
 ------------
 
     .
-    ├── data # DO NOT UPLOAD DATA
-    │   ├── interim          <- Intermediate preprocessed data
-    │   │   ├── test.csv
-    │   │   ├── train.csv
-    │   │   └── val.csv
-    │   ├── processed        <- Final dataset files for modeling
-    │   │   ├── file_00-0.tfrec
-    │   │   ├── file_00-1.tfrec
-    │   │   ├── file_00-2.tfrec
-    │   │   └── file_00-3.tfrec
-    │   └── raw              <- Original immutable input data
-    │       └── training_data.zip
     ├── LICENSE
+    ├── .dvc 
     ├── notebooks            <- Jupyter notebooks for EDA and model testing
     │   ├── intial_model_construction.ipynb
-    │   ├── tf_intial_model_construction_with_multigpu.ipynb
-    │   ├── tf_dask_test.ipynb
-    │   └── distributed_training_demo.ipynb
+    │   └── tf_intial_model_construction_with_multigpu.ipynb
     ├── README.md
-    ├── references           <- Reference materials such as papers
-    ├── reports              <- Folder containing your milestone markdown submissions
-    │   ├── milestone2.md
-    │   └── milestone3.md
-    ├── requirements.txt
+    ├── reports              <- Folder containing past milestone markdown submissions
+    │   └── milestone2.md
+    ├── cli.py               <- Files in the root of repo for data versioning
+    ├── docker-shell.sh
     ├── Dockerfile
-    ├── cli.py
-    ├── setup.py
-    ├── .dvc      
+    ├── Pipfile
+    ├── Pipfile.lock
+    ├── requirements.txt
+    ├── keyword_dataset.dvc
     └── src                  <- Source code and Dockerfiles for data processing and modeling
-        ├── data    <- Scripts for dataset creation
-        │   ├── build_records.py
-        │   ├── dataloader.py
-        │   ├── Dockerfile
-        │   ├── process.py
-        ├── dataloader    <- Scripts for dataset creation
+        ├── dataloader       <- Scripts for dataset creation
         │   ├── tokenizer.py
         │   ├── Dockerfile
         │   ├── docker-shell.sh
@@ -68,13 +50,13 @@ Project Organization
         │   ├── Pipfile.lock
         │   ├── docker-shell.sh
         │   └── extract.py
-        ├── model_training
+        ├── model_training    <- Scripts for training keyword extraction model
         │   ├── Dockerfile
         │   ├── Pipfile
         │   ├── Pipfile.lock
         │   ├── docker-shell.sh
         │   └── trainer.py
-        └── vertex_training
+        └── vertex_training   <- Scripts for serverless training
             ├── cli.py
             ├── cli.sh
             ├── Pipfile.lock
@@ -109,15 +91,15 @@ We have built the four main containers that we will use in our pipeline for depl
 
 ### Milestone3 ###
 
-Our efforts in this milestone focused on building out our pipeline for training our keyword extraction model. This includes the creation of two new containers - one for preprocessing and one for running training.
+Our efforts in this milestone focused on building out our pipeline for training our keyword extraction model. This includes the creation of three new containers - one for preprocessing, one for running training, and one for future serverless training with Vertex AI.
 
-Our initial experimentation led us to build a naive preprocessing and training script (`notebooks/initial_model_construction.ipynb`) using Pytorch data types on a single GPU, and we iterated from there. We now use TensorFlow Data throughout preprocessing and training, implement Dask for efficient transformations to our dataset, and add support for training on multiple GPUs - all while tracking performance with Weights & Biases.
+Our initial experimentation led us to build a naive preprocessing and training script (`notebooks/initial_model_construction.ipynb`) using Pytorch data types on a single GPU, and we iterated from there. We now use TensorFlow Data throughout preprocessing and training, implement Dask for efficient transformations to our dataset, and add support for training on multiple GPUs - all while tracking performance with Weights & Biases. Finally, we have built a container for serverless training in future, once Google approves our request for muliple GPU compute instances.
 
 In the preprocessing stage, we apply a tokenizer to the keywords in the [Inspec](https://huggingface.co/datasets/midas/inspec) dataset of keywords, using the TF Dataset of tokenized key words (known as `input_ids`) and labels (`B`, `I`, or `O`, depending on whether beginning, inside, or outside a keyword phrase) in training.
 
-In training, we have begun experimenting with different versions of the BERT model (accessed via `TFAutoModelForTokenClassification`) to improve our performance on keyword extraction. Although Google has not yet approved our request for muliple GPU compute instances, we have added support for training on multiple GPUs, using TensorFlow's support for distributed training (i.e. `tf.distribute.MirroredStrategy()`). We have tracked our performance of the several training runs completed to date using Weights & Biases, but will be doing more experimentation and optimization (including a hyperparameter search) for Milestone4.
+In training, we have begun experimenting with different versions of the BERT model (accessed via `TFAutoModelForTokenClassification`) to improve our performance on keyword extraction. AWe have added support for training on multiple GPUs, using TensorFlow's support for distributed training (i.e. `tf.distribute.MirroredStrategy()`). We have tracked our performance of the several training runs completed to date using Weights & Biases, but will be doing more experimentation and optimization (including a hyperparameter search) for Milestone4.
 
-In the remainder of this update, we will explain the code structure of the three [deliverables](https://harvard-iacs.github.io/2023-AC215/milestone3/#deliverables) for Milestone3.
+In the remainder of this update, we will explain the code structure of the three [deliverables](https://harvard-iacs.github.io/2023-AC215/milestone3/#deliverables) for Milestone3 and offer some final comments on our current and future use of Vertex AI.
 
 #### Code Structure
 
@@ -136,7 +118,7 @@ We have now added a second container for preprocessing our [Inspec](https://hugg
 **Distributed Computing and Storage Integration**
 We have implemented support for Dask in `notebooks/tf_dask_test`, in case we wish to make additional transformations to our dataset in furture. We have not had to perform any dataset-wide transformations beyond tokenization, which uses built-in TensorFlow functions rather than Dask, so we have not shifted this over to the preprocessing container for now.
 
-We take further advantage of distributed computing by handling our data as TF Datasets, shuffling the data appropriately, and prefetching batch(es) of the data for training (on multiple GPUs if available). Look for the `model.prepare_tf_dataset` method in the training container (see `src/model_training/trainer.py`) for our usage of TF Datasets. The training container is described further below.
+We take further advantage of distributed computing by handling our data as TF Datasets, shuffling the data appropriately, and prefetching batch(es) of the data for training (on multiple GPUs if available). Look for the `model.prepare_tf_dataset` method in the training container (see `src/model_training/trainer.py`) for our usage of TF Datasets. The training container and use of Vertex AI are described further below.
 
 **Machine Learning Workflow Implementation**
 
@@ -151,14 +133,14 @@ Having completed preprocessing, we train our model using the `src/model_training
 
 Below you can see the output from our Weights & Biases page. We used this tool to track several iterations of our model training. It was tracked using the `wandb` library we included inside of our `trainer.py` script. 
 
-![wnb image](images/wandb.png)
+![wnb image](reports/wandb.png)
 
 
 **Vertex AI Integration**
 
 Finally, we integrated our entire training process with Vertex AI. This allows us to run multiple jobs (serverless training) with multi-GPU support, instead of training on local machines or on Colab. This still allows for Weights and Biases reporting during model training. The model is conveniently stored in a bucket on the cloud, where it can later be accessed for deployment. 
 
-(1) `src/vertex_training/docker-shell.sh` creates a container that sets up our training method to integrate with Google Cloud storage and Vertex AI.
+(1) `src/vertex_training/docker-shell.sh` creates a container that sets up our training method to integrate with GCS and Vertex AI.
 
 (2) `src/vertex_training/package-trainer.sh` creates a tar.gz file that bundles all training code and uploads it to the `model-trainer` bucket.
 
