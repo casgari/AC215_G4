@@ -120,11 +120,11 @@ We take further advantage of distributed computing by handling our data as TF Da
 
 Having completed preprocessing, we train our model using the `src/model_training` container with usage as follows:
 
-(1) `src/dataloader/trainer.py`  - this script loads the preprocessed training and validation data from GCS, runs the training loop, and tracks the performance via Weights & Biases.
+(1) `src/model_training/trainer.py`  - this script loads the preprocessed training and validation data from GCS, runs the training loop, and tracks the performance via Weights & Biases.
 
-(2) `src/dataloader/Pipfile` - We used following packages to help us here - `transformers, datasets, seqeval, evaluate, wandb, tensorflow` 
+(2) `src/model_training/Pipfile` - We used following packages to help us here - `transformers, datasets, seqeval, evaluate, wandb, tensorflow` 
 
-(3) `src/dataloader/Dockerfile` - This Dockerfile starts with `python:3.8-slim-buster`. This <statement> attaches volume to the Docker container and also uses secrets (not to be stored on GitHub) to connect to GCS. To run Dockerfile - `sh docker-shell.sh`
+(3) `src/Model_training/Dockerfile` - This Dockerfile starts with `python:3.8-slim-buster`. This <statement> attaches volume to the Docker container and also uses secrets (not to be stored on GitHub) to connect to GCS. To run Dockerfile - `sh docker-shell.sh`
 
 Below you can see the output from our Weights & Biases page. We used this tool to track several iterations of our model training. It was tracked using the `wandb` library we included inside of our `trainer.py` script. 
 
