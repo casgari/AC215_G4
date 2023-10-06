@@ -18,8 +18,10 @@ Project Organization
     │       └── training_data.zip
     ├── LICENSE
     ├── notebooks            <- Jupyter notebooks for EDA and model testing
-    │   ├── eda.ipynb
-    │   └── model_testing.ipynb
+    │   ├── intial_model_construction.ipynb
+    │   ├── tf_intial_model_construction_with_multigpu.ipynb
+    │   ├── tf_dask_test.ipynb
+    │   └── distributed_training_demo.ipynb
     ├── README.md
     ├── references           <- Reference materials such as papers
     ├── reports              <- Folder containing your milestone markdown submissions
@@ -31,19 +33,17 @@ Project Organization
     ├── setup.py
     ├── .dvc      
     ├── src                  <- Source code and Dockerfiles for data processing and modeling
-    │   ├── datapipeline     <- Scripts for dataset creation
-    │   │   ├── build_records.py
-    │   │   ├── dataloader.py
-    │   │   ├── Dockerfile
-    │   │   ├── process.py
-    │   │   ├── Pipfile.lock
-    │   │   └── Pipfile
-    │   └── models           <- Model training, evaluation, and prediction code
-    │       └── vgg16
-    │           ├── Dockerfile
-    │           ├── Pipfile
-    │           ├── Pipfile.lock
-    │           └── train_multi_gpu.py
+        ├── data    <- Scripts for dataset creation
+        │   ├── build_records.py
+        │   ├── dataloader.py
+        │   ├── Dockerfile
+        │   ├── process.py
+        ├── dataloader    <- Scripts for dataset creation
+        │   ├── tokenizer.py
+        │   ├── Dockerfile
+        │   ├── docker-shell.sh
+        │   ├── Pipfile.lock
+        │   └── Pipfile
         ├── preprocess_audio_file
         │   ├── Dockerfile
         │   ├── Pipfile
@@ -62,13 +62,35 @@ Project Organization
         │   ├── Pipfile.lock
         │   ├── docker-shell.sh
         │   └── generate.py
-        └── keyword_extraction
-                ├── Dockerfile
-                ├── Pipfile
-                ├── Pipfile.lock
-                ├── docker-shell.sh
-                └── extract.py
-    └── test_project.py
+        ├── keyword_extraction
+        │       ├── Dockerfile
+        │       ├── Pipfile
+        │       ├── Pipfile.lock
+        │       ├── docker-shell.sh
+        │       └── extract.py
+        ├── model_training
+        │   ├── Dockerfile
+        │   ├── Pipfile
+        │   ├── Pipfile.lock
+        │   ├── docker-shell.sh
+        │   └── trainer.py
+        └── vertex_training
+            ├── cli.py
+            ├── cli.sh
+            ├── Pipfile.lock
+            ├── Pipfile
+            ├── Dockerfile
+            ├── docker-shell.sh
+            ├── package-trainer.sh
+            └── package
+                ├── PKG-INFO
+                ├── setup.cfg
+                ├── setup.py
+                └── trainer
+                    ├── task_multigpu.py
+                    ├── task_reference.py
+                    └── __init__.py
+                
 
 --------
 # AC215 - Milestone3 - Learning Tools for Transcribed Lecture Audio
