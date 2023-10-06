@@ -126,6 +126,18 @@ Having completed preprocessing, we train our model using the `src/model_training
 
 (3) `src/Model_training/Dockerfile` - This Dockerfile starts with `python:3.8-slim-buster`. This <statement> attaches volume to the Docker container and also uses secrets (not to be stored on GitHub) to connect to GCS. To run Dockerfile - `sh docker-shell.sh`
 
+
 Below you can see the output from our Weights & Biases page. We used this tool to track several iterations of our model training. It was tracked using the `wandb` library we included inside of our `trainer.py` script. 
 
 ![wnb image](images/wandb.png)
+
+
+**Vertex AI Integration**
+
+Finally, we integrated our entire training process with Vertex AI. This allows us to run multiple jobs (serverless training) with multi-GPU support, instead of training on local machines or on Colab. This still allows for Weights and Biases reporting during model training. The model is conveniently stored in a bucket on the cloud, where it can later be accessed for deployment. 
+
+(1) `src/vertex_training/docker-shell.sh` creates a container that sets up our training method to integrate with Google Cloud storage and Vertex AI.
+
+(2) `src/vertex_training/package-trainer.sh` creates a tar.gz file that bundles all training code and uploads it to the `model-trainer` bucket.
+
+(3) `src/vertex_training/cli.sh` provides args to the `task_multigpu.py` file that trains the provided model with capacity to train on multiple GPUs. `cli.sh` also launches this training job on custom training GPUs accessed through Vertex AI. Trained model is stored on the cloud in a `model-trainer` bucket.
