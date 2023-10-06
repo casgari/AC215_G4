@@ -6,6 +6,8 @@ import argparse
 import shutil
 from google.cloud import storage
 from moviepy.editor import VideoFileClip
+import dask
+from dask.distributed import Client
 
 # Generate the inputs arguments parser
 parser = argparse.ArgumentParser(description="Command description.")
@@ -39,6 +41,29 @@ def download():
         if blob.name.endswith(".mp4"):
             blob.download_to_filename(blob.name)
 
+@dask.delayed
+def dask_convert(video_path, audio_files):
+    uuid = video_path.replace(".mp4", "")
+    video_path = os.path.join(input_videos, video_path)
+    converted_file = os.path.join(audio_files, uuid + ".mp3")
+
+    if os.path.exists(converted_file):
+        return
+
+    video = VideoFileClip(video_path)
+    video.audio.write_audiofile(converted_file)
+    return converted_file
+
+@dask.delayed
+def dask_upload(audio_file, bucket_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    file_path = os.path.join(audio_files, audio_file)
+    destination_blob_name = file_path
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(file_path)
+    return destination_blob_name
 
 def convert():
     print("convert")
@@ -46,37 +71,22 @@ def convert():
 
     # Get the list of video files
     video_files = os.listdir(input_videos)
+    results = [dask_convert(video_path, audio_files) for video_path in video_files]
 
-    for video_path in video_files:
-        uuid = video_path.replace(".mp4", "")
-        video_path = os.path.join(input_videos, video_path)
-        converted_file = os.path.join(audio_files, uuid + ".mp3")
-
-        if os.path.exists(converted_file):
-            continue
-
-        video = VideoFileClip(video_path)
-        video.audio.write_audiofile(converted_file)
-
+    # Using dask compute to start the computation
+    dask.compute(*results)
 
 def upload():
     print("upload")
     makedirs()
 
-    # Upload to bucket
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
-
     # Get the list of audio files
     converted_audio_files = os.listdir(audio_files)
 
-    for audio_file in converted_audio_files:
-        file_path = os.path.join(audio_files, audio_file)
+    results = [dask_upload(file_path, bucket_name) for file_path in converted_audio_files]
 
-        destination_blob_name = file_path
-        blob = bucket.blob(destination_blob_name)
-
-        blob.upload_from_filename(file_path)
+    # Using dask compute to start the computation
+    dask.compute(*results)
 
 
 def main(args=None):
@@ -85,9 +95,13 @@ def main(args=None):
     if args.download:
         download()
     if args.convert:
+        client = Client()  # starts local cluster, uses all available cores
         convert()
+        client.close()
     if args.upload:
+        client = Client()
         upload()
+        client.close()
 
 
 if __name__ == "__main__":

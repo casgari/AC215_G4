@@ -192,12 +192,12 @@ def train():
     sm_s = os.listdir(saved_model)
 
     for sm in sm_s:
-        file_path = os.path.join(saved_model, sm)
+        if sm.endswith('.pb'):
+            file_path = os.path.join(saved_model, sm)
 
-        destination_blob_name = file_path 
-        blob = bucket.blob(destination_blob_name)
-
-        blob.upload_from_filename(file_path)
+            destination_blob_name = file_path 
+            blob = bucket.blob(destination_blob_name)
+            blob.upload_from_filename(file_path)
 
 
 def main(args=None):
