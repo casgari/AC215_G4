@@ -32,7 +32,7 @@ Project Organization
     ├── cli.py
     ├── setup.py
     ├── .dvc      
-    ├── src                  <- Source code and Dockerfiles for data processing and modeling
+    └── src                  <- Source code and Dockerfiles for data processing and modeling
         ├── data    <- Scripts for dataset creation
         │   ├── build_records.py
         │   ├── dataloader.py
@@ -63,11 +63,11 @@ Project Organization
         │   ├── docker-shell.sh
         │   └── generate.py
         ├── keyword_extraction
-        │       ├── Dockerfile
-        │       ├── Pipfile
-        │       ├── Pipfile.lock
-        │       ├── docker-shell.sh
-        │       └── extract.py
+        │   ├── Dockerfile
+        │   ├── Pipfile
+        │   ├── Pipfile.lock
+        │   ├── docker-shell.sh
+        │   └── extract.py
         ├── model_training
         │   ├── Dockerfile
         │   ├── Pipfile
