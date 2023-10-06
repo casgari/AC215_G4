@@ -14,9 +14,6 @@ export ACCELERATOR_COUNT=1
 export GCP_REGION="us-central1" # Adjust region based on you approved quotas for GPUs
 
 export CMDARGS="--model_name=distilbert-base-uncased,--epochs=30,--batch_size=32,-lr=0.00002,-wandb_key=$WANDB_KEY"
-#export CMDARGS="--model_name=mobilenetv2,--train_base,--epochs=30,--batch_size=32,--wandb_key=$WANDB_KEY"
-#export CMDARGS="--model_name=tfhub_mobilenetv2,--epochs=30,--batch_size=32,--wandb_key=$WANDB_KEY"
-#export CMDARGS="--model_name=tfhub_mobilenetv2,--train_base,--epochs=30,--batch_size=32,--wandb_key=$WANDB_KEY"
 
 gcloud ai custom-jobs create \
   --region=$GCP_REGION \
