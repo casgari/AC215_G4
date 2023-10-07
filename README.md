@@ -12,6 +12,9 @@ Project Organization
     ├── README.md
     ├── reports              <- Folder containing past milestone markdown submissions
     │   └── milestone2.md
+    │   └── milestone3.md
+    ├── images               <- Folder containing wandb image
+        │   └── wandb.png
     ├── cli.py               <- Files in the root of repo for data versioning
     ├── docker-shell.sh
     ├── Dockerfile
@@ -97,9 +100,9 @@ Our initial experimentation led us to build a naive preprocessing and training s
 
 In the preprocessing stage, we apply a tokenizer to the keywords in the [Inspec](https://huggingface.co/datasets/midas/inspec) dataset of keywords, using the TF Dataset of tokenized key words (known as `input_ids`) and labels (`B`, `I`, or `O`, depending on whether beginning, inside, or outside a keyword phrase) in training.
 
-In training, we have begun experimenting with different versions of the BERT model (accessed via `TFAutoModelForTokenClassification`) to improve our performance on keyword extraction. AWe have added support for training on multiple GPUs, using TensorFlow's support for distributed training (i.e. `tf.distribute.MirroredStrategy()`). We have tracked our performance of the several training runs completed to date using Weights & Biases, but will be doing more experimentation and optimization (including a hyperparameter search) for Milestone4.
+In training, we have begun experimenting with different versions of the BERT model (accessed via `TFAutoModelForTokenClassification`) to improve our performance on keyword extraction. AWe have added support for training on multiple GPUs, using TensorFlow's support for distributed training (i.e. `tf.distribute.MirroredStrategy()`). We have tracked our performance of the several training runs completed to date using Weights & Biases, but will be doing more experimentation and optimization (including a hyperparameter search) for Milestone 4.
 
-In the remainder of this update, we will explain the code structure of the three [deliverables](https://harvard-iacs.github.io/2023-AC215/milestone3/#deliverables) for Milestone3 and offer some final comments on our current and future use of Vertex AI.
+In the remainder of this update, we will explain the code structure of the three [deliverables](https://harvard-iacs.github.io/2023-AC215/milestone3/#deliverables) for Milestone 3 and offer some final comments on our current and future use of Vertex AI.
 
 #### Code Structure
 
@@ -108,7 +111,7 @@ As a reminder from milestone2, our data versioning container sits in the root of
   
 We have now added a second container for preprocessing our [Inspec](https://huggingface.co/datasets/midas/inspec) dataset of keywords for training. This can be found in `src/dataloader` with usage as follows:
 
-(1) `src/dataloader/tokenizer.py`  - This script loads the [Inspec](https://huggingface.co/datasets/midas/inspec) data to our compute instance's local `keyword_dataset` folder for tokenization.
+(1) `src/dataloader/tokenizer.py`  - This script loads the [Inspec](https://huggingface.co/datasets/midas/inspec) data from huggingface, applies preprocessing (which is just tokenization here, and pushes the tokenized dataset back to GCP.
 
 (2) `src/dataloader/Pipfile` - We used following packages to help us here - `transformers, google-cloud-storage, datasets, gcsfs, numpy` 
 
@@ -124,16 +127,16 @@ We take further advantage of distributed computing by handling our data as TF Da
 
 Having completed preprocessing, we train our model using the `src/model_training` container with usage as follows:
 
-(1) `src/model_training/trainer.py`  - this script loads the preprocessed training and validation data from GCS, runs the training loop, and tracks the performance via Weights & Biases.
+(1) `src/model_training/trainer.py`  - this script loads the preprocessed training and validation data from GCS, runs the training loop, and tracks the performance via Weights & Biases; the trained model is saved and uploaded back to GCS.
 
 (2) `src/model_training/Pipfile` - We used following packages to help us here - `transformers, datasets, seqeval, evaluate, wandb, tensorflow` 
 
 (3) `src/Model_training/Dockerfile` - This Dockerfile starts with `python:3.8-slim-buster`. This <statement> attaches volume to the Docker container and also uses secrets (not to be stored on GitHub) to connect to GCS. To run Dockerfile - `sh docker-shell.sh`
 
 
-Below you can see the output from our Weights & Biases page. We used this tool to track several iterations of our model training. It was tracked using the `wandb` library we included inside of our `trainer.py` script. 
+Below you can see the output from our Weights & Biases page. We used this tool to track several iterations of our model training. It was tracked using the `wandb` library we included inside of our `trainer.py` script.
 
-![wnb image](reports/wandb.png)
+![wnb image](images/wandb.png)
 
 
 **Vertex AI Integration**
