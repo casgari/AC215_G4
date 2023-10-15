@@ -14,7 +14,7 @@ Project Organization
     │   └── milestone2.md
     │   └── milestone3.md
     ├── images               <- Folder containing wandb image
-        │   └── wandb.png
+    │   └── wandb.png
     ├── cli.py               <- Files in the root of repo for data versioning
     ├── docker-shell.sh
     ├── Dockerfile
