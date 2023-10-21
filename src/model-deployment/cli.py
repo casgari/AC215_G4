@@ -19,8 +19,9 @@ from google.cloud import storage
 from google.cloud import aiplatform
 import tensorflow as tf
 
+
 # # W&B
-# import wandb
+import wandb
 
 GCP_PROJECT = os.environ["GCP_PROJECT"]
 GCS_MODELS_BUCKET_NAME = os.environ["GCS_MODELS_BUCKET_NAME"]
@@ -68,7 +69,10 @@ def main(args=None):
         bucket = storage_client.get_bucket(GCS_MODELS_BUCKET_NAME)
 
         # ACTION: Use this code if you want to pull your model directly from WandB
-        WANDB_KEY = os.environ["WANDB_KEY"]
+
+        with open(os.environ["WANDB_KEY"], "r") as f:
+            WANDB_KEY = f.read()
+        print(WANDB_KEY)
         # Login into wandb
         wandb.login(key=WANDB_KEY)
 

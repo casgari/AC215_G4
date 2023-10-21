@@ -5,7 +5,8 @@ set -e
 export IMAGE_NAME=model-deployment-cli
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../secrets/
-export SECRETS_FILE_NAME=model-deployment.json
+export GOOGLE_SECRETS_FILE=model-deployment.json
+export WANDB_SECRETS_FILE=wandb_key.txt
 export GCP_PROJECT="ac215-group-4"
 export GCS_MODELS_BUCKET_NAME="keyword_models_mega_ppp" 
 export CONTAINER_SECRETS_DIR=/secrets
@@ -22,7 +23,8 @@ docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
 docker run --rm --name $IMAGE_NAME -ti \
 -v "$BASE_DIR":/app \
 -v "$SECRETS_DIR":$CONTAINER_SECRETS_DIR \
--e GOOGLE_APPLICATION_CREDENTIALS=/$CONTAINER_SECRETS_DIR/$SECRETS_FILE_NAME \
+-e GOOGLE_APPLICATION_CREDENTIALS=/$CONTAINER_SECRETS_DIR/$GOOGLE_SECRETS_FILE \
+-e WANDB_KEY=/$CONTAINER_SECRETS_DIR/$WANDB_SECRETS_FILE \
 -e GCP_PROJECT=$GCP_PROJECT \
 -e GCS_MODELS_BUCKET_NAME=$GCS_MODELS_BUCKET_NAME \
 $IMAGE_NAME
