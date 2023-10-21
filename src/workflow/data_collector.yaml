@@ -1,0 +1,30 @@
+# PIPELINE DEFINITION
+# Name: data-collector-pipeline
+components:
+  comp-data-collector:
+    executorLabel: exec-data-collector
+deploymentSpec:
+  executors:
+    exec-data-collector:
+      container:
+        args:
+        - cli.py
+        - --search
+        - --nums 10
+        - --query oyster+mushrooms crimini+mushrooms amanita+mushrooms
+        - --bucket mushroom-app-ml-workflow-demo
+        image: dlops/mushroom-app-data-collector
+pipelineInfo:
+  name: data-collector-pipeline
+root:
+  dag:
+    tasks:
+      data-collector:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-data-collector
+        taskInfo:
+          name: data-collector
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.3.0
