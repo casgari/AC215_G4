@@ -5,8 +5,11 @@ set -e
 export IMAGE_NAME=model-deployment-cli
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../secrets/
+export SECRETS_FILE_NAME=model-deployment.json
 export GCP_PROJECT="ac215-group-4"
-export GCS_MODELS_BUCKET_NAME="keyword_models" 
+export GCS_MODELS_BUCKET_NAME="keyword_models_mega_ppp" 
+export CONTAINER_SECRETS_DIR=/secrets
+
 # ACTION: May need to change above to mega-ppp/keyword_models
 
 
@@ -18,8 +21,8 @@ docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
 # Run Container
 docker run --rm --name $IMAGE_NAME -ti \
 -v "$BASE_DIR":/app \
--v "$SECRETS_DIR":/secrets \
--e GOOGLE_APPLICATION_CREDENTIALS=/secrets/model-deployment.json \
+-v "$SECRETS_DIR":$CONTAINER_SECRETS_DIR \
+-e GOOGLE_APPLICATION_CREDENTIALS=/$CONTAINER_SECRETS_DIR/$SECRETS_FILE_NAME \
 -e GCP_PROJECT=$GCP_PROJECT \
 -e GCS_MODELS_BUCKET_NAME=$GCS_MODELS_BUCKET_NAME \
 $IMAGE_NAME
