@@ -19,6 +19,7 @@ from google.cloud import storage
 from google.cloud import aiplatform
 import tensorflow as tf
 
+from transformers import TFAutoModelForTokenClassification
 
 # # W&B
 import wandb
@@ -78,23 +79,14 @@ def main(args=None):
 
         # Download model artifact from wandb
         run = wandb.init()
-        artifact = run.use_artifact(
-            "mega-ppp/keyword_models/model.h5",
-            type="model",
-        )
+        artifact = run.use_artifact('ac215-ppp/ppp-keyword-extraction/model-distilroberta-base-21oct:v4')
         artifact_dir = artifact.download()
         print("artifact_dir", artifact_dir)
-
-        # Download model
-        # download_file(
-        #     "https://github.com/dlops-io/models/releases/download/v2.0/model-mobilenetv2_train_base_True.v74.zip",
-        #     base_path="artifacts",
-        #     extract=True,
-        # )
-        # artifact_dir = "./artifacts/model-mobilenetv2_train_base_True:v74"
+        
+        prediction_model = TFAutoModelForTokenClassification.from_pretrained(artifact_dir)
 
         # Load model
-        prediction_model = tf.keras.models.load_model(artifact_dir)
+        # prediction_model = tf.keras.models.load_model(artifact_dir)
         print(prediction_model.summary())
 
         # ACTION: modify processing to fit our model
