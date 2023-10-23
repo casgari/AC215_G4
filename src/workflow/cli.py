@@ -247,7 +247,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "-g",
-        "--generate",
+        "--generate_quiz",
         action="store_true",
         help="Generate Quiz",
     )
