@@ -11,7 +11,7 @@ import openai
 parser = argparse.ArgumentParser(description="Command description.")
 
 gcp_project = "AC215 Group 4"
-bucket_name = "mega-ppp"
+bucket_name = os.environ["GCS_BUCKET_NAME"]
 text_prompts = "text_prompts"
 generated_quizzes = "generated_quizzes"
 
@@ -39,6 +39,8 @@ def generate():
     print("generate")
     text_files = os.listdir(text_prompts)
 
+    #THINK I NEED SECRETS HERE TO BE ABLE TO TEST THIS
+
     with open("secrets/openai_api_key.txt") as f:
         openai.api_key = f.read()
 
@@ -52,7 +54,7 @@ def generate():
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "user", "content": f"Please generate some multiple choice questions for the following lecture: {lecture_transcript[:3800]}"}
+                {"role": "user", "content": f"Please generate 5 multiple choice questions for the following lecture: {lecture_transcript[:3800]}"}
             ])
         quiz = response.choices[0].message.content
         with open(quiz_path, "w") as f:
@@ -80,11 +82,9 @@ def upload():
 def main(args=None):
     print("Args:", args)
 
-    if args.download:
-        download()
     if args.generate:
+        download()
         generate()
-    if args.upload:
         upload()
 
 
@@ -94,21 +94,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Transcribe audio file to text")
 
     parser.add_argument(
-        "-d",
-        "--download",
-        action="store_true",
-        help="Download audio files from GCS bucket",
-    )
-
-    parser.add_argument(
         "-g", "--generate", action="store_true", help="Generate quizzes from transcript"
-    )
-
-    parser.add_argument(
-        "-u",
-        "--upload",
-        action="store_true",
-        help="Upload quizzes to GCS bucket",
     )
 
     args = parser.parse_args()

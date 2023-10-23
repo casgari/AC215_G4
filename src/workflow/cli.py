@@ -22,6 +22,7 @@ GCS_SERVICE_ACCOUNT = os.environ["GCS_SERVICE_ACCOUNT"]
 
 DATA_CONVERSION_IMAGE = "cbsaul/ppp-workflow:preprocess_audio_file"
 TRANSCRIBE_AUDIO_IMAGE = "cbsaul/ppp-workflow:transcribe-audio"
+GENERATE_QUIZ_IMAGE = "cbsaul/ppp-workflow:generate-quiz"
 
 
 def generate_uuid(length: int = 8) -> str:
@@ -113,6 +114,45 @@ def main(args=None):
 
 
 
+    if args.generate_quiz:
+        # Define a Container Component
+        @dsl.container_component
+        def generate_quiz():
+            container_spec = dsl.ContainerSpec(
+                image=GENERATE_QUIZ_IMAGE,
+                command=[],
+                args=[
+                    "cli.py",
+                    "--generate"
+                ],
+            )
+            return container_spec
+        
+        # Define a Pipeline
+        @dsl.pipeline
+        def generate_quiz_pipeline():
+            generate_quiz()
+
+        # Build yaml file for pipeline
+        compiler.Compiler().compile(
+            generate_quiz_pipeline, package_path="generate_quiz.yaml"
+        )
+
+        # Submit job to Vertex AI
+        aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
+
+        job_id = generate_uuid()
+        DISPLAY_NAME = "generate_quiz-" + job_id
+        job = aip.PipelineJob(
+            display_name=DISPLAY_NAME,
+            template_path="generate_quiz.yaml",
+            pipeline_root=PIPELINE_ROOT,
+            enable_caching=False,
+        )
+
+        job.run(service_account=GCS_SERVICE_ACCOUNT)
+
+
     if args.pipeline:
         # Define a Container Component
         @dsl.container_component
@@ -138,6 +178,18 @@ def main(args=None):
                 ],
             )
             return container_spec
+        
+        @dsl.container_component
+        def generate_quiz():
+            container_spec = dsl.ContainerSpec(
+                image=GENERATE_QUIZ_IMAGE,
+                command=[],
+                args=[
+                    "cli.py",
+                    "--generate"
+                ],
+            )
+            return container_spec
 
         # Define a Pipeline
         @dsl.pipeline
@@ -148,6 +200,12 @@ def main(args=None):
                 transcribe_audio()
                 .set_display_name("Transcribe Audio")
                 .after(data_conversion_task)
+            )
+
+            generate_quiz_task = (
+                generate_quiz()
+                .set_display_name("Generate Quiz")
+                .after(transcribe_audio_task)
             )
 
         # Build yaml file for pipeline
@@ -185,6 +243,13 @@ if __name__ == "__main__":
         "--transcribe_audio",
         action="store_true",
         help="Transcribe mp3 audio file",
+    )
+
+    parser.add_argument(
+        "-g",
+        "--generate",
+        action="store_true",
+        help="Generate Quiz",
     )
 
     parser.add_argument(
