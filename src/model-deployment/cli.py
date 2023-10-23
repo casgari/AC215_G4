@@ -19,6 +19,7 @@ from google.cloud import storage
 from google.cloud import aiplatform
 import tensorflow as tf
 
+import transformers
 from transformers import TFAutoModelForTokenClassification
 
 # # W&B
@@ -73,17 +74,20 @@ def main(args=None):
 
         with open(os.environ["WANDB_KEY"], "r") as f:
             WANDB_KEY = f.read()
-        print(WANDB_KEY)
         # Login into wandb
         wandb.login(key=WANDB_KEY)
 
         # Download model artifact from wandb
         run = wandb.init()
-        artifact = run.use_artifact('ac215-ppp/ppp-keyword-extraction/model-distilroberta-base-21oct:v4')
-        artifact_dir = artifact.download()
-        print("artifact_dir", artifact_dir)
+        # artifact = run.use_artifact('ac215-ppp/ppp-keyword-extraction/model-distilroberta-base-21oct:v4', type="model")
+        # artifact_dir = artifact.download()
+        # print("artifact_dir", artifact_dir)
+        artifact_dir = './artifacts/model-distilroberta-base-21oct:v4'
         
         prediction_model = TFAutoModelForTokenClassification.from_pretrained(artifact_dir)
+        # prediction_model.saved_model.load(
+        #     export_dir, tags=None, options=None
+        # )
 
         # Load model
         # prediction_model = tf.keras.models.load_model(artifact_dir)
@@ -91,38 +95,12 @@ def main(args=None):
 
         # ACTION: modify processing to fit our model
         # Preprocess Image
-        def preprocess_image(bytes_input):
-            decoded = tf.io.decode_jpeg(bytes_input, channels=3)
-            decoded = tf.image.convert_image_dtype(decoded, tf.float32)
-            resized = tf.image.resize(decoded, size=(224, 224))
-            return resized
-
-        @tf.function(input_signature=[tf.TensorSpec([None], tf.string)])
-        def preprocess_function(bytes_inputs):
-            decoded_images = tf.map_fn(
-                preprocess_image, bytes_inputs, dtype=tf.float32, back_prop=False
-            )
-            return {"model_input": decoded_images}
-
-        @tf.function(input_signature=[tf.TensorSpec([None], tf.string)])
-        def serving_function(bytes_inputs):
-            images = preprocess_function(bytes_inputs)
-            results = model_call(**images)
-            return results
-
-        model_call = tf.function(prediction_model.call).get_concrete_function(
-            [
-                tf.TensorSpec(
-                    shape=[None, 224, 224, 3], dtype=tf.float32, name="model_input"
-                )
-            ]
-        )
 
         # Save updated model to GCS
         tf.saved_model.save(
             prediction_model,
             ARTIFACT_URI,
-            signatures={"serving_default": serving_function},
+            # signatures={"serving_default": serving_function},
         )
 
     elif args.deploy:
