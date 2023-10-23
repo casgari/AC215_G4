@@ -40,7 +40,7 @@ def main(args=None):
                 image=DATA_CONVERSION_IMAGE,
                 command=[],
                 args=[
-                    "python cli.py",
+                    "cli.py",
                     "--convert"
                 ],
             )
