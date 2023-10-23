@@ -9,8 +9,9 @@ verify_ssl = true
 google-cloud-aiplatform = "*"
 wandb = "*"
 pillow = "*"
-tensorflow-aarch64 = "*"
+tensorflow = "*"
 transformers = "*"
+numpy = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.8"
