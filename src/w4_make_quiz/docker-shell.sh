@@ -24,5 +24,3 @@ docker run --rm --name $IMAGE_NAME -ti \
 -e GCP_PROJECT=$GCP_PROJECT \
 -e GCS_BUCKET_NAME=$GCS_BUCKET_NAME \
 $IMAGE_NAME
-
-

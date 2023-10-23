@@ -39,9 +39,7 @@ def generate():
     print("generate")
     text_files = os.listdir(text_prompts)
 
-    #THINK I NEED SECRETS HERE TO BE ABLE TO TEST THIS
-
-    with open("secrets/openai_api_key.txt") as f:
+    with open("/../secrets/openai_api_key.txt") as f:
         openai.api_key = f.read()
 
     for text_file in text_files:
