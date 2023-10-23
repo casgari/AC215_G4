@@ -20,9 +20,7 @@ BUCKET_URI = f"gs://{GCS_BUCKET_NAME}"
 PIPELINE_ROOT = f"{BUCKET_URI}/pipeline_root/root"
 GCS_SERVICE_ACCOUNT = os.environ["GCS_SERVICE_ACCOUNT"]
 
-# DATA_COLLECTOR_IMAGE = "gcr.io/ac215-project/mushroom-app-data-collector"
-DATA_COLLECTOR_IMAGE = "dlops/mushroom-app-data-collector"
-DATA_PROCESSOR_IMAGE = "dlops/mushroom-app-data-processor"
+DATA_COLLECTOR_IMAGE = "cbsaul/ppp-workflow:preprocess_audio_file"
 
 
 def generate_uuid(length: int = 8) -> str:
@@ -32,42 +30,39 @@ def generate_uuid(length: int = 8) -> str:
 def main(args=None):
     print("CLI Arguments:", args)
 
-    if args.data_collector:
+    if args.data_conversion:
         # Define a Container Component
         @dsl.container_component
-        def data_collector():
+        def data_conversion():
             container_spec = dsl.ContainerSpec(
                 image=DATA_COLLECTOR_IMAGE,
                 command=[],
                 args=[
                     "cli.py",
-                    "--search",
-                    "--nums 10",
-                    "--query oyster+mushrooms crimini+mushrooms amanita+mushrooms",
-                    f"--bucket {GCS_BUCKET_NAME}",
+                    "--convert"
                 ],
             )
             return container_spec
 
         # Define a Pipeline
         @dsl.pipeline
-        def data_collector_pipeline():
-            data_collector()
+        def data_conversion_pipeline():
+            data_conversion()
 
         # Build yaml file for pipeline
         compiler.Compiler().compile(
-            data_collector_pipeline, package_path="data_collector.yaml"
+            data_conversion_pipeline, package_path="data_conversion.yaml"
         )
 
         # Submit job to Vertex AI
         aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
-        DISPLAY_NAME = "mushroom-app-data-collector"
+        DISPLAY_NAME = "mega-ppp-data-conversion"
 
         job_id = generate_uuid()
-        DISPLAY_NAME = "mushroom-app-data-collector-" + job_id
+        DISPLAY_NAME = "mega-ppp-data-conversion-" + job_id
         job = aip.PipelineJob(
             display_name=DISPLAY_NAME,
-            template_path="data_collector.yaml",
+            template_path="data_conversion.yaml",
             pipeline_root=PIPELINE_ROOT,
             enable_caching=False,
         )
@@ -142,9 +137,9 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "-c",
-        "--data_collector",
+        "--data_conversion",
         action="store_true",
-        help="Data Collector",
+        help="Data Conversion Mp4 to Mp3",
     )
     parser.add_argument(
         "-w",
