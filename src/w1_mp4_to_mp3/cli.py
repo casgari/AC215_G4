@@ -14,7 +14,8 @@ parser = argparse.ArgumentParser(description="Command description.")
 
 
 gcp_project = "AC215 Group 4"
-bucket_name = os.environ["GCS_BUCKET_NAME"]
+#bucket_name = os.environ["GCS_BUCKET_NAME"]
+bucket_name = "mega-ppp-ml-workflow"
 input_videos = "input_videos"
 audio_files = "audio_files"
 
