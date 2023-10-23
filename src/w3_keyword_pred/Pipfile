@@ -6,10 +6,11 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-user-agent = "*"
-requests = "*"
-beautifulsoup4 = "*"
-google-cloud-storage = "*"
+google-cloud-aiplatform = "*"
+wandb = "*"
+pillow = "*"
+tensorflow-aarch64 = "*"
+transformers = "*"
 
 [requires]
 python_version = "3.9"
