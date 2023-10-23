@@ -26,7 +26,7 @@ RUN pipenv sync
 ADD . /app
 
 # Entry point
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/bin/bash","./docker-entrypoint.sh"]
 
 # Get into the pipenv shell
-CMD ["-c", "pipenv shell"]
+#CMD ["-c", "pipenv shell"]

@@ -40,7 +40,7 @@ def main(args=None):
                 image=DATA_CONVERSION_IMAGE,
                 command=[],
                 args=[
-                    "cli.py",
+                    "python cli.py",
                     "--convert"
                 ],
             )
@@ -122,7 +122,7 @@ def main(args=None):
                 image=GENERATE_QUIZ_IMAGE,
                 command=[],
                 args=[
-                    "cli.py",
+                    "python cli.py",
                     "--generate"
                 ],
             )
