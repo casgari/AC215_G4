@@ -20,7 +20,7 @@ BUCKET_URI = f"gs://{GCS_BUCKET_NAME}"
 PIPELINE_ROOT = f"{BUCKET_URI}/pipeline_root/root"
 GCS_SERVICE_ACCOUNT = os.environ["GCS_SERVICE_ACCOUNT"]
 
-DATA_COLLECTOR_IMAGE = "cbsaul/ppp-workflow:preprocess_audio_file"
+DATA_CONVERSION_IMAGE = "cbsaul/ppp-workflow:preprocess_audio_file"
 
 
 def generate_uuid(length: int = 8) -> str:
@@ -35,7 +35,7 @@ def main(args=None):
         @dsl.container_component
         def data_conversion():
             container_spec = dsl.ContainerSpec(
-                image=DATA_COLLECTOR_IMAGE,
+                image=DATA_CONVERSION_IMAGE,
                 command=[],
                 args=[
                     "cli.py",
@@ -74,7 +74,7 @@ def main(args=None):
         @dsl.container_component
         def data_collector():
             container_spec = dsl.ContainerSpec(
-                image=DATA_COLLECTOR_IMAGE,
+                image=DATA_CONVERSION_IMAGE,
                 command=[],
                 args=[
                     "cli.py",
