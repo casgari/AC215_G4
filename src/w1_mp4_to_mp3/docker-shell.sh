@@ -7,7 +7,7 @@ set -e
 export IMAGE_NAME="preprocess_audio_file"
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../secrets
-export SECRETS_FILE_NAME=mega-ppp.json
+export SECRETS_FILE_NAME=ml-workflow.json
 export GCP_PROJECT="ac215-group-4"
 export GCS_BUCKET_NAME="mega-ppp-ml-workflow"
 export CONTAINER_SECRETS_DIR=/secrets

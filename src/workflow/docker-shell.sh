@@ -20,8 +20,6 @@ docker run --rm --name $IMAGE_NAME -ti \
 -v /var/run/docker.sock:/var/run/docker.sock \
 -v "$BASE_DIR":/app \
 --mount type=bind,source="$SECRETS_DIR",target=$CONTAINER_SECRETS_DIR \
--v "$BASE_DIR/../data-collector":/data-collector \
--v "$BASE_DIR/../data-processor":/data-processor \
 -e GOOGLE_APPLICATION_CREDENTIALS=$CONTAINER_SECRETS_DIR/$SECRETS_FILE_NAME \
 -e GCP_PROJECT=$GCP_PROJECT \
 -e GCS_BUCKET_NAME=$GCS_BUCKET_NAME \
