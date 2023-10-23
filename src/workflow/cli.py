@@ -21,6 +21,7 @@ PIPELINE_ROOT = f"{BUCKET_URI}/pipeline_root/root"
 GCS_SERVICE_ACCOUNT = os.environ["GCS_SERVICE_ACCOUNT"]
 
 DATA_CONVERSION_IMAGE = "cbsaul/ppp-workflow:preprocess_audio_file"
+TRANSCRIBE_AUDIO_IMAGE = "cbsaul/ppp-workflow:transcribe-audio"
 
 
 def generate_uuid(length: int = 8) -> str:
@@ -43,7 +44,7 @@ def main(args=None):
                 ],
             )
             return container_spec
-
+        
         # Define a Pipeline
         @dsl.pipeline
         def data_conversion_pipeline():
@@ -56,10 +57,9 @@ def main(args=None):
 
         # Submit job to Vertex AI
         aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
-        DISPLAY_NAME = "mega-ppp-data-conversion"
 
         job_id = generate_uuid()
-        DISPLAY_NAME = "mega-ppp-data-conversion-" + job_id
+        DISPLAY_NAME = "preprocess_audio_file-" + job_id
         job = aip.PipelineJob(
             display_name=DISPLAY_NAME,
             template_path="data_conversion.yaml",
@@ -69,33 +69,72 @@ def main(args=None):
 
         job.run(service_account=GCS_SERVICE_ACCOUNT)
 
+
+
+    if args.transcribe_audio:
+        print("Transcribe Audio")
+
+        # Define a Container Component for data processor
+        @dsl.container_component
+        def transcribe_audio():
+            container_spec = dsl.ContainerSpec(
+                image=TRANSCRIBE_AUDIO_IMAGE,
+                command=[],
+                args=[
+                    "cli.py",
+                    "--transcribe"
+                ],
+            )
+            return container_spec
+
+        # Define a Pipeline
+        @dsl.pipeline
+        def transcribe_audio_pipeline():
+            transcribe_audio()
+
+        # Build yaml file for pipeline
+        compiler.Compiler().compile(
+            transcribe_audio_pipeline, package_path="transcribe_audio.yaml"
+        )
+
+        # Submit job to Vertex AI
+        aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
+
+        job_id = generate_uuid()
+        DISPLAY_NAME = "transcribe_audio-" + job_id
+        job = aip.PipelineJob(
+            display_name=DISPLAY_NAME,
+            template_path="transcribe_audio.yaml",
+            pipeline_root=PIPELINE_ROOT,
+            enable_caching=False,
+        )
+
+        job.run(service_account=GCS_SERVICE_ACCOUNT)
+
+
+
     if args.pipeline:
         # Define a Container Component
         @dsl.container_component
-        def data_collector():
+        def data_conversion():
             container_spec = dsl.ContainerSpec(
                 image=DATA_CONVERSION_IMAGE,
                 command=[],
                 args=[
                     "cli.py",
-                    "--search",
-                    "--nums 10",
-                    "--query oyster+mushrooms crimini+mushrooms amanita+mushrooms",
-                    f"--bucket {GCS_BUCKET_NAME}",
+                    "--convert"
                 ],
             )
             return container_spec
 
         @dsl.container_component
-        def data_processor():
+        def transcribe_audio():
             container_spec = dsl.ContainerSpec(
-                image=DATA_PROCESSOR_IMAGE,
+                image=TRANSCRIBE_AUDIO_IMAGE,
                 command=[],
                 args=[
                     "cli.py",
-                    "--clean",
-                    "--prepare",
-                    f"--bucket {GCS_BUCKET_NAME}",
+                    "--transcribe"
                 ],
             )
             return container_spec
@@ -103,12 +142,12 @@ def main(args=None):
         # Define a Pipeline
         @dsl.pipeline
         def ml_pipeline():
-            data_collector_task = data_collector().set_display_name("Data Collector")
+            data_conversion_task = data_conversion().set_display_name("Data Conversion")
 
-            data_processor_task = (
-                data_processor()
-                .set_display_name("Data Processor")
-                .after(data_collector_task)
+            transcribe_audio_task = (
+                transcribe_audio()
+                .set_display_name("Transcribe Audio")
+                .after(data_conversion_task)
             )
 
         # Build yaml file for pipeline
@@ -116,10 +155,9 @@ def main(args=None):
 
         # Submit job to Vertex AI
         aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
-        DISPLAY_NAME = "mushroom-app-pipeline"
 
         job_id = generate_uuid()
-        DISPLAY_NAME = "mushroom-app-pipeline-" + job_id
+        DISPLAY_NAME = "mega-ppp-" + job_id
         job = aip.PipelineJob(
             display_name=DISPLAY_NAME,
             template_path="pipeline.yaml",
@@ -141,11 +179,19 @@ if __name__ == "__main__":
         action="store_true",
         help="Data Conversion Mp4 to Mp3",
     )
+
     parser.add_argument(
-        "-w",
+        "-t",
+        "--transcribe_audio",
+        action="store_true",
+        help="Transcribe mp3 audio file",
+    )
+
+    parser.add_argument(
+        "-p",
         "--pipeline",
         action="store_true",
-        help="Mushroom App Pipeline",
+        help="Run Mega PPP Pipeline",
     )
 
     args = parser.parse_args()
