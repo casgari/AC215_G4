@@ -29,6 +29,7 @@ AUDIO_TRANSCRIPTION_IMAGE = "cvanamburg/mega-ppp-audio-transcription"
 QUIZ_GENERATION_IMAGE = "cvanamburg/mega-ppp-quiz-generation"
 DATA_COLLECTOR_IMAGE = "cvanamburg/mushroom-app-data-collector"
 DATA_PROCESSOR_IMAGE = "dlops/mushroom-app-data-processor"
+KEYWORD_EXTRACTION_IMAGE = "the20thduck/ppp-workflow:model-deployment-cli"
 
 
 def generate_uuid(length: int = 8) -> str:
@@ -114,6 +115,44 @@ def main(args=None):
 
         job.run(service_account=GCS_SERVICE_ACCOUNT)
 
+
+    if args.keyword_extraction:
+        
+        @dsl.container_component
+        def keyword_extraction():
+            container_spec = dsl.ContainerSpec(
+                image=KEYWORD_EXTRACTION_IMAGE,
+                command=[],
+                args=[
+                    "cli.py",
+                    "-p"
+                ]
+            )
+            return container_spec
+
+        # Define a Pipeline
+        @dsl.pipeline
+        def keyword_extraction_pipeline():
+            keyword_extraction()
+
+        # Build yaml file for pipeline
+        compiler.Compiler().compile(
+            keyword_extraction_pipeline, package_path="keyword_extraction.yaml"
+        )
+
+        # Submit job to Vertex AI
+        aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
+
+        job_id = generate_uuid()
+        DISPLAY_NAME = "mega-ppp-keyword-extraction-" + job_id
+        job = aip.PipelineJob(
+            display_name=DISPLAY_NAME,
+            template_path="keyword_extraction.yaml",
+            pipeline_root=PIPELINE_ROOT,
+            enable_caching=False,
+        )
+
+        job.run(service_account=GCS_SERVICE_ACCOUNT)
 
     if args.quiz_generation:
         
@@ -327,6 +366,18 @@ def main(args=None):
                 ]
             )
             return container_spec
+        
+        @dsl.container_component
+        def keyword_extraction():
+            container_spec = dsl.ContainerSpec(
+                image=KEYWORD_EXTRACTION_IMAGE_IMAGE,
+                command=[],
+                args=[
+                    "cli.py",
+                    "-p"
+                ]
+            )
+            return container_spec
 
         @dsl.container_component
         def quiz_generation():
@@ -392,6 +443,11 @@ def main(args=None):
                 quiz_generation()
                 .set_display_name("Quiz Generation")
                 .after(audio_transcription_task)
+            )
+            keyword_extraction_task = (
+                keyword_extraction()
+                .set_display_name("Keyword Extraction")
+                .after(quiz_generation_task)
             )
             # # Model Training
             # model_training_task = (
@@ -486,6 +542,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Workflow CLI")
 
     parser.add_argument(
+        "-e",
+        "--keyword_extraction",
+        action="store_true",
+        help="Run just the Keyword Extraction",
+    )
+    parser.add_argument(
         "-k",
         "--data_conversion",
         action="store_true",
@@ -493,13 +555,13 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "-r",
-        "--transcribe",
+        "--audio_transcription",
         action="store_true",
         help="Run just the Audio Transcription",
     )
     parser.add_argument(
         "-g",
-        "--generate",
+        "--quiz_generation",
         action="store_true",
         help="Run just the Quiz Generation",
     )
