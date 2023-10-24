@@ -9,6 +9,7 @@ Typical usage example from command line:
 
 import os
 import requests
+import json
 import zipfile
 import tarfile
 import argparse
@@ -21,13 +22,14 @@ import tensorflow as tf
 
 import transformers
 from transformers import TFAutoModelForTokenClassification
+from transformers import AutoTokenizer
 
 # # W&B
 import wandb
 
 GCP_PROJECT = os.environ["GCP_PROJECT"]
 GCS_MODELS_BUCKET_NAME = os.environ["GCS_MODELS_BUCKET_NAME"]
-BEST_MODEL = "model.h5" # ACTION: Model Name
+BEST_MODEL = "distilbert" # ACTION: Model Name
 ARTIFACT_URI = f"gs://{GCS_MODELS_BUCKET_NAME}/{BEST_MODEL}"
 
 # ACTION: Modify details to fit model
@@ -79,25 +81,29 @@ def main(args=None):
 
         # Download model artifact from wandb
         run = wandb.init()
-        # artifact = run.use_artifact('ac215-ppp/ppp-keyword-extraction/model-distilroberta-base-21oct:v4', type="model")
-        # artifact_dir = artifact.download()
-        # print("artifact_dir", artifact_dir)
-        artifact_dir = './artifacts/model-distilroberta-base-21oct:v4'
-        
-        prediction_model = tf.saved_model.load(artifact_dir)
-        # Load model
-        # prediction_model = tf.keras.models.load_model(artifact_dir)
-        print(prediction_model.summary())
+        # download_file(
+        #     "https://github.com/dlops-io/models/releases/download/v2.0/model-mobilenetv2_train_base_True.v74.zip",
+        #     base_path="artifacts",
+        #     extract=True,
+        # )
+        # artifact_dir = "./artifacts/model-mobilenetv2_train_base_True:v74/1"
 
-        # ACTION: modify processing to fit our model
-        # Preprocess Image
+        # Load model
+        artifact = run.use_artifact('ac215-ppp/ppp-keyword-extraction/model-distilroberta-base-21oct:v4', type="model")
+        artifact_dir = artifact.download()
+        prediction_model = tf.saved_model.load(artifact_dir)
 
         # Save updated model to GCS
         tf.saved_model.save(
             prediction_model,
-            ARTIFACT_URI,
-            # signatures={"serving_default": serving_function},
+            ARTIFACT_URI
         )
+        # Save updated model locally for endpoint
+        # tf.saved_model.save(
+        #     prediction_model,
+        #     "./artifacts/endpoint/1",
+        #     signatures={"serving_default": serving_function},
+        # )
 
     elif args.deploy:
         print("Deploy model")
@@ -134,14 +140,43 @@ def main(args=None):
         # Get the endpoint
         # Endpoint format: endpoint_name="projects/{PROJECT_NUMBER}/locations/us-central1/endpoints/{ENDPOINT_ID}"
         endpoint = aiplatform.Endpoint(
-            "projects/129349313346/locations/us-central1/endpoints/5072058134046965760"
+            "projects/36357732856/locations/us-central1/endpoints/1708924743563870208"
         )
+
+        # with open("cs109_lecture1.txt", "r") as f:
+        #     sentence = f.read()
+        sentence = "Diffusion models are a class of machine learning models that have gained significant attention in recent times for their ability to generate high-quality samples from complex data distributions. At their core, diffusion models operate by simulating a random process known as diffusion, which can be thought of as the reverse of a denoising process. Starting with a random noise sample, the model iteratively refines the sample through a series of steps, gradually morphing the noise into a sample that closely resembles the target data distribution. This is achieved by leveraging a sequence of transition probabilities, which guide the diffusion process. One of the primary advantages of diffusion models is their ability to generate samples without the need for explicit likelihood computation, which is a common requirement in many generative models. Their flexibility and robustness have led to applications in a variety of domains, from image synthesis to audio generation. As research progresses, the potential of diffusion models continues to unfold, promising even more advanced and diverse applications in the future."
+        print(sentence)
+        tokenizer = AutoTokenizer.from_pretrained("distilroberta-base")
+        example_text = tokenizer(sentence, truncation=True, return_token_type_ids=True)
+
+
+        # The format of each instance should conform to the deployed model's prediction input schema.
+       
+
+        result = endpoint.predict(instances=[example_text])
+
+        logits = result.predictions[0]
+        
+        predictions = np.argmax(logits, axis=-1)
+        keyphrases = []
+        keyphrase = []
+        for label, token in zip(predictions, example_text["input_ids"]):
+            if label == 0:
+                keyphrase = [tokenizer.decode(token)]
+            elif label == 1 and len(keyphrase) > 0:
+                keyphrase.append(tokenizer.decode(token))
+            elif label == 2 and len(keyphrase) > 0:
+                keyphrases.append(''.join(keyphrase))
+                keyphrase = []
+        print("Keywords:", keyphrases)
+
+    elif args.local:
 
         # Get a sample image to predict
         image_files = glob(os.path.join("data", "*.jpg"))
         print("image_files:", image_files[:5])
-
-        image_samples = np.random.randint(0, high=len(image_files) - 1, size=5)
+        image_samples = np.random.randint(0, high=len(image_files) - 1, size=1)
         for img_idx in image_samples:
             print("Image:", image_files[img_idx])
 
@@ -151,7 +186,12 @@ def main(args=None):
             # The format of each instance should conform to the deployed model's prediction input schema.
             instances = [{"bytes_inputs": {"b64": b64str}}]
 
-            result = endpoint.predict(instances=instances)
+            headers = {"content-type": "application/json"}
+            response = requests.post(
+                "http://host.docker.internal:8501/v1/models/model_name:predict", data=data, headers=headers
+            )
+            print(response)
+            result = json.loads(response.text)
 
             print("Result:", result)
             prediction = result.predictions[0]
@@ -161,6 +201,7 @@ def main(args=None):
                 data_details["index2label"][prediction.index(max(prediction))],
                 "\n",
             )
+
 
 
 if __name__ == "__main__":
@@ -191,6 +232,12 @@ if __name__ == "__main__":
         "--test",
         action="store_true",
         help="Test deployment to Vertex AI",
+    )
+    parser.add_argument(
+        "-l",
+        "--local",
+        action="store_true",
+        help="Make prediction using endpoint locally",
     )
 
     args = parser.parse_args()
