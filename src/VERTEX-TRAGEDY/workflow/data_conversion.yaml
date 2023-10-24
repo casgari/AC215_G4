@@ -1,0 +1,27 @@
+# PIPELINE DEFINITION
+# Name: data-conversion-pipeline
+components:
+  comp-data-conversion:
+    executorLabel: exec-data-conversion
+deploymentSpec:
+  executors:
+    exec-data-conversion:
+      container:
+        args:
+        - cli.py
+        - --convert
+        image: cvanamburg/mega-ppp-data-conversion-v4
+pipelineInfo:
+  name: data-conversion-pipeline
+root:
+  dag:
+    tasks:
+      data-conversion:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-data-conversion
+        taskInfo:
+          name: data-conversion
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.3.0
