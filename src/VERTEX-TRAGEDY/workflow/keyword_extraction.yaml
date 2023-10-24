@@ -10,7 +10,7 @@ deploymentSpec:
         args:
         - cli.py
         - -p
-        image: the20thduck/ppp-workflow:model-deployment-cli
+        image: the20thduck/ppp-workflow:latest
 pipelineInfo:
   name: keyword-extraction-pipeline
 root:

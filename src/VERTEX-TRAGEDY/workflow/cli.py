@@ -29,7 +29,7 @@ AUDIO_TRANSCRIPTION_IMAGE = "cvanamburg/mega-ppp-audio-transcription"
 QUIZ_GENERATION_IMAGE = "cvanamburg/mega-ppp-quiz-generation"
 DATA_COLLECTOR_IMAGE = "cvanamburg/mushroom-app-data-collector"
 DATA_PROCESSOR_IMAGE = "dlops/mushroom-app-data-processor"
-KEYWORD_EXTRACTION_IMAGE = "the20thduck/ppp-workflow:model-deployment-cli"
+KEYWORD_EXTRACTION_IMAGE = "the20thduck/ppp-workflow:latest"
 
 
 def generate_uuid(length: int = 8) -> str:

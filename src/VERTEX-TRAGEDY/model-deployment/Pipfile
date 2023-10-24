@@ -9,7 +9,7 @@ verify_ssl = true
 google-cloud-aiplatform = "*"
 wandb = "*"
 pillow = "*"
-tensorflow-aarch64 = "*"
+tensorflow = "*"
 transformers = "*"
 
 [requires]
