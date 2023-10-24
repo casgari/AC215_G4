@@ -11,10 +11,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
 
 
-# ACTION: idk
-ENV GOOGLE_APPLICATION_CREDENTIALS=secrets/mega-ppp.json
-
-
 
 
 

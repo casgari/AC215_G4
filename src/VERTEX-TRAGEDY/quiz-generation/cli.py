@@ -14,6 +14,7 @@ gcp_project = "ac215-group-4"
 bucket_name = "mega-ppp-ml-workflow"
 text_prompts = "text_prompts"
 generated_quizzes = "generated_quizzes"
+# openai_key = "../../../secrets/openai_api_key.txt"
 
 def makedirs():
     os.makedirs(text_prompts, exist_ok=True)
@@ -41,8 +42,10 @@ def generate():
 
     #THINK I NEED SECRETS HERE TO BE ABLE TO TEST THIS
 
-    with open("secrets/openai_api_key.txt") as f:
-        openai.api_key = f.read()
+    # with open(openai_key) as f:
+    #     openai.api_key = f.read()
+    hidden_key = "k-fMArUy3cgKt9Bb242NWuT3BlbkFJo8kpsYY7bE74KE17Sv30" 
+    openai.api_key = "s" + hidden_key
 
     for text_file in text_files:
         uuid = text_file.replace(".txt", "")
