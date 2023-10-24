@@ -84,11 +84,7 @@ def main(args=None):
         # print("artifact_dir", artifact_dir)
         artifact_dir = './artifacts/model-distilroberta-base-21oct:v4'
         
-        prediction_model = TFAutoModelForTokenClassification.from_pretrained(artifact_dir)
-        # prediction_model.saved_model.load(
-        #     export_dir, tags=None, options=None
-        # )
-
+        prediction_model = tf.saved_model.load(artifact_dir)
         # Load model
         # prediction_model = tf.keras.models.load_model(artifact_dir)
         print(prediction_model.summary())
