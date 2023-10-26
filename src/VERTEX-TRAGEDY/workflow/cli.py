@@ -24,7 +24,8 @@ GCS_PACKAGE_URI = os.environ["GCS_PACKAGE_URI"]
 GCP_REGION = os.environ["GCP_REGION"]
 
 # DATA_COLLECTOR_IMAGE = "gcr.io/ac215-project/mushroom-app-data-collector"
-DATA_CONVERSION_IMAGE = "cvanamburg/mega-ppp-data-conversion-v4"
+# DATA_CONVERSION_IMAGE = "cvanamburg/mega-ppp-data-conversion-v4"
+DATA_CONVERSION_IMAGE = "the20thduck/ppp-workflow:data-conversion"
 AUDIO_TRANSCRIPTION_IMAGE = "cvanamburg/mega-ppp-audio-transcription"
 QUIZ_GENERATION_IMAGE = "cvanamburg/mega-ppp-quiz-generation"
 DATA_COLLECTOR_IMAGE = "cvanamburg/mushroom-app-data-collector"
@@ -126,6 +127,7 @@ def main(args=None):
                 args=[
                     "cli.py",
                     "-p"
+                    f"--bucket {GCS_BUCKET_NAME}"
                 ]
             )
             return container_spec

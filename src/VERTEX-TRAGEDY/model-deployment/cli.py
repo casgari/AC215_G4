@@ -217,6 +217,12 @@ if __name__ == "__main__":
         action="store_true",
         help="Do all three: upload model, deploy endpoint, predict keywords",
     )
+    parser.add_argument(
+        "-b",
+        "--bucket",
+        action="store_true",
+        help="Store bucket environment variable",
+    )
 
     args = parser.parse_args()
 

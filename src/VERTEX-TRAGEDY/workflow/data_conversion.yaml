@@ -10,7 +10,7 @@ deploymentSpec:
         args:
         - cli.py
         - --convert
-        image: cvanamburg/mega-ppp-data-conversion-v4
+        image: the20thduck/ppp-workflow:data-conversion
 pipelineInfo:
   name: data-conversion-pipeline
 root:
