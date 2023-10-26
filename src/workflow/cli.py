@@ -20,7 +20,8 @@ BUCKET_URI = f"gs://{GCS_BUCKET_NAME}"
 PIPELINE_ROOT = f"{BUCKET_URI}/pipeline_root/root"
 GCS_SERVICE_ACCOUNT = os.environ["GCS_SERVICE_ACCOUNT"]
 
-DATA_CONVERSION_IMAGE = "cbsaul/ppp-workflow:preprocess_audio_file"
+# DATA_CONVERSION_IMAGE = "cbsaul/ppp-workflow:preprocess_audio_file"
+DATA_CONVERSION_IMAGE = "cvanamburg/mega-ppp-data-conversion"
 TRANSCRIBE_AUDIO_IMAGE = "cbsaul/ppp-workflow:transcribe-audio"
 GENERATE_QUIZ_IMAGE = "cbsaul/ppp-workflow:generate-quiz"
 
