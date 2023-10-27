@@ -95,9 +95,9 @@ Aside from a presentation (see `reports/milestone4_presentation.pdf`), our effor
 1. Optimizing training of a keyword extraction model, so that it was ready for deployment.
 2. Using Vertex AI (Kubeflow) pipelines for the deployment of our four main containers.
 
-In training, we have experimented with different versions of the BERT model (accessed via `TFAutoModelForTokenClassification`) to improve our performance on keyword extraction. All experiments were run on a single A100 chip on Vertex AI, although we have also fully implemented and tested support for training on multiple GPUs, using TensorFlow's support for distributed training (i.e. `tf.distribute.MirroredStrategy()`). We have tracked our performance of our many training runs using Weights & Biases and stored our model artifacts on the platform. We have chosen to deploy the `distilbert-base-uncased` model, which performed well in terms of inference time and achieved 99% of the performance of the undistilled `bert-base-uncased` model.
+In training, we have experimented with different versions and derivations of the BERT model (accessed via `TFAutoModelForTokenClassification`) to improve our performance on keyword extraction. All experiments were run on a single A100 GPU on Vertex AI, although we have also fully implemented and tested support for training on multiple GPUs, using TensorFlow's support for distributed training (i.e. `tf.distribute.MirroredStrategy()`). We have tracked our performance of our many training runs using Weights & Biases and stored our model artifacts on the platform. We have chosen to deploy the `distilbert-base-uncased` model, which performed well in terms of inference time and achieved 99% of the performance of the undistilled `bert-base-uncased` model.
 
-Aside from serverless training with Vertex AI, our four main containers have all been formulated into a Vertex AI (Kubeflow) pipeline, allowing for effective orchestration of our app's components and usage of cloud functions.
+Aside from serverless training with Vertex AI, our four main containers have all been formulated into a Vertex AI (Kubeflow) pipeline, allowing for effective orchestration of our app's components and usage of cloud functions. These containers preprocess inputted videos, transcribe them, extract key words with the deployed model, and generate quiz questions from the transcribed text.
 
 In the remainder of this update, we will explain the code structure of the [deliverables](https://harvard-iacs.github.io/2023-AC215/milestone4/) for Milestone 4. Given the size of the codebase, please note that we reserve this space for describing the deliverables for Milestone 4 only, and usage of other parts of the codebase is desribed in earlier reports (see `reports/milestone2.md` and `reports/milestone3.md`).
 
@@ -109,9 +109,9 @@ Having completed preprocessing, we train our model using the `src/model_training
 
 (1) `src/model_training/docker-shell.sh` - this script creates a container (defined in `src/model_training/Dockerfile`) for running training in a standardized environment. Run with `sh docker-shell.sh`.
 
-(1) `src/model_training/package` - this package contains all the necessary scripts for running training, tracking performance via Weights & Biases, and saving the trained model artifact. Before running serverless training, this package is compiled by running `sh package-trainer.sh` inside the Docker container.
+(2) `src/model_training/package` - this package contains all the necessary scripts for running training, tracking performance via Weights & Biases, and saving the trained model artifact. Before running serverless training, this package is compiled by running `sh package-trainer.sh` inside the Docker container.
 
-(2) `src/model_training/cli.sh` - we use this script to submit the job to Vertex AI, specifying parameters for training and the `ACCELERATOR_COUNT` for running training with multiple GPUs. Run with `sh cli.sh`.
+(3) `src/model_training/cli.sh` - we use this script to submit the serverless job to Vertex AI, specifying parameters for training and the `ACCELERATOR_COUNT` for running training with multiple GPUs. Run with `sh cli.sh`.
 
 Below you can see the results of our serverless training experiments on an A100 chip. We experimented with small models (e.g. `roberta-tiny-cased-trained`) which has only 28M parameters, and large models (e.g. the original BERT and RoBERTa models) which have over 100M parameters. Naturally, the smaller models performed inference faster but with a lower accuracy. We were able to find a useful compromise using model distillation. The distilled BERT and RoBERTa models achieved 99% of the accuracy achieved by the full-sized models with an acceptable inference time for deployment. Finally, we chose to deploy the `distilbert-base-uncased` model because of its very slight performance advantage over `distilroberta-base`.
 
@@ -119,9 +119,17 @@ Below you can see the results of our serverless training experiments on an A100 
 ![training_results image](images/training_results.png)
 
 **Vertex AI (Kubeflow) Pipeline Implementation**
-===============================
-TODO
-===============================
+
+We designed our Kubeflow Pipeline for handling what will be user inputted videos, and generating corresponding key-word highlighted texts along with generated quizzes. The pipeline consists of four main components; the structure can be visualized below: 
+
+(1) Data Preprocessing: This component and subdirectory found in () simply converts user video files (mp4) to audio files (mp3). Note that this container makes use of Dask to parallelize the process of video conversion with the moviepy library.
+
+(2) Audio Transcription: This component and subdirectory found in () transcribes the audio files
+
+(3a) Key Word Highlighting: This component and subdirectory found in () deploys our trained key-word highlighting Distilbert model and conducts inference on the transcribed text. 
+
+(3b) Quiz Generation: This componet and subdirectory found in () utilizes the transcribed text and forms an prompt to be inputted into the OpenAI GPT API.
+
 
 **Addenda to Presentation (10/24)**
 We have included an updated set of slides (see `reports/milestone4_presentation.pdf`) with two slight adjustments:
