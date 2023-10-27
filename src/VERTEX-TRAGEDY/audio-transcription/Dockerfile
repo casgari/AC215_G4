@@ -1,3 +1,4 @@
+# Use the official Debian-hosted Python image
 FROM python:3.8-slim-buster
 
 ARG DEBIAN_PACKAGES="build-essential git curl wget unzip gzip"
@@ -5,20 +6,20 @@ ARG DEBIAN_PACKAGES="build-essential git curl wget unzip gzip"
 # Prevent apt from showing prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Python wants UTF-8 locale
 ENV LANG=C.UTF-8
-
 # Tell pipenv where the shell is. 
 # This allows us to use "pipenv shell" as a container entry point.
 ENV PYENV_SHELL=/bin/bash
-ENV PYTHONUNBUFFERED=1
 
-# ENV GOOGLE_APPLICATION_CREDENTIALS=/secrets/mega-ppp.json
+ENV PYTHONUNBUFFERED=1
+# ENV GOOGLE_APPLICATION_CREDENTIALS=secrets/mega-ppp.json
+
 
 # Ensure we have an up to date baseline, install dependencies 
 RUN set -ex; \
     apt-get update && \
     apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends build-essential git ffmpeg && \
     apt-get install -y --no-install-recommends $DEBIAN_PACKAGES && \
     apt-get install -y --no-install-recommends software-properties-common apt-transport-https ca-certificates gnupg2 gnupg-agent curl openssh-client && \
     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
@@ -37,12 +38,31 @@ RUN set -ex; \
     chown app:app /persistent && \
     chown app:app /app
 
+# WORKDIR /app
+
+# # Add Pipfile, Pipfile.lock
+# ADD Pipfile Pipfile.lock /app/
+
+# RUN pipenv sync
+
+# # Source code
+# ADD . /app
+
+# # Entry point
+# ENTRYPOINT ["/bin/bash"]
+
+# # Get into the pipenv shell
+# CMD ["-c", "pipenv shell"]
+
+
+
 # Switch to the new user
 USER app
 WORKDIR /app
 
 # Install python packages
 ADD --chown=app:app Pipfile Pipfile.lock /app/
+#ADD Pipfile Pipfile.lock /app/
 
 RUN pipenv sync
 

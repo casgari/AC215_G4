@@ -391,7 +391,7 @@
         },
         "jaxlib": {
             "hashes": [
-                "sha256:6cb20bbbdafd90e71ad0deb9295519a0175c108c8c557b84fb9fe94f751daee4",
+                "sha256:19ae4c316b17a49342432c69f7f89f190b975333f3f9e9e175f686a651bc7347",
                 "sha256:411334d903df07dc1ace8d52fc53c17f6bc1d55aff7f6e0e5cf61ec149f758a0",
                 "sha256:49690fcdd26560515fd15399fc3a44777e0bfc5db5c48fe76ff7bc7228e8b2fb",
                 "sha256:522635d5e159401a386c79f1236c218c1f68fbb4ca6648115c3ad3c2c3f518ab",

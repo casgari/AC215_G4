@@ -22,7 +22,12 @@ import tensorflow as tf
 
 import transformers
 from transformers import TFAutoModelForTokenClassification
+<<<<<<< HEAD
 from transformers import AutoTokenizer
+||||||| parent of bb7e900 (working on deploy)
+=======
+from transformers import create_optimizer
+>>>>>>> bb7e900 (working on deploy)
 
 # # W&B
 import wandb
@@ -81,10 +86,38 @@ def main(args=None):
 
         # Download model artifact from wandb
         run = wandb.init()
+<<<<<<< HEAD
         # download_file(
         #     "https://github.com/dlops-io/models/releases/download/v2.0/model-mobilenetv2_train_base_True.v74.zip",
         #     base_path="artifacts",
         #     extract=True,
+||||||| parent of bb7e900 (working on deploy)
+        # artifact = run.use_artifact('ac215-ppp/ppp-keyword-extraction/model-distilroberta-base-21oct:v4', type="model")
+        # artifact_dir = artifact.download()
+        # print("artifact_dir", artifact_dir)
+        artifact_dir = './artifacts/model-distilroberta-base-21oct:v4'
+        
+        prediction_model = TFAutoModelForTokenClassification.from_pretrained(artifact_dir)
+        # prediction_model.saved_model.load(
+        #     export_dir, tags=None, options=None
+=======
+        artifact = run.use_artifact(
+            "ac215-ppp/ppp-keyword-extraction/model-distilroberta-base-21oct:v9",
+            type="model",
+        )
+        artifact_dir = artifact.download()
+        print("artifact_dir", artifact_dir)
+        MyOptimizer,_ = create_optimizer(init_lr=2e-5,
+                                         num_train_steps=310,
+                                        weight_decay_rate=0.01,
+                                        num_warmup_steps=0,
+                                                 )
+        # prediction_model = TFAutoModelForTokenClassification.from_pretrained(artifact_dir)
+        prediction_model = tf.keras.models.load_model(artifact_dir, custom_objects={'AdamWeightDecay': MyOptimizer})
+        print(prediction_model.summary())
+        # prediction_model.saved_model.load(
+        #     export_dir, tags=None, options=None
+>>>>>>> bb7e900 (working on deploy)
         # )
         # artifact_dir = "./artifacts/model-mobilenetv2_train_base_True:v74/1"
 
