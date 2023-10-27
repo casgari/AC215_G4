@@ -4,16 +4,16 @@
 set -e
 
 # Define some environment variables
-export IMAGE_NAME="mushroom-app-data-collector"
+export IMAGE_NAME="mega-ppp-data-conversion-v4"
 export BASE_DIR=$(pwd)
 export PERSISTENT_DIR=$(pwd)/../../../persistent-folder/
 export SECRETS_DIR=$(pwd)/../../../secrets/
 export GCP_PROJECT="ac215-group-4"
-export GCS_BUCKET_NAME="vertex-tragedy"
+export GCS_BUCKET_NAME="mega-ppp-ml-workflow"
 
 # Build the image based on the Dockerfile
 #docker build -t $IMAGE_NAME -f Dockerfile .
-# M1/2 chip macs use this line
+# Build the image based on the Dockerfile
 docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
 
 # Run Container

@@ -13,7 +13,9 @@ export GCS_BUCKET_NAME="mega-ppp-ml-workflow"
 export CONTAINER_SECRETS_DIR=/secrets
 
 # Build the image based on the Dockerfile
-docker build -t $IMAGE_NAME -f Dockerfile .
+# docker build -t $IMAGE_NAME -f Dockerfile .
+
+docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
 
 # Run the container
 docker run --rm --name $IMAGE_NAME -ti \

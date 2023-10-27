@@ -7,9 +7,11 @@ verify_ssl = true
 
 [packages]
 user-agent = "*"
-requests = "*"
-beautifulsoup4 = "*"
 google-cloud-storage = "*"
+moviepy = "*"
+ffmpeg = "*"
+ffmpeg-python = "*"
+dask = {extras = ["distributed"], version = "*"}
 
 [requires]
-python_version = "3.9"
+python_version = "3.8"

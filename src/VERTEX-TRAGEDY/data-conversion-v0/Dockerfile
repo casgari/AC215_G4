@@ -1,5 +1,4 @@
-# Use the official Debian-hosted Python image
-FROM python:3.9-slim-buster
+FROM python:3.8-slim-buster
 
 ARG DEBIAN_PACKAGES="build-essential git curl wget unzip gzip"
 
@@ -9,17 +8,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Python wants UTF-8 locale
 ENV LANG=C.UTF-8
 
-# Tell pipenv where the shell is. This allows us to use "pipenv shell" as a
-# container entry point.
+# Tell pipenv where the shell is. 
+# This allows us to use "pipenv shell" as a container entry point.
 ENV PYENV_SHELL=/bin/bash
-
-# Tell Python to disable buffering so we don't lose any logs.
 ENV PYTHONUNBUFFERED=1
 
-# Ensure we have an up to date baseline, install dependencies and
-# create a user so we don't run the app as root
+# ENV GOOGLE_APPLICATION_CREDENTIALS=/secrets/mega-ppp.json
+
+# Ensure we have an up to date baseline, install dependencies 
 RUN set -ex; \
-    for i in $(seq 1 8); do mkdir -p "/usr/share/man/man${i}"; done && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends $DEBIAN_PACKAGES && \
