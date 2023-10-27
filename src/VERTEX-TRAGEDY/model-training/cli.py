@@ -36,7 +36,7 @@ def main(args=None):
 
         # container_uri = "us-docker.pkg.dev/vertex-ai/training/tf-gpu.2-12.py310:latest"
         container_uri = "us-docker.pkg.dev/vertex-ai/training/tf-cpu.2-12.py310:latest"
-        python_package_gcs_uri = f"{GCS_PACKAGE_URI}/mushroom-app-trainer.tar.gz"
+        python_package_gcs_uri = f"{GCS_PACKAGE_URI}/trainer.tar.gz"
 
         job = aip.CustomPythonPackageTrainingJob(
             display_name=DISPLAY_NAME,
@@ -61,8 +61,8 @@ def main(args=None):
             args=CMDARGS,
             replica_count=1,
             machine_type=TRAIN_COMPUTE,
-            # accelerator_type=TRAIN_GPU,
-            # accelerator_count=TRAIN_NGPU,
+            accelerator_type=TRAIN_GPU,
+            accelerator_count=TRAIN_NGPU,
             base_output_dir=MODEL_DIR,
             sync=False,
         )

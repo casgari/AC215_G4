@@ -5,7 +5,7 @@ set -e
 export IMAGE_NAME=model-training-cli
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../../../secrets/
-export GCP_PROJECT="ac215-project"
+export GCP_PROJECT="ac215-group-4"
 export GCS_BUCKET_NAME="vertex-tragedy"
 export GCP_REGION="us-central1"
 export GCS_PACKAGE_URI="gs://vertex-tragedy"
@@ -17,7 +17,7 @@ docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
 docker run --rm --name $IMAGE_NAME -ti \
 -v "$BASE_DIR":/app \
 -v "$SECRETS_DIR":/secrets \
--e GOOGLE_APPLICATION_CREDENTIALS=/secrets/model-trainer.json \
+-e GOOGLE_APPLICATION_CREDENTIALS=/secrets/ml-workflow.json \
 -e GCP_PROJECT=$GCP_PROJECT \
 -e GCS_BUCKET_NAME=$GCS_BUCKET_NAME \
 -e GCP_REGION=$GCP_REGION \
