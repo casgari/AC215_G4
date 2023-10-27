@@ -1,7 +1,7 @@
 import argparse
-import os
+# import os
 import time
-import zipfile
+# import zipfile
 from collections import Counter
 
 import tensorflow as tf
@@ -11,7 +11,7 @@ import wandb
 from transformers import DataCollatorForTokenClassification, AutoTokenizer, TFAutoModelForTokenClassification, create_optimizer
 from transformers.keras_callbacks import KerasMetricCallback
 from datasets import load_dataset
-from google.cloud import storage
+# from google.cloud import storage
 
 
 # train_data_name = "train_data.arrow"
@@ -132,7 +132,7 @@ def train():
     weights = [max_/count_0s, max_/count_1s, max_/count_2s]
 
     # Login to W&B
-    wandb.login()
+    wandb.login(key=wandb_key)
 
     # Train with multi-GPU
     ## Reference: https://saturncloud.io/docs/examples/python/tensorflow/qs-multi-gpu-tensorflow/
@@ -290,9 +290,9 @@ if __name__ == "__main__":
         help="Bucket for data and models.",
     )
     parser.add_argument(
-        "-wandb_key", 
+        "--wandb_key", 
         dest="wandb_key", 
-        default="ce7ccda2bedf746e53133690c8d979cdcf94d05f", 
+        default="", 
         type=str, 
         help="WandB API Key"
     )

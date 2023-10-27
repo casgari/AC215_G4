@@ -10,7 +10,9 @@ REQUIRED_PACKAGES = [
     "evaluate",
     "transformers",
     "datasets",
-    "google-cloud-storage"
+    "google-cloud-storage",
+    "python-json-logger",
+    "seqeval"
 ]
 
 

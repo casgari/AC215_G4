@@ -32,7 +32,7 @@ def main(args=None):
         )
 
         job_id = generate_uuid()
-        DISPLAY_NAME = "mushroom_" + job_id
+        DISPLAY_NAME = "model_" + job_id
 
         # container_uri = "us-docker.pkg.dev/vertex-ai/training/tf-gpu.2-12.py310:latest"
         container_uri = "us-docker.pkg.dev/vertex-ai/training/tf-cpu.2-12.py310:latest"
