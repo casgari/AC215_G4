@@ -21,5 +21,5 @@ setup(
     version="0.0.1",
     install_requires=REQUIRED_PACKAGES,
     packages=find_packages(),
-    description="BERT Keyword extraction trainer",
+    description="Model Trainer",
 )

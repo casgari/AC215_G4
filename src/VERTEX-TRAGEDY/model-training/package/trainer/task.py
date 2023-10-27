@@ -225,9 +225,9 @@ def train():
 
     # Call the training function with specified parameters
     model_params = {
-        "n_epochs": 10,
-        "base_lr": 2e-5,
-        "batchsize": 16
+        "n_epochs": num_epochs,
+        "base_lr": learning_rate,
+        "batchsize": batch_size
     }
 
     tester_plain = train_multigpu(**model_params)
