@@ -123,11 +123,11 @@ We designed our Kubeflow Pipeline for handling what will be user inputted videos
 
 ![kubeflow image](images/kubeflow_pipeline.png)
 
-(1) Data Preprocessing: This component and subdirectory found in 'src/pipeline-workflow/data-conversion' simply converts user video files (mp4) to audio files (mp3). Note that this container makes use of Dask to parallelize the process of video conversion with the moviepy library.
+(1) Data Conversion: This component and subdirectory found in 'src/pipeline-workflow/data-conversion' simply converts user video files (mp4) to audio files (mp3). Note that this container makes use of Dask to parallelize the process of video conversion with the moviepy library.
 
 (2) Audio Transcription: This component and subdirectory found in 'src/pipeline-workflow/audio-transcription' transcribes the audio files to text files using the Whisper Jax model.
 
-(3a) Key Word Highlighting: This component and subdirectory found in 'src/pipeline-workflow/model-deployment' deploys our trained key-word highlighting Distilbert model and conducts inference on the transcribed text. 
+(3a) Keyword Extraction: This component and subdirectory found in 'src/pipeline-workflow/model-deployment' deploys our trained key-word highlighting Distilbert model and conducts inference on the transcribed text. The model is downloaded from Weights & Biases with its trained parameter set.
 
 (3b) Quiz Generation: This componet and subdirectory found in 'src/pipeline-workflow/quiz-generation' utilizes the transcribed text and forms an prompt to be inputted into the OpenAI GPT API.
 
