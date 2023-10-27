@@ -119,6 +119,12 @@ Below you can see the results of our serverless training experiments on an A100 
 
 **Vertex AI (Kubeflow) Pipeline Implementation**
 
+Below you can see two images related to our work with Vertex AI Pipelines. The first showcases our models which we've saved within the Vertex AI Model Registry, and the second is our Endpoints, which are our models that are available for model prediction requests.
+
+![registry image](images/registry.png)
+![endpoint image](images/endpoint.png)
+
+
 We designed our Kubeflow Pipeline for handling what will be user inputted videos, and generating corresponding key-word highlighted texts along with generated quizzes. The pipeline consists of four main components; the structure can be visualized below: 
 
 ![kubeflow image](images/kubeflow_pipeline.png)
