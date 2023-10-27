@@ -25,52 +25,54 @@ TODO
     ├── requirements.txt
     ├── keyword_dataset.dvc
     └── src                  <- Source code and Dockerfiles for data processing and modeling
-        ├── individual-containers <- containers to be run independently of the pipeline. Identical aside from 
+        ├── individual-containers <- initial iteration of containers to be run independently of the pipeline, from earlier milestones.
         ├── pipeline-workflow
-            ├── dataloader       <- Scripts for dataset creation
-            │   ├── tokenizer.py
-            │   ├── Dockerfile
-            │   ├── docker-shell.sh
-            │   ├── Pipfile.lock
-            │   └── Pipfile
             ├── model-deployment <- Script to deploy and get predictions from the keyword extraction model
             │   ├── Dockerfile
             │   ├── Pipfile
             │   ├── Pipfile.lock
             │   ├── docker-shell.sh
-            │   └── convert.py
-            ├── transcribe_audio <- Use Whisper JAX for transcription
+            │   ├── docker-entrypoint.sh
+            │   └── cli.py
+            ├── audio-transcription <- Use Whisper JAX for transcription
             │   ├── Dockerfile
             │   ├── Pipfile
             │   ├── Pipfile.lock
             │   ├── docker-shell.sh
-            │   └── transcribe.py
-            ├── quiz_generation
+            │   ├── docker-entrypoint.sh
+            │   └── cli.py
+            ├── quiz-generation  <- generate quizzes from transcribed text
             │   ├── Dockerfile
             │   ├── Pipfile
             │   ├── Pipfile.lock
             │   ├── docker-shell.sh
-            │   └── generate.py
-            ├── data-conversion <- Convert mp4 to mp3
+            │   ├── docker-entrypoint.sh
+            │   └── cli.py
+            ├── data-conversion <- Convert video to audio file
             │   ├── Dockerfile
             │   ├── Pipfile
             │   ├── Pipfile.lock
             │   ├── docker-shell.sh
-            │   └── generate.py
+            │   ├── docker-entrypoint.sh
+            │   └── cli.py
             ├── model_training    <- Scripts for training keyword extraction model
+            │   └── package
+            │   └── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── docker-shell.sh
+            │   ├── docker-entrypoint.sh
+            │   ├── package-trainer.sh
+            │   ├── cli.sh
+            │   ├── cli.py
             │   └── package
             │       ├── PKG-INFO
             │       ├── setup.cfg
             │       ├── setup.py
             │       └── trainer
-            │           ├── task_multigpu.py
-            │           ├── task_reference.py
+            │           ├── task.py
             │           └── __init__.py
-            │   ├── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
-            │   ├── docker-shell.sh
-            │   └── trainer.py
+
             
                 
 
