@@ -2,9 +2,6 @@ AC215 - Milestone4
 
 Project Organization
 ------------
-==============================
-TODO
-===============================
     .
     ├── LICENSE
     ├── .dvc 
@@ -124,13 +121,15 @@ Below you can see the results of our serverless training experiments on an A100 
 
 We designed our Kubeflow Pipeline for handling what will be user inputted videos, and generating corresponding key-word highlighted texts along with generated quizzes. The pipeline consists of four main components; the structure can be visualized below: 
 
-(1) Data Preprocessing: This component and subdirectory found in () simply converts user video files (mp4) to audio files (mp3). Note that this container makes use of Dask to parallelize the process of video conversion with the moviepy library.
+![kubeflow image](images/kubeflow_pipeline.png)
 
-(2) Audio Transcription: This component and subdirectory found in () transcribes the audio files
+(1) Data Preprocessing: This component and subdirectory found in 'src/pipeline-workflow/data-conversion' simply converts user video files (mp4) to audio files (mp3). Note that this container makes use of Dask to parallelize the process of video conversion with the moviepy library.
 
-(3a) Key Word Highlighting: This component and subdirectory found in () deploys our trained key-word highlighting Distilbert model and conducts inference on the transcribed text. 
+(2) Audio Transcription: This component and subdirectory found in 'src/pipeline-workflow/audio-transcription' transcribes the audio files to text files using the Whisper Jax model.
 
-(3b) Quiz Generation: This componet and subdirectory found in () utilizes the transcribed text and forms an prompt to be inputted into the OpenAI GPT API.
+(3a) Key Word Highlighting: This component and subdirectory found in 'src/pipeline-workflow/model-deployment' deploys our trained key-word highlighting Distilbert model and conducts inference on the transcribed text. 
+
+(3b) Quiz Generation: This componet and subdirectory found in 'src/pipeline-workflow/quiz-generation' utilizes the transcribed text and forms an prompt to be inputted into the OpenAI GPT API.
 
 
 **Addenda to Presentation (10/24)**
