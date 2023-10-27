@@ -25,58 +25,53 @@ TODO
     ├── requirements.txt
     ├── keyword_dataset.dvc
     └── src                  <- Source code and Dockerfiles for data processing and modeling
-        ├── dataloader       <- Scripts for dataset creation
-        │   ├── tokenizer.py
-        │   ├── Dockerfile
-        │   ├── docker-shell.sh
-        │   ├── Pipfile.lock
-        │   └── Pipfile
-        ├── preprocess_audio_file
-        │   ├── Dockerfile
-        │   ├── Pipfile
-        │   ├── Pipfile.lock
-        │   ├── docker-shell.sh
-        │   └── convert.py
-        ├── transcribe_audio
-        │   ├── Dockerfile
-        │   ├── Pipfile
-        │   ├── Pipfile.lock
-        │   ├── docker-shell.sh
-        │   └── transcribe.py
-        ├── generate_quiz
-        │   ├── Dockerfile
-        │   ├── Pipfile
-        │   ├── Pipfile.lock
-        │   ├── docker-shell.sh
-        │   └── generate.py
-        ├── keyword_extraction
-        │   ├── Dockerfile
-        │   ├── Pipfile
-        │   ├── Pipfile.lock
-        │   ├── docker-shell.sh
-        │   └── extract.py
-        ├── model_training    <- Scripts for training keyword extraction model
-        │   ├── Dockerfile
-        │   ├── Pipfile
-        │   ├── Pipfile.lock
-        │   ├── docker-shell.sh
-        │   └── trainer.py
-        └── vertex_training   <- Scripts for serverless training
-            ├── cli.py
-            ├── cli.sh
-            ├── Pipfile.lock
-            ├── Pipfile
-            ├── Dockerfile
-            ├── docker-shell.sh
-            ├── package-trainer.sh
-            └── package
-                ├── PKG-INFO
-                ├── setup.cfg
-                ├── setup.py
-                └── trainer
-                    ├── task_multigpu.py
-                    ├── task_reference.py
-                    └── __init__.py
+        ├── individual-containers <- containers to be run independently of the pipeline. Identical aside from 
+        ├── pipeline-workflow
+            ├── dataloader       <- Scripts for dataset creation
+            │   ├── tokenizer.py
+            │   ├── Dockerfile
+            │   ├── docker-shell.sh
+            │   ├── Pipfile.lock
+            │   └── Pipfile
+            ├── model-deployment <- Script to deploy and get predictions from the keyword extraction model
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── docker-shell.sh
+            │   └── convert.py
+            ├── transcribe_audio <- Use Whisper JAX for transcription
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── docker-shell.sh
+            │   └── transcribe.py
+            ├── quiz_generation
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── docker-shell.sh
+            │   └── generate.py
+            ├── data-conversion <- Convert mp4 to mp3
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── docker-shell.sh
+            │   └── generate.py
+            ├── model_training    <- Scripts for training keyword extraction model
+            │   └── package
+            │       ├── PKG-INFO
+            │       ├── setup.cfg
+            │       ├── setup.py
+            │       └── trainer
+            │           ├── task_multigpu.py
+            │           ├── task_reference.py
+            │           └── __init__.py
+            │   ├── Dockerfile
+            │   ├── Pipfile
+            │   ├── Pipfile.lock
+            │   ├── docker-shell.sh
+            │   └── trainer.py
+            
                 
 
 --------
