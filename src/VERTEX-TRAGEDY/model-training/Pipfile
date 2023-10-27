@@ -10,6 +10,9 @@ google-cloud-aiplatform = "*"
 wandb = "*"
 pillow = "*"
 tensorflow-aarch64 = "*"
+evaluate = "*"
+transformers = "*"
+seqeval = "*"
 
 [requires]
 python_version = "3.9"

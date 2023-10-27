@@ -251,8 +251,7 @@ def train():
 def main(args=None):
     print("Args:", args)
 
-    if args.train:
-        train()
+    train()
     
     print("Training Job Complete")
 
@@ -278,7 +277,7 @@ if __name__ == "__main__":
         help="Model name",
     )
     parser.add_argument(
-        "--epochs", dest="epochs", default=10, type=int, help="Number of epochs."
+        "--epochs", dest="epochs", default=2, type=int, help="Number of epochs."
     )
     parser.add_argument(
         "--batch_size", dest="batch_size", default=16, type=int, help="Size of a batch."
@@ -286,7 +285,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--bucket_name",
         dest="bucket_name",
-        default="",
+        default="mega-ppp-ml-workflow",
         type=str,
         help="Bucket for data and models.",
     )
