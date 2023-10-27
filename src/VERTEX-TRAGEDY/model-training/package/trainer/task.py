@@ -2,281 +2,308 @@ import argparse
 import os
 import time
 import zipfile
+from collections import Counter
 
-# Tensorflow
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras.models import Model, Sequential
-from tensorflow.keras.utils import to_categorical
-from tensorflow.python.keras import backend as K
-
+import numpy as np
+import evaluate
+import wandb
+from transformers import DataCollatorForTokenClassification, AutoTokenizer, TFAutoModelForTokenClassification, create_optimizer
+from transformers.keras_callbacks import KerasMetricCallback
+from datasets import load_dataset
 from google.cloud import storage
 
-# Setup the arguments for the trainer task
-parser = argparse.ArgumentParser()
-parser.add_argument("--lr", dest="lr", default=0.001, type=float, help="Learning rate.")
-parser.add_argument(
-    "--model_name",
-    dest="model_name",
-    default="mobilenetv2",
-    type=str,
-    help="Model name",
-)
-parser.add_argument(
-    "--train_base",
-    dest="train_base",
-    default=False,
-    action="store_true",
-    help="Train base or not",
-)
-parser.add_argument(
-    "--epochs", dest="epochs", default=10, type=int, help="Number of epochs."
-)
-parser.add_argument(
-    "--batch_size", dest="batch_size", default=16, type=int, help="Size of a batch."
-)
-parser.add_argument(
-    "--bucket_name",
-    dest="bucket_name",
-    default="",
-    type=str,
-    help="Bucket for data and models.",
-)
-args = parser.parse_args()
 
-# TF Version
-print("tensorflow version", tf.__version__)
-print("Eager Execution Enabled:", tf.executing_eagerly())
-# Get the number of replicas
-strategy = tf.distribute.MirroredStrategy()
-print("Number of replicas:", strategy.num_replicas_in_sync)
-
-devices = tf.config.experimental.get_visible_devices()
-print("Devices:", devices)
-print(tf.config.experimental.list_logical_devices("GPU"))
-
-print("GPU Available: ", tf.config.list_physical_devices("GPU"))
-print("All Physical Devices", tf.config.list_physical_devices())
-
-num_classes = 3
-dataset_folder = os.path.join("/persistent", "dataset")
-tfrecords_folder = os.path.join(dataset_folder, "tfrecords")
-
-# Make dirs
-os.makedirs(dataset_folder, exist_ok=True)
-
-# Check if clean exists
-if not os.path.exists(tfrecords_folder):
-    # Download Data
-    start_time = time.time()
-    storage_client = storage.Client()
-    bucket = storage_client.get_bucket(args.bucket_name)
-    source_blob_name = "tfrecords.zip"
-    destination_file_name = os.path.join(dataset_folder, "tfrecords.zip")
-    blob = bucket.blob(source_blob_name)
-    blob.download_to_filename(destination_file_name)
-
-    # Unzip data
-    with zipfile.ZipFile(destination_file_name) as zfile:
-        zfile.extractall(dataset_folder)
-    execution_time = (time.time() - start_time) / 60.0
-    print("Download execution time (mins)", execution_time)
+# train_data_name = "train_data.arrow"
+# valid_data_name = "valid_data.arrow"
 
 
-# Create TF Datasets using TF records
-def get_dataset_tfrecord(
-    image_width=224, image_height=224, num_channels=3, batch_size=32
-):
-    # Read TF Records
-    feature_description = {
-        "image": tf.io.FixedLenFeature([], tf.string),
-        "label": tf.io.FixedLenFeature([], tf.int64),
+model_name = None
+batch_size = None
+learning_rate = None
+num_epochs = None
+bucket_name = None
+wandb_key = None
+
+
+def train():
+
+    #downloading data from gcp bucket
+    # storage_client = storage.Client(project=gcp_project)
+
+    # bucket = storage_client.bucket(bucket_name)
+
+    # train_blobs = bucket.list_blobs(prefix= tokenized_data + "/train")
+    # valid_blobs = bucket.list_blobs(prefix= tokenized_data + "/validation")
+
+    # for blob in train_blobs:
+
+    #     if blob.name.endswith(".arrow"):
+    #         blob.download_to_filename(train_data_name)
+
+    # for blob in valid_blobs:
+
+    #     if blob.name.endswith(".arrow"):
+    #         blob.download_to_filename(valid_data_name)
+
+    # train_data = Dataset.from_file(train_data_name)
+    # valid_data = Dataset.from_file(valid_data_name)
+
+
+    # Load Tokenizer and Dataset
+    inspec = load_dataset("midas/inspec")
+    example = inspec["train"][0]
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name, add_prefix_space=True)
+
+    # Preprocess
+    label_list = np.unique(example["doc_bio_tags"])
+
+    id2label = {i: label for i, label in enumerate(label_list)}
+    label2id = {v: k for k, v in id2label.items()}
+
+    print('Mapping doc_bio_tag to integer:\n\n',label2id)
+    print('\nMapping integer to doc_bio_tag:\n\n',id2label)
+
+    def tokenize_and_align_labels(examples):
+        tokenized_inputs = tokenizer(examples["document"], truncation=True, is_split_into_words=True)
+
+        labels = []
+        for i, label in enumerate(examples[f"doc_bio_tags"]):
+            word_ids = tokenized_inputs.word_ids(batch_index=i)  # Map tokens to their respective word.
+            previous_word_idx = None
+            label_ids = []
+            for word_idx in word_ids:  # Set the special tokens to -100.
+                if word_idx is None:
+                    label_ids.append(-100)
+                elif word_idx != previous_word_idx:  # Only label the first token of a given word.
+                    label_ids.append(label2id[label[word_idx]]) # Convert BIO to integers for classification
+                else:
+                    label_ids.append(-100)
+                previous_word_idx = word_idx
+            labels.append(label_ids)
+
+        tokenized_inputs["labels"] = labels
+        return tokenized_inputs
+
+    # This is our tokenized dataset (a data_dict which we will convert to a TF Dataset)
+    tokenized_inspec = inspec.map(tokenize_and_align_labels, batched=True)
+
+    # Utils for training
+    data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer, return_tensors="tf")
+
+    seqeval = evaluate.load("seqeval")
+
+    labels = example[f"doc_bio_tags"]
+
+    def compute_metrics(p):
+        predictions, labels = p
+        predictions = np.argmax(predictions, axis=2)
+
+        # Remove ignored index (special tokens) and convert to labels
+        true_labels = [[id2label[l] for l in label if l != -100] for label in labels]
+
+        true_predictions = [
+            [id2label[p] for (p, l) in zip(prediction, label) if l != -100]
+            for prediction, label in zip(predictions, labels)
+        ]
+
+        # return metrics
+        all_metrics = seqeval.compute(predictions=true_predictions, references=true_labels)
+        del all_metrics['_']
+        print(all_metrics)
+        wandb.log(all_metrics)
+
+        return all_metrics
+
+    #counting how many beginning keywords, middle keywords, and non-keywords there are
+    count_0s = 0
+    count_1s = 0
+    count_2s = 0
+
+    for listt in tokenized_inspec["train"]["labels"]:
+        count_dict = Counter(listt)
+        count_0s += count_dict[0]
+        count_1s += count_dict[1]
+        count_2s += count_dict[2]
+
+    #getting weights for weighted cross_entropy
+    max_ = max(count_0s,count_1s,count_2s)
+    weights = [max_/count_0s, max_/count_1s, max_/count_2s]
+
+    # Login to W&B
+    wandb.login()
+
+    # Train with multi-GPU
+    ## Reference: https://saturncloud.io/docs/examples/python/tensorflow/qs-multi-gpu-tensorflow/
+    def train_multigpu(n_epochs, base_lr, batchsize):
+        num_train_steps = (len(tokenized_inspec["train"]) // batchsize) * n_epochs
+        num_labels=3
+
+        # Set up for multi-GPU training
+        strategy = tf.distribute.MirroredStrategy()
+        print("Number of devices: %d" % strategy.num_replicas_in_sync)
+
+        # Initialize W&B run
+        run = wandb.init(entity="ac215-ppp", project="ppp-keyword-extraction", name=f"{model_name}-trained")
+
+        with strategy.scope():
+            model = TFAutoModelForTokenClassification.from_pretrained(
+                    model_name, num_labels=num_labels, id2label=id2label, label2id=label2id)
+
+            # We define our own optimizer (and lr_schedule which we do not use)
+            optimizer, lr_schedule = create_optimizer(
+                                                    init_lr=2e-5,
+                                                    num_train_steps=num_train_steps,
+                                                    weight_decay_rate=0.01,
+                                                    num_warmup_steps=0,
+                                                    )
+
+            # Compute custom loss (CrossEntropyLoss with weights)
+            def loss_fn(y_true, y_pred):
+                loss = tf.nn.weighted_cross_entropy_with_logits(
+                    labels=tf.one_hot(y_true, depth=num_labels),
+                    logits=y_pred,
+                    pos_weight=tf.constant(weights)
+                )
+                loss = tf.reduce_mean(loss)
+                return loss
+
+            # The model is ready for training
+            model.compile(loss=loss_fn, optimizer=optimizer)
+
+        # Load in our data as TF Datasets (with data_collator applied)
+        train_ds = model.prepare_tf_dataset(
+                                            tokenized_inspec["train"],
+                                            shuffle=True,
+                                            batch_size=batchsize,
+                                            collate_fn=data_collator,
+                                        ).prefetch(2).cache().shuffle(1000)
+
+        valid_ds = model.prepare_tf_dataset(
+                                            tokenized_inspec["validation"],
+                                            shuffle=False,
+                                            batch_size=batchsize,
+                                            collate_fn=data_collator,
+                                        ).prefetch(2)
+
+
+        # Set up callback for end of each epoch
+        metric_callback = KerasMetricCallback(metric_fn=compute_metrics, eval_dataset=valid_ds)
+        callbacks = [metric_callback]
+
+
+        # Run training
+        start = time.time()
+
+        history = model.fit(x=train_ds, validation_data=valid_ds, epochs=n_epochs, callbacks=callbacks)
+
+        end = time.time() - start
+        print("model training time", end)
+        wandb.config.update({"execution_time": end})
+
+        # Log validation loss to Weights & Biases
+        wandb.define_metric("epochs")
+        wandb.define_metric("validation_loss", step_metric="epochs")
+        for epoch, val_loss in enumerate(history.history["val_loss"]):
+            wandb.log({"epochs" : epoch, "validation_loss": val_loss})
+
+        # Create a W&B artifact to save the model
+        trained_model_artifact = wandb.Artifact("trained_model", type="model")
+        # Save the model to a specified directory (adjust the path)
+        directory = "model_directory"
+        model.save_pretrained(directory, saved_model=True)
+        # Add the saved model to the artifact
+        trained_model_artifact.add_dir("model_directory")
+        # Log the artifact
+        run.log_artifact(trained_model_artifact)
+
+        # Close the W&B run
+        wandb.run.finish()
+
+        return model
+
+    # Call the training function with specified parameters
+    model_params = {
+        "n_epochs": 10,
+        "base_lr": 2e-5,
+        "batchsize": 16
     }
 
-    # @tf.function
-    def parse_tfrecord_example(example_proto):
-        parsed_example = tf.io.parse_single_example(example_proto, feature_description)
+    tester_plain = train_multigpu(**model_params)
 
-        # Image
-        # image = tf.image.decode_jpeg(parsed_example['image'])
-        image = tf.io.decode_raw(parsed_example["image"], tf.uint8)
-        image.set_shape([num_channels * image_height * image_width])
-        image = tf.reshape(image, [image_height, image_width, num_channels])
-        # Label
-        label = tf.cast(parsed_example["label"], tf.int32)
-        label = tf.one_hot(label, num_classes)
+    # # Upload to bucket
+    # storage_client = storage.Client()
+    # bucket = storage_client.bucket(bucket_name)
 
-        return image, label
+    # # Get the list of audio files
+    # sm_s = os.listdir(saved_model)
 
-    # Normalize pixels
-    def normalize(image, label):
-        image = image / 255
-        return image, label
+    # for sm in sm_s:
+    #     if sm.endswith('.pb'):
+    #         file_path = os.path.join(saved_model, sm)
 
-    # Read the tfrecord files
-    train_tfrecord_files = tf.data.Dataset.list_files(tfrecords_folder + "/train*")
-    validate_tfrecord_files = tf.data.Dataset.list_files(tfrecords_folder + "/val*")
+    #         destination_blob_name = file_path 
+    #         blob = bucket.blob(destination_blob_name)
+    #         blob.upload_from_filename(file_path)
 
-    #############
-    # Train data
-    #############
-    train_data = train_tfrecord_files.flat_map(tf.data.TFRecordDataset)
-    train_data = train_data.map(
-        parse_tfrecord_example, num_parallel_calls=tf.data.AUTOTUNE
+
+def main(args=None):
+    print("Args:", args)
+
+    if args.train:
+        train()
+    
+    print("Training Job Complete")
+
+
+if __name__ == "__main__":
+
+    # Generate the inputs arguments parser
+    # if you type into the terminal 'python cli.py --help', it will provide the description
+    # Setup the arguments for the trainer task
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--lr", 
+        dest="lr", 
+        default=2e-5, 
+        type=float, 
+        help="Learning rate."
     )
-    train_data = train_data.map(normalize, num_parallel_calls=tf.data.AUTOTUNE)
-    train_data = train_data.batch(batch_size)
-    train_data = train_data.prefetch(buffer_size=tf.data.AUTOTUNE)
-
-    ##################
-    # Validation data
-    ##################
-    validation_data = validate_tfrecord_files.flat_map(tf.data.TFRecordDataset)
-    validation_data = validation_data.map(
-        parse_tfrecord_example, num_parallel_calls=tf.data.AUTOTUNE
+    parser.add_argument(
+        "--model_name",
+        dest="model_name",
+        default="distilbert-base-uncased",
+        type=str,
+        help="Model name",
     )
-    validation_data = validation_data.map(
-        normalize, num_parallel_calls=tf.data.AUTOTUNE
+    parser.add_argument(
+        "--epochs", dest="epochs", default=10, type=int, help="Number of epochs."
     )
-    validation_data = validation_data.batch(batch_size)
-    validation_data = validation_data.prefetch(buffer_size=tf.data.AUTOTUNE)
-
-    return train_data, validation_data
-
-
-def build_mobilenet_model(
-    image_height, image_width, num_channels, num_classes, model_name, train_base=False
-):
-    # Model input
-    input_shape = [image_height, image_width, num_channels]  # height, width, channels
-
-    # Load a pretrained model from keras.applications
-    tranfer_model_base = keras.applications.MobileNetV2(
-        input_shape=input_shape, weights="imagenet", include_top=False
+    parser.add_argument(
+        "--batch_size", dest="batch_size", default=16, type=int, help="Size of a batch."
     )
-
-    # Freeze the mobileNet model layers
-    tranfer_model_base.trainable = train_base
-
-    # Regularize using L1
-    kernel_weight = 0.02
-    bias_weight = 0.02
-
-    model = Sequential(
-        [
-            tranfer_model_base,
-            keras.layers.GlobalAveragePooling2D(),
-            keras.layers.Dense(
-                units=128,
-                activation="relu",
-                kernel_regularizer=keras.regularizers.l1(kernel_weight),
-                bias_regularizer=keras.regularizers.l1(bias_weight),
-            ),
-            keras.layers.Dense(
-                units=num_classes,
-                activation="softmax",
-                kernel_regularizer=keras.regularizers.l1(kernel_weight),
-                bias_regularizer=keras.regularizers.l1(bias_weight),
-            ),
-        ],
-        name=model_name + "_train_base_" + str(train_base),
+    parser.add_argument(
+        "--bucket_name",
+        dest="bucket_name",
+        default="",
+        type=str,
+        help="Bucket for data and models.",
     )
-
-    return model
-
-
-print("Start Train model")
-############################
-# Training Params
-############################
-model_name = args.model_name
-learning_rate = 0.001
-image_width = 224
-image_height = 224
-num_channels = 3
-batch_size = args.batch_size
-epochs = args.epochs
-train_base = args.train_base
-
-# Free up memory
-K.clear_session()
-
-# Data
-train_data, validation_data = get_dataset_tfrecord(
-    image_width=image_width,
-    image_height=image_height,
-    num_channels=num_channels,
-    batch_size=batch_size,
-)
-
-if model_name == "mobilenetv2":
-    # Model
-    model = build_mobilenet_model(
-        image_height,
-        image_width,
-        num_channels,
-        num_classes,
-        model_name,
-        train_base=train_base,
+    parser.add_argument(
+        "-wandb_key", 
+        dest="wandb_key", 
+        default="ce7ccda2bedf746e53133690c8d979cdcf94d05f", 
+        type=str, 
+        help="WandB API Key"
     )
-    # Optimizer
-    optimizer = keras.optimizers.SGD(learning_rate=learning_rate)
-    # Loss
-    loss = keras.losses.categorical_crossentropy
-    # Print the model architecture
-    print(model.summary())
-    # Compile
-    model.compile(loss=loss, optimizer=optimizer, metrics=["accuracy"])
+    args = parser.parse_args()
+    
+    model_name = args.model_name
+    batch_size = args.batch_size
+    learning_rate = args.lr
+    num_epochs = args.epochs
+    bucket_name = args.bucket_name
+    wandb_key = args.wandb_key
 
-
-# Train model
-start_time = time.time()
-training_results = model.fit(
-    train_data,
-    validation_data=validation_data,
-    epochs=epochs,
-    verbose=1,
-)
-execution_time = (time.time() - start_time) / 60.0
-print("Training execution time (mins)", execution_time)
-
-print("Change model signature and save")
-
-
-# Preprocess Image
-def preprocess_image(bytes_input):
-    decoded = tf.io.decode_jpeg(bytes_input, channels=3)
-    decoded = tf.image.convert_image_dtype(decoded, tf.float32)
-    resized = tf.image.resize(decoded, size=(224, 224))
-    return resized
-
-
-@tf.function(input_signature=[tf.TensorSpec([None], tf.string)])
-def preprocess_function(bytes_inputs):
-    decoded_images = tf.map_fn(
-        preprocess_image, bytes_inputs, dtype=tf.float32, back_prop=False
-    )
-    return {"model_input": decoded_images}
-
-
-@tf.function(input_signature=[tf.TensorSpec([None], tf.string)])
-def serving_function(bytes_inputs):
-    images = preprocess_function(bytes_inputs)
-    results = model_call(**images)
-    return results
-
-
-model_call = tf.function(model.call).get_concrete_function(
-    [tf.TensorSpec(shape=[None, 224, 224, 3], dtype=tf.float32, name="model_input")]
-)
-ARTIFACT_URI = f"gs://{args.bucket_name}/model"
-
-# Save updated model to GCS
-tf.saved_model.save(
-    model,
-    ARTIFACT_URI,
-    signatures={"serving_default": serving_function},
-)
-
-
-print("Training Job Complete")
+    main(args)
