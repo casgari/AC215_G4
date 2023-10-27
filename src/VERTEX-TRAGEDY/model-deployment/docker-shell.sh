@@ -17,7 +17,7 @@ export CONTAINER_SECRETS_DIR=/secrets
 # Build the image based on the Dockerfile
 #docker build -t $IMAGE_NAME -f Dockerfile .
 # M1/2 chip macs use this line
-docker buildx build -t $IMAGE_NAME --platform=linux/amd64 -f Dockerfile .
+docker build -t $IMAGE_NAME --platform=linux/amd64/v2 -f Dockerfile .
 
 # Run Container
 docker run --rm --name $IMAGE_NAME -ti \

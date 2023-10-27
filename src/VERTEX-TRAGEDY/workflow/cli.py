@@ -25,12 +25,12 @@ GCP_REGION = os.environ["GCP_REGION"]
 
 # DATA_COLLECTOR_IMAGE = "gcr.io/ac215-project/mushroom-app-data-collector"
 # DATA_CONVERSION_IMAGE = "cvanamburg/mega-ppp-data-conversion-v4"
-DATA_CONVERSION_IMAGE = "the20thduck/ppp-workflow:data-conversion"
+DATA_CONVERSION_IMAGE = "the20thduck/ppp-workflow:data-conversionv2"
 AUDIO_TRANSCRIPTION_IMAGE = "cvanamburg/mega-ppp-audio-transcription"
 QUIZ_GENERATION_IMAGE = "cvanamburg/mega-ppp-quiz-generation"
 DATA_COLLECTOR_IMAGE = "cvanamburg/mushroom-app-data-collector"
 DATA_PROCESSOR_IMAGE = "dlops/mushroom-app-data-processor"
-KEYWORD_EXTRACTION_IMAGE = "the20thduck/ppp-workflow:latest"
+KEYWORD_EXTRACTION_IMAGE = "the20thduck/ppp-workflow:model-deployment-cli-v2"
 
 
 def generate_uuid(length: int = 8) -> str:
@@ -127,7 +127,6 @@ def main(args=None):
                 args=[
                     "cli.py",
                     "-p"
-                    f"--bucket {GCS_BUCKET_NAME}"
                 ]
             )
             return container_spec

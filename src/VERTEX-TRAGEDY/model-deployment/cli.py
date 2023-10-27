@@ -29,7 +29,6 @@ import shutil
 # # W&B
 import wandb
 
-GCP_PROJECT = "ac215-group-4"
 GCS_MODELS_BUCKET_NAME = "mega-ppp-ml-workflow"
 BEST_MODEL = "distilbert" # ACTION: Model Name
 ARTIFACT_URI = f"gs://{GCS_MODELS_BUCKET_NAME}/{BEST_MODEL}"
@@ -58,7 +57,7 @@ def download():
 def upload():
     print("Upload model to GCS")
 
-    storage_client = storage.Client(project=GCP_PROJECT)
+    storage_client = storage.Client()
     bucket = storage_client.get_bucket(GCS_MODELS_BUCKET_NAME)
 
     # ACTION: Use this code if you want to pull your model directly from WandB
@@ -216,12 +215,6 @@ if __name__ == "__main__":
         "--generate",
         action="store_true",
         help="Do all three: upload model, deploy endpoint, predict keywords",
-    )
-    parser.add_argument(
-        "-b",
-        "--bucket",
-        action="store_true",
-        help="Store bucket environment variable",
     )
 
     args = parser.parse_args()

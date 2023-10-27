@@ -9,8 +9,8 @@ deploymentSpec:
       container:
         args:
         - cli.py
-        - -p--bucket vertex-tragedy
-        image: the20thduck/ppp-workflow:latest
+        - -p
+        image: the20thduck/ppp-workflow:model-deployment-cli-v2
 pipelineInfo:
   name: keyword-extraction-pipeline
 root:

@@ -10,7 +10,7 @@ deploymentSpec:
         args:
         - cli.py
         - --convert
-        image: the20thduck/ppp-workflow:data-conversion
+        image: the20thduck/ppp-workflow:data-conversionv2
 pipelineInfo:
   name: data-conversion-pipeline
 root:
