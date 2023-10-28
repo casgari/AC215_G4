@@ -117,6 +117,11 @@ Below you can see the results of our serverless training experiments on an A100 
 ![wnb image](images/wandb.png)
 ![training_results image](images/training_results.png)
 
+Below we include an image of the successful serverless training job on Vertex AI.
+
+![wnb image](images/serverless.jpeg)
+
+
 **Vertex AI (Kubeflow) Pipeline Implementation**
 
 Below you can see two images related to our work with Vertex AI Pipelines. The first showcases our models which we've saved within the Vertex AI Model Registry, and the second is our Endpoints, which are our models that are available for model prediction requests.
