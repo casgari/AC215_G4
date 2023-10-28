@@ -52,23 +52,23 @@ Project Organization
             │   ├── docker-shell.sh
             │   ├── docker-entrypoint.sh
             │   └── cli.py
-            ├── model_training    <- Scripts for training keyword extraction model
-            │   └── package
-            │   └── Dockerfile
-            │   ├── Pipfile
-            │   ├── Pipfile.lock
-            │   ├── docker-shell.sh
-            │   ├── docker-entrypoint.sh
-            │   ├── package-trainer.sh
-            │   ├── cli.sh
-            │   ├── cli.py
-            │   └── package
-            │       ├── PKG-INFO
-            │       ├── setup.cfg
-            │       ├── setup.py
-            │       └── trainer
-            │           ├── task.py
-            │           └── __init__.py
+            └── model_training    <- Scripts for training keyword extraction model
+                └── package
+                └── Dockerfile
+                ├── Pipfile
+                ├── Pipfile.lock
+                ├── docker-shell.sh
+                ├── docker-entrypoint.sh
+                ├── package-trainer.sh
+                ├── cli.sh
+                ├── cli.py
+                └── package
+                    ├── PKG-INFO
+                    ├── setup.cfg
+                    ├── setup.py
+                    └── trainer
+                        ├── task.py
+                        └── __init__.py
 
             
                 
