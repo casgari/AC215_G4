@@ -13,7 +13,7 @@ Project Organization
     │   └── milestone2.md
     │   └── milestone3.md
     ├── images               <- Folder containing wandb image
-        │   └── wandb.png
+    │   └── wandb.png
     ├── cli.py               <- Files in the root of repo for data versioning
     ├── docker-shell.sh
     ├── Dockerfile
@@ -23,7 +23,7 @@ Project Organization
     ├── keyword_dataset.dvc
     └── src                  <- Source code and Dockerfiles for data processing and modeling
         ├── individual-containers <- initial iteration of containers to be run independently of the pipeline, from earlier milestones.
-        ├── pipeline-workflow
+        └── pipeline-workflow
             ├── model-deployment <- Script to deploy and get predictions from the keyword extraction model
             │   ├── Dockerfile
             │   ├── Pipfile
