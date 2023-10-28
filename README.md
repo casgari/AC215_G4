@@ -144,13 +144,13 @@ A brief description of the pipeline usage follows proceeds:
 
 (2) To run each component of the pipeline individually first enter src/pipeline-workflow/workflow. Then, for
 
-    - converting the data, run 'python cli.py -c' 
+- converting the data, run 'python cli.py -c' 
     
-    - transcribing the audio, run 'python cli.py -t'
+- transcribing the audio, run 'python cli.py -t'
     
-    - extracting keywords, run 'python cli.py -e'
+- extracting keywords, run 'python cli.py -e'
     
-    - generating the quiz, run 'python cli.py -g'.
+- generating the quiz, run 'python cli.py -g'.
 
 
 **Addenda to Presentation (10/24)**
