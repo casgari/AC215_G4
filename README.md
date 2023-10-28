@@ -104,7 +104,7 @@ In the remainder of this update, we will explain the code structure of the [deli
 
 **Machine Learning Workflow Implementation**
 
-Having completed preprocessing, we train our model using the `src/model_training` container with usage as follows:
+Having completed preprocessing, we train our model using the `src/pipeline-workflow/model_training` container with usage as follows:
 
 (1) `src/model_training/docker-shell.sh` - this script creates a container (defined in `src/model_training/Dockerfile`) for running training in a standardized environment. Run with `sh docker-shell.sh`.
 
