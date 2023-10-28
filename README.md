@@ -138,6 +138,17 @@ We designed our Kubeflow Pipeline for handling what will be user inputted videos
 (3b) Quiz Generation: This componet and subdirectory found in 'src/pipeline-workflow/quiz-generation' utilizes the transcribed text and forms an prompt to be inputted into the OpenAI GPT API, generating a quiz based on the lecture material.
 
 
+A brief description of the pipeline usage follows proceeds:
+
+(1) To run the complete pipeline - converting the data, transcribing the audio, extracting keywords, and generating the quiz - first enter src/pipeline-workflow/workflow. Then run 'python cli.py -p'.
+
+(2) To run each component of the pipeline individually first enter src/pipeline-workflow/workflow. Then, for
+    - converting the data, run 'python cli.py -c' 
+    - transcribing the audio, run 'python cli.py -t'
+    - extracting keywords, run 'python cli.py -e'
+    - generating the quiz, run 'python cli.py -g'.
+
+
 **Addenda to Presentation (10/24)**
 We have included an updated set of slides (see `reports/milestone4_presentation.pdf`) with two slight adjustments:
 1. The diagram on slide 3 now shows that our Quiz Generation container for now only generates quizzes based on the lecture transcript and does not yet use the keywords. A next step is to improve the keyword extraction container using prompt engineering that makes use of the keywords from the Keyword Extraction container.
