@@ -133,9 +133,9 @@ We designed our Kubeflow Pipeline for handling what will be user inputted videos
 
 (2) Audio Transcription: This component and subdirectory found in 'src/pipeline-workflow/audio-transcription' transcribes the audio files to text files using the Whisper Jax model.
 
-(3a) Keyword Extraction: This component and subdirectory found in 'src/pipeline-workflow/model-deployment' deploys our trained key-word highlighting Distilbert model and conducts inference on the transcribed text. The model is downloaded from Weights & Biases with its trained parameter set.
+(3a) Keyword Extraction: This component and subdirectory found in 'src/pipeline-workflow/model-deployment' deploys our trained key-word highlighting Distilbert model and conducts inference on the transcribed text. The model is downloaded from Weights & Biases with its trained parameter set, deployed to GCP, and then used for keyword extraction.
 
-(3b) Quiz Generation: This componet and subdirectory found in 'src/pipeline-workflow/quiz-generation' utilizes the transcribed text and forms an prompt to be inputted into the OpenAI GPT API.
+(3b) Quiz Generation: This componet and subdirectory found in 'src/pipeline-workflow/quiz-generation' utilizes the transcribed text and forms an prompt to be inputted into the OpenAI GPT API, generating a quiz based on the lecture material.
 
 
 **Addenda to Presentation (10/24)**
