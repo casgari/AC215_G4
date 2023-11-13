@@ -8,6 +8,12 @@ verify_ssl = true
 [packages]
 uvicorn = "*"
 fastapi = "*"
+pandas = "*"
+google-cloud-storage = "*"
+tensorflow-hub = "*"
+python-multipart = "*"
+tensorflow-aarch64 = "==2.13.1"
+google-cloud-aiplatform = "*"
 
 [requires]
 python_version = "3.9"

@@ -29,8 +29,11 @@ RUN set -ex; \
     pip install pipenv && \
     useradd -ms /bin/bash app -d /home/app -u 1000 -p "$(openssl passwd -1 Passw0rd)" && \
     mkdir -p /app && \
+    mkdir -p /persistent && \
+    chown app:app /persistent && \
     chown app:app /app
 
+# Expose port of API service
 EXPOSE 9000
 
 # Switch to the new user
