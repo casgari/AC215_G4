@@ -1,49 +1,78 @@
 # PIPELINE DEFINITION
 # Name: ml-pipeline
 components:
-  comp-data-collector:
-    executorLabel: exec-data-collector
-  comp-data-processor:
-    executorLabel: exec-data-processor
+  comp-audio-transcription:
+    executorLabel: exec-audio-transcription
+  comp-data-conversion:
+    executorLabel: exec-data-conversion
+  comp-keyword-extraction:
+    executorLabel: exec-keyword-extraction
+  comp-quiz-generation:
+    executorLabel: exec-quiz-generation
 deploymentSpec:
   executors:
-    exec-data-collector:
+    exec-audio-transcription:
       container:
         args:
         - cli.py
-        - --search
-        - --nums 50
-        - --query oyster+mushrooms crimini+mushrooms amanita+mushrooms
-        - --bucket vertex-tragedy
-        image: cvanamburg/mushroom-app-data-collector
-    exec-data-processor:
+        - --transcribe
+        image: cbsaul/ppp-workflow:mega-ppp-audio-transcription
+    exec-data-conversion:
       container:
         args:
         - cli.py
-        - --clean
-        - --prepare
-        - --bucket vertex-tragedy
-        image: dlops/mushroom-app-data-processor
+        - --convert
+        image: the20thduck/ppp-workflow:data-conversionv2
+    exec-keyword-extraction:
+      container:
+        args:
+        - cli.py
+        - -p
+        image: the20thduck/ppp-workflow:model-deployment-cli-v2
+    exec-quiz-generation:
+      container:
+        args:
+        - cli.py
+        - --generate
+        image: cvanamburg/mega-ppp-quiz-generation
 pipelineInfo:
   name: ml-pipeline
 root:
   dag:
     tasks:
-      data-collector:
+      audio-transcription:
         cachingOptions:
           enableCache: true
         componentRef:
-          name: comp-data-collector
-        taskInfo:
-          name: Data Collector
-      data-processor:
-        cachingOptions:
-          enableCache: true
-        componentRef:
-          name: comp-data-processor
+          name: comp-audio-transcription
         dependentTasks:
-        - data-collector
+        - data-conversion
         taskInfo:
-          name: Data Processor
+          name: Audio Transcription
+      data-conversion:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-data-conversion
+        taskInfo:
+          name: Data Conversion
+      keyword-extraction:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-keyword-extraction
+        dependentTasks:
+        - audio-transcription
+        taskInfo:
+          name: Keyword Extraction
+      quiz-generation:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-quiz-generation
+        dependentTasks:
+        - audio-transcription
+        taskInfo:
+          name: Quiz Generation
 schemaVersion: 2.1.0
 sdkVersion: kfp-2.3.0
