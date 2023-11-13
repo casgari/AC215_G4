@@ -12,6 +12,7 @@ import string
 from kfp import dsl
 from kfp import compiler
 import google.cloud.aiplatform as aip
+from model import model_training, model_deploy
 
 
 GCP_PROJECT = os.environ["GCP_PROJECT"]
@@ -19,11 +20,17 @@ GCS_BUCKET_NAME = os.environ["GCS_BUCKET_NAME"]
 BUCKET_URI = f"gs://{GCS_BUCKET_NAME}"
 PIPELINE_ROOT = f"{BUCKET_URI}/pipeline_root/root"
 GCS_SERVICE_ACCOUNT = os.environ["GCS_SERVICE_ACCOUNT"]
+GCS_PACKAGE_URI = os.environ["GCS_PACKAGE_URI"]
+GCP_REGION = os.environ["GCP_REGION"]
 
-# DATA_CONVERSION_IMAGE = "cbsaul/ppp-workflow:preprocess_audio_file"
-DATA_CONVERSION_IMAGE = "cvanamburg/mega-ppp-data-conversion"
-TRANSCRIBE_AUDIO_IMAGE = "cbsaul/ppp-workflow:transcribe-audio"
-GENERATE_QUIZ_IMAGE = "cbsaul/ppp-workflow:generate-quiz"
+# DATA_COLLECTOR_IMAGE = "gcr.io/ac215-project/mushroom-app-data-collector"
+# DATA_CONVERSION_IMAGE = "cvanamburg/mega-ppp-data-conversion-v4"
+DATA_CONVERSION_IMAGE = "the20thduck/ppp-workflow:data-conversionv2"
+AUDIO_TRANSCRIPTION_IMAGE = "cbsaul/ppp-workflow:mega-ppp-audio-transcription"
+QUIZ_GENERATION_IMAGE = "cvanamburg/mega-ppp-quiz-generation"
+DATA_COLLECTOR_IMAGE = "cvanamburg/mushroom-app-data-collector"
+DATA_PROCESSOR_IMAGE = "dlops/mushroom-app-data-processor"
+KEYWORD_EXTRACTION_IMAGE = "the20thduck/ppp-workflow:model-deployment-cli-v2"
 
 
 def generate_uuid(length: int = 8) -> str:
@@ -34,7 +41,7 @@ def main(args=None):
     print("CLI Arguments:", args)
 
     if args.data_conversion:
-        # Define a Container Component
+        
         @dsl.container_component
         def data_conversion():
             container_spec = dsl.ContainerSpec(
@@ -43,10 +50,10 @@ def main(args=None):
                 args=[
                     "cli.py",
                     "--convert"
-                ],
+                ]
             )
             return container_spec
-        
+
         # Define a Pipeline
         @dsl.pipeline
         def data_conversion_pipeline():
@@ -61,7 +68,7 @@ def main(args=None):
         aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
 
         job_id = generate_uuid()
-        DISPLAY_NAME = "preprocess_audio_file-" + job_id
+        DISPLAY_NAME = "mega-ppp-data-conversion-" + job_id
         job = aip.PipelineJob(
             display_name=DISPLAY_NAME,
             template_path="data_conversion.yaml",
@@ -70,43 +77,39 @@ def main(args=None):
         )
 
         job.run(service_account=GCS_SERVICE_ACCOUNT)
-
-
-
-    if args.transcribe_audio:
-        print("Transcribe Audio")
-
-        # Define a Container Component for data processor
+    
+    if args.audio_transcription:
+        
         @dsl.container_component
-        def transcribe_audio():
+        def audio_transcription():
             container_spec = dsl.ContainerSpec(
-                image=TRANSCRIBE_AUDIO_IMAGE,
+                image=AUDIO_TRANSCRIPTION_IMAGE,
                 command=[],
                 args=[
                     "cli.py",
                     "--transcribe"
-                ],
+                ]
             )
             return container_spec
 
         # Define a Pipeline
         @dsl.pipeline
-        def transcribe_audio_pipeline():
-            transcribe_audio()
+        def audio_transcription_pipeline():
+            audio_transcription()
 
         # Build yaml file for pipeline
         compiler.Compiler().compile(
-            transcribe_audio_pipeline, package_path="transcribe_audio.yaml"
+            audio_transcription_pipeline, package_path="audio_transcription.yaml"
         )
 
         # Submit job to Vertex AI
         aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
 
         job_id = generate_uuid()
-        DISPLAY_NAME = "transcribe_audio-" + job_id
+        DISPLAY_NAME = "mega-ppp-audio_transcription-" + job_id
         job = aip.PipelineJob(
             display_name=DISPLAY_NAME,
-            template_path="transcribe_audio.yaml",
+            template_path="audio_transcription.yaml",
             pipeline_root=PIPELINE_ROOT,
             enable_caching=False,
         )
@@ -114,48 +117,227 @@ def main(args=None):
         job.run(service_account=GCS_SERVICE_ACCOUNT)
 
 
-
-    if args.generate_quiz:
-        # Define a Container Component
+    if args.keyword_extraction:
+        
         @dsl.container_component
-        def generate_quiz():
+        def keyword_extraction():
             container_spec = dsl.ContainerSpec(
-                image=GENERATE_QUIZ_IMAGE,
+                image=KEYWORD_EXTRACTION_IMAGE,
                 command=[],
                 args=[
-                    "python cli.py",
-                    "--generate"
-                ],
+                    "cli.py",
+                    "-p"
+                ]
             )
             return container_spec
-        
+
         # Define a Pipeline
         @dsl.pipeline
-        def generate_quiz_pipeline():
-            generate_quiz()
+        def keyword_extraction_pipeline():
+            keyword_extraction()
 
         # Build yaml file for pipeline
         compiler.Compiler().compile(
-            generate_quiz_pipeline, package_path="generate_quiz.yaml"
+            keyword_extraction_pipeline, package_path="keyword_extraction.yaml"
         )
 
         # Submit job to Vertex AI
         aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
 
         job_id = generate_uuid()
-        DISPLAY_NAME = "generate_quiz-" + job_id
+        DISPLAY_NAME = "mega-ppp-keyword-extraction-" + job_id
         job = aip.PipelineJob(
             display_name=DISPLAY_NAME,
-            template_path="generate_quiz.yaml",
+            template_path="keyword_extraction.yaml",
             pipeline_root=PIPELINE_ROOT,
             enable_caching=False,
         )
 
         job.run(service_account=GCS_SERVICE_ACCOUNT)
 
+    if args.quiz_generation:
+        
+        @dsl.container_component
+        def quiz_generation():
+            container_spec = dsl.ContainerSpec(
+                image=QUIZ_GENERATION_IMAGE,
+                command=[],
+                args=[
+                    "cli.py",
+                    "--generate"
+                ]
+            )
+            return container_spec
+
+        # Define a Pipeline
+        @dsl.pipeline
+        def quiz_generation_pipeline():
+            quiz_generation()
+
+        # Build yaml file for pipeline
+        compiler.Compiler().compile(
+            quiz_generation_pipeline, package_path="quiz_generation.yaml"
+        )
+
+        # Submit job to Vertex AI
+        aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
+
+        job_id = generate_uuid()
+        DISPLAY_NAME = "mega-ppp-quiz_generation-" + job_id
+        job = aip.PipelineJob(
+            display_name=DISPLAY_NAME,
+            template_path="quiz_generation.yaml",
+            pipeline_root=PIPELINE_ROOT,
+            enable_caching=False,
+        )
+
+        job.run(service_account=GCS_SERVICE_ACCOUNT)
+
+    if args.data_collector:
+        # Define a Container Component
+        @dsl.container_component
+        def data_collector():
+            container_spec = dsl.ContainerSpec(
+                image=DATA_COLLECTOR_IMAGE,
+                command=[],
+                args=[
+                    "cli.py",
+                    "--search",
+                    "--nums 10",
+                    "--query oyster+mushrooms crimini+mushrooms amanita+mushrooms",
+                    f"--bucket {GCS_BUCKET_NAME}",
+                ],
+            )
+            return container_spec
+
+        # Define a Pipeline
+        @dsl.pipeline
+        def data_collector_pipeline():
+            data_collector()
+
+        # Build yaml file for pipeline
+        compiler.Compiler().compile(
+            data_collector_pipeline, package_path="data_collector.yaml"
+        )
+
+        # Submit job to Vertex AI
+        aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
+
+        job_id = generate_uuid()
+        DISPLAY_NAME = "mushroom-app-data-collector-" + job_id
+        job = aip.PipelineJob(
+            display_name=DISPLAY_NAME,
+            template_path="data_collector.yaml",
+            pipeline_root=PIPELINE_ROOT,
+            enable_caching=False,
+        )
+
+        job.run(service_account=GCS_SERVICE_ACCOUNT)
+
+    if args.data_processor:
+        print("Data Processor")
+
+        # Define a Container Component for data processor
+        @dsl.container_component
+        def data_processor():
+            container_spec = dsl.ContainerSpec(
+                image=DATA_PROCESSOR_IMAGE,
+                command=[],
+                args=[
+                    "cli.py",
+                    "--clean",
+                    "--prepare",
+                    f"--bucket {GCS_BUCKET_NAME}",
+                ],
+            )
+            return container_spec
+
+        # Define a Pipeline
+        @dsl.pipeline
+        def data_processor_pipeline():
+            data_processor()
+
+        # Build yaml file for pipeline
+        compiler.Compiler().compile(
+            data_processor_pipeline, package_path="data_processor.yaml"
+        )
+
+        # Submit job to Vertex AI
+        aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
+
+        job_id = generate_uuid()
+        DISPLAY_NAME = "mushroom-app-data-processor-" + job_id
+        job = aip.PipelineJob(
+            display_name=DISPLAY_NAME,
+            template_path="data_processor.yaml",
+            pipeline_root=PIPELINE_ROOT,
+            enable_caching=False,
+        )
+
+        job.run(service_account=GCS_SERVICE_ACCOUNT)
+
+    if args.model_training:
+        print("Model Training")
+
+        # Define a Pipeline
+        @dsl.pipeline
+        def model_training_pipeline():
+            model_training(
+                project=GCP_PROJECT,
+                location=GCP_REGION,
+                staging_bucket=GCS_PACKAGE_URI,
+                bucket_name=GCS_BUCKET_NAME,
+            )
+
+        # Build yaml file for pipeline
+        compiler.Compiler().compile(
+            model_training_pipeline, package_path="model_training.yaml"
+        )
+
+        # Submit job to Vertex AI
+        aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
+
+        job_id = generate_uuid()
+        DISPLAY_NAME = "mushroom-app-model-training-" + job_id
+        job = aip.PipelineJob(
+            display_name=DISPLAY_NAME,
+            template_path="model_training.yaml",
+            pipeline_root=PIPELINE_ROOT,
+            enable_caching=False,
+        )
+
+        job.run(service_account=GCS_SERVICE_ACCOUNT)
+
+    if args.model_deploy:
+        print("Model Deploy")
+
+        # Define a Pipeline
+        @dsl.pipeline
+        def model_deploy_pipeline():
+            model_deploy(
+                bucket_name=GCS_BUCKET_NAME,
+            )
+
+        # Build yaml file for pipeline
+        compiler.Compiler().compile(
+            model_deploy_pipeline, package_path="model_deploy.yaml"
+        )
+
+        # Submit job to Vertex AI
+        aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
+
+        job_id = generate_uuid()
+        DISPLAY_NAME = "mushroom-app-model-deploy-" + job_id
+        job = aip.PipelineJob(
+            display_name=DISPLAY_NAME,
+            template_path="model_deploy.yaml",
+            pipeline_root=PIPELINE_ROOT,
+            enable_caching=False,
+        )
+
+        job.run(service_account=GCS_SERVICE_ACCOUNT)
 
     if args.pipeline:
-        # Define a Container Component
         @dsl.container_component
         def data_conversion():
             container_spec = dsl.ContainerSpec(
@@ -164,30 +346,73 @@ def main(args=None):
                 args=[
                     "cli.py",
                     "--convert"
-                ],
-            )
-            return container_spec
-
-        @dsl.container_component
-        def transcribe_audio():
-            container_spec = dsl.ContainerSpec(
-                image=TRANSCRIBE_AUDIO_IMAGE,
-                command=[],
-                args=[
-                    "cli.py",
-                    "--transcribe"
-                ],
+                ]
             )
             return container_spec
         
         @dsl.container_component
-        def generate_quiz():
+        def audio_transcription():
             container_spec = dsl.ContainerSpec(
-                image=GENERATE_QUIZ_IMAGE,
+                image=AUDIO_TRANSCRIPTION_IMAGE,
+                command=[],
+                args=[
+                    "cli.py",
+                    "--transcribe"
+                ]
+            )
+            return container_spec
+        
+        @dsl.container_component
+        def keyword_extraction():
+            container_spec = dsl.ContainerSpec(
+                image=KEYWORD_EXTRACTION_IMAGE,
+                command=[],
+                args=[
+                    "cli.py",
+                    "-p"
+                ]
+            )
+            return container_spec
+
+        @dsl.container_component
+        def quiz_generation():
+            container_spec = dsl.ContainerSpec(
+                image=QUIZ_GENERATION_IMAGE,
                 command=[],
                 args=[
                     "cli.py",
                     "--generate"
+                ]
+            )
+            return container_spec
+
+        # Define a Container Component for data collector
+        @dsl.container_component
+        def data_collector():
+            container_spec = dsl.ContainerSpec(
+                image=DATA_COLLECTOR_IMAGE,
+                command=[],
+                args=[
+                    "cli.py",
+                    "--search",
+                    "--nums 50",
+                    "--query oyster+mushrooms crimini+mushrooms amanita+mushrooms",
+                    f"--bucket {GCS_BUCKET_NAME}",
+                ],
+            )
+            return container_spec
+
+        # Define a Container Component for data processor
+        @dsl.container_component
+        def data_processor():
+            container_spec = dsl.ContainerSpec(
+                image=DATA_PROCESSOR_IMAGE,
+                command=[],
+                args=[
+                    "cli.py",
+                    "--clean",
+                    "--prepare",
+                    f"--bucket {GCS_BUCKET_NAME}",
                 ],
             )
             return container_spec
@@ -195,18 +420,24 @@ def main(args=None):
         # Define a Pipeline
         @dsl.pipeline
         def ml_pipeline():
+            # Data Conversion
             data_conversion_task = data_conversion().set_display_name("Data Conversion")
-
-            transcribe_audio_task = (
-                transcribe_audio()
-                .set_display_name("Transcribe Audio")
+            # Data Collector
+            audio_transcription_task = (
+                audio_transcription()
+                .set_display_name("Audio Transcription")
                 .after(data_conversion_task)
             )
-
-            generate_quiz_task = (
-                generate_quiz()
-                .set_display_name("Generate Quiz")
-                .after(transcribe_audio_task)
+            # Data Processor
+            quiz_generation_task = (
+                quiz_generation()
+                .set_display_name("Quiz Generation")
+                .after(audio_transcription_task)
+            )
+            keyword_extraction_task = (
+                keyword_extraction()
+                .set_display_name("Keyword Extraction")
+                .after(audio_transcription_task)
             )
 
         # Build yaml file for pipeline
@@ -216,7 +447,7 @@ def main(args=None):
         aip.init(project=GCP_PROJECT, staging_bucket=BUCKET_URI)
 
         job_id = generate_uuid()
-        DISPLAY_NAME = "mega-ppp-" + job_id
+        DISPLAY_NAME = "mushroom-app-pipeline-" + job_id
         job = aip.PipelineJob(
             display_name=DISPLAY_NAME,
             template_path="pipeline.yaml",
@@ -225,10 +456,6 @@ def main(args=None):
         )
 
         job.run(service_account=GCS_SERVICE_ACCOUNT)
-
-
-
-
 
     if args.sample1:
         print("Sample Pipeline 1")
@@ -282,33 +509,59 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Workflow CLI")
 
     parser.add_argument(
+        "-e",
+        "--keyword_extraction",
+        action="store_true",
+        help="Run just the Keyword Extraction",
+    )
+    parser.add_argument(
         "-c",
         "--data_conversion",
         action="store_true",
-        help="Data Conversion Mp4 to Mp3",
+        help="Run just the Data Conversion",
     )
-
     parser.add_argument(
         "-t",
-        "--transcribe_audio",
+        "--audio_transcription",
         action="store_true",
-        help="Transcribe mp3 audio file",
+        help="Run just the Audio Transcription",
     )
-
     parser.add_argument(
         "-g",
-        "--generate_quiz",
+        "--quiz_generation",
         action="store_true",
-        help="Generate Quiz",
+        help="Run just the Quiz Generation",
     )
-
+    parser.add_argument(
+        "-cl",
+        "--data_collector",
+        action="store_true",
+        help="Run just the Data Collector",
+    )
+    parser.add_argument(
+        "-pr",
+        "--data_processor",
+        action="store_true",
+        help="Run just the Data Processor",
+    )
+    parser.add_argument(
+        "-tr",
+        "--model_training",
+        action="store_true",
+        help="Run just Model Training",
+    )
+    parser.add_argument(
+        "-d",
+        "--model_deploy",
+        action="store_true",
+        help="Run just Model Deployment",
+    )
     parser.add_argument(
         "-p",
         "--pipeline",
         action="store_true",
-        help="Run Mega PPP Pipeline",
+        help="Mushroom App Pipeline",
     )
-
     parser.add_argument(
         "-s1",
         "--sample1",
