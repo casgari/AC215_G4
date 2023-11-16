@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>🍄 Mushroom Identifier</title>
+    <title>🔥 Keyword Identifier 🔥</title>
     <!-- Add reference to Google fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <!-- Google Material Design Styles -->
@@ -15,11 +15,11 @@
     <style>
         body {
             margin: 0;
-            background-color: #efefef;
+            background-color: #dccfc1;
         }
 
         .mdc-top-app-bar {
-            background-color: #A41034;
+            background-color: #4e65b7;
         }
 
         .content {
@@ -77,8 +77,7 @@
             <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
                 <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
                     aria-label="Open navigation menu">menu</button>
-                <span class="mdc-top-app-bar__title" style="font-weight: 900; font-size: 30px;">🍄 Mushroom
-                    Identifier</span>
+                <span class="mdc-top-app-bar__title" style="font-weight: 900; font-size: 30px;">🔥 Keyword Identifier 🔥</span>
             </section>
         </div>
     </header>
@@ -90,10 +89,10 @@
             <div class="mdc-card mdc-card--outlined" style="min-height: 400px;">
                 <div class="dropzone" onclick="upload_file()">
 
-                    <input type="file" id="input_file" accept="image/*" capture="camera" name="input_file" on
+                    <input type="file" id="input_file" accept=".txt" capture="camera" name="input_file" on
                         autocomplete="off" tabindex="-1" style="display: none;">
                     <div><img id="input_file_view" style="width:100%;" /></div>
-                    <div style="color: #302f2f;">Click to take a picture or upload...</div>
+                    <div style="color: #302f2f;">Click to upload an epic text transcription.</div>
                 </div>
                 <div style="padding:20px;">
                     <span class="prediction" id="prediction_label"></span>
@@ -142,7 +141,7 @@
             console.log(prediction_results);
 
             // Display the results
-            prediction_label.innerHTML = prediction_results["prediction_label"] + " (" + prediction_results["accuracy"] + "%)";
+            prediction_label.innerHTML = "I love you";
             if (prediction_results["poisonous"]) {
                 mushroom_type.innerHTML = "&nbsp;&nbsp;Poisonous";
             } else {
