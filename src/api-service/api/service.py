@@ -28,7 +28,7 @@ app.add_middleware(
 async def startup():
     print("Startup tasks")
     # Start the tracker service
-    # asyncio.create_task(tracker_service.track())
+    asyncio.create_task(tracker_service.track())
 
 
 # Routes
@@ -37,47 +37,47 @@ async def get_index():
     return {"message": "Welcome to the API Service"}
 
 
-# @app.get("/experiments")
-# def experiments_fetch():
-#     # Fetch experiments
-#     df = pd.read_csv("/persistent/experiments/experiments.csv")
+@app.get("/experiments")
+def experiments_fetch():
+    # Fetch experiments
+    df = pd.read_csv("/persistent/experiments/experiments.csv")
 
-#     df["id"] = df.index
-#     df = df.fillna("")
+    df["id"] = df.index
+    df = df.fillna("")
 
-#     return df.to_dict("records")
-
-
-# @app.get("/best_model")
-# async def get_best_model():
-#     model.check_model_change()
-#     if model.best_model is None:
-#         return {"message": "No model available to serve"}
-#     else:
-#         return {
-#             "message": "Current model being served:" + model.best_model["model_name"],
-#             "model_details": model.best_model,
-#         }
+    return df.to_dict("records")
 
 
-# @app.post("/predict")
-# async def predict(file: bytes = File(...)):
-#     print("predict file:", len(file), type(file))
+@app.get("/best_model")
+async def get_best_model():
+    model.check_model_change()
+    if model.best_model is None:
+        return {"message": "No model available to serve"}
+    else:
+        return {
+            "message": "Current model being served:" + model.best_model["model_name"],
+            "model_details": model.best_model,
+        }
 
-#     self_host_model = True
 
-#     # Save the image
-#     with TemporaryDirectory() as image_dir:
-#         image_path = os.path.join(image_dir, "test.png")
-#         with open(image_path, "wb") as output:
-#             output.write(file)
+@app.post("/predict")
+async def predict(file: bytes = File(...)):
+    print("predict file:", len(file), type(file))
 
-#         # Make prediction
-#         prediction_results = {}
-#         if self_host_model:
-#             prediction_results = model.make_prediction(image_path)
-#         else:
-#             prediction_results = model.make_prediction_vertexai(image_path)
+    self_host_model = False
 
-#     print(prediction_results)
-#     return prediction_results
+    # Save the image
+    with TemporaryDirectory() as image_dir:
+        image_path = os.path.join(image_dir, "test.txt")
+        with open(image_path, "wb") as output:
+            output.write(file)
+
+        # Make prediction
+        prediction_results = {}
+        if self_host_model:
+            prediction_results = model.make_prediction(image_path)
+        else:
+            prediction_results = model.make_prediction_vertexai(image_path)
+
+    print(prediction_results)
+    return prediction_results
