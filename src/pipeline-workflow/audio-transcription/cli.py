@@ -38,7 +38,7 @@ def download(filename=None):
             if not blob.name.endswith("/"):
                 blob.download_to_filename(blob.name)
         else: # Download specific file
-            if blob.name == filename:
+            if blob.name.endswith("/" + filename):
                 blob.download_to_filename(blob.name)
 
 
@@ -86,6 +86,14 @@ def upload():
 
         blob.upload_from_filename(file_path)
 
+    return text_files
+
+
+def transcribe_file(filename):
+    download(filename=filename)
+    transcribe()
+    return upload() # return a list of text files uploaded to the bucket.
+
 def main(args=None):
     print("Args:", args)
 
@@ -95,10 +103,7 @@ def main(args=None):
         upload()
 
     if args.filename != "":
-        download(filename=args.filename)
-        transcribe()
-        upload()
-
+        transcribe_file(args.filename)
 
 if __name__ == "__main__":
     # Generate the inputs arguments parser
