@@ -11,7 +11,7 @@ const styles = theme => ({
 
     },
     container: {
-        backgroundColor: "#ffffff",
+        backgroundColor: "#F0E9DF",
         paddingTop: "30px",
         paddingBottom: "20px",
     },
@@ -25,15 +25,14 @@ const styles = theme => ({
         borderRadius: "2px",
         borderColor: "#cccccc",
         borderStyle: "dashed",
-        backgroundColor: "#fafafa",
+        backgroundColor: "#F0E9DF",
         outline: "none",
         transition: "border .24s ease-in-out",
         cursor: "pointer",
-        backgroundImage: "url('https://storage.googleapis.com/public_colab_images/ai5/mushroom.svg')",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
         minHeight: "400px",
-    },
+    }, //        backgroundImage: "url('https://storage.googleapis.com/public_colab_images/ai5/mushroom.svg')",
     fileInput: {
         display: "none",
     },

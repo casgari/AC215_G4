@@ -7,20 +7,20 @@ const Theme = createMuiTheme({
         type: 'light',
         primary: {
             // light: will be calculated from palette.primary.main,
-            main: '#A41034',
+            main: '#6182DF',
             // dark: will be calculated from palette.primary.main,
             // contrastText: will be calculated to contrast with palette.primary.main
         },
         secondary: {
-            light: '#0066ff',
-            main: '#A41034',
+            light: '#EC4126',
+            main: '#6182DF',
             // dark: will be calculated from palette.secondary.main,
             contrastText: '#ffffff',
         },
         // error: will use the default color
         info: {
-            light: '#AF5454',
-            main: '#AF5454',
+            light: '#6182DF',
+            main: '#6182DF',
             // dark: will be calculated from palette.secondary.main,
             contrastText: '#ffffff',
         },
@@ -28,19 +28,19 @@ const Theme = createMuiTheme({
     typography: {
         useNextVariants: true,
         h6: {
-            color: "#A41034",
+            color: "#6182DF",
             fontSize: "1.1rem",
             fontFamily: "Roboto, Helvetica, Arial, sans-serif",
             fontWeight: 800
         },
         h5: {
-            color: "#A41034",
+            color: "#6182DF",
             fontSize: "1.2rem",
             fontFamily: "Roboto, Helvetica, Arial, sans-serif",
             fontWeight: 800
         },
         h4: {
-            color: "#A41034",
+            color: "#6182DF",
             fontSize: "1.8rem",
             fontFamily: "Roboto, Helvetica, Arial, sans-serif",
             fontWeight: 900
@@ -49,7 +49,7 @@ const Theme = createMuiTheme({
     overrides: {
         MuiOutlinedInput: {
             root: {
-                backgroundColor: "#ffffff",
+                backgroundColor: "#EC4126",
                 position: "relative",
                 borderRadius: "4px",
             }

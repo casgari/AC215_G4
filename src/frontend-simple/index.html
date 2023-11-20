@@ -89,15 +89,35 @@
         <div class="container">
             <div class="mdc-card mdc-card--outlined" style="min-height: 400px;">
                 <div class="dropzone" onclick="upload_file()">
-
-                    <input type="file" id="input_file" accept=".txt" name="input_file" on
-                        autocomplete="off" tabindex="-1" style="display: none;">
+    
+                    <input type="file" id="input_file" accept=".mp4, .mp3" name="input_file" on autocomplete="off"
+                        tabindex="-1" style="display: none;">
                     <div><img id="input_file_view" style="width:100%;" /></div>
-                    <div style="color: #302f2f;">Click to take a picture or upload...</div>
+                    <div style="color: #302f2f;">Click to upload video/audio.</div>
                 </div>
                 <div style="padding:20px;">
                     <span class="prediction" id="prediction_label"></span>
                     <span class="mushroom_type" id="mushroom_type"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content -->
+
+    <!-- Content -->
+    <div class="content">
+        <div class="container">
+            <div class="mdc-card mdc-card--outlined" style="min-height: 400px;">
+                <div class="dropzone" onclick="upload_text()">
+
+                    <input type="file" id="input_text" accept=".txt" name="input_text" on
+                        autocomplete="off" tabindex="-1" style="display: none;">
+                    <div><img id="input_text_view" style="width:100%;" /></div>
+                    <div style="color: #302f2f;">Click to upload text transcript 11.</div>
+                </div>
+                <div style="padding:20px;">
+                    <span class="prediction" id="prediction_label_text"></span>
+                    <span class="mushroom_type" id="mushroom_type_text"></span>
                 </div>
             </div>
         </div>
@@ -112,9 +132,17 @@
     // file input
     var input_file = document.getElementById("input_file");
     var prediction_label = document.getElementById("prediction_label");
-    var prediction_accuracy = document.getElementById("prediction_accuracy");
+    // var prediction_accuracy = document.getElementById("prediction_accuracy");
     var mushroom_type = document.getElementById("mushroom_type");
     var input_file_view = document.getElementById('input_file_view');
+
+    // text input
+    var input_text = document.getElementById("input_text");
+    var prediction_label_text = document.getElementById("prediction_label_text");
+    var mushroom_type_text = document.getElementById("mushroom_type_text");
+    var input_text_view = document.getElementById('input_text_view');
+
+
 
     function upload_file() {
         // Clear
@@ -122,6 +150,16 @@
         input_file_view.src = null;
 
         input_file.click();
+    }
+
+    function upload_text() {
+            // Clear
+            console.log("Love me!");
+            prediction_label_text.innerHTML = "";
+            input_text_view.src = null;
+
+            input_text.click();
+            
     }
 
     function input_file_onchange() {
@@ -152,8 +190,36 @@
         });
     }
 
+    function input_text_onchange() {
+        // Read the uploaded file and display it
+        var text_to_upload = input_text.files[0];
+        input_text_view.src = URL.createObjectURL(text_to_upload);
+        prediction_label_text.innerHTML = "";
+        console.log("Love you");
+
+        // Post the image to the /predict API
+        var formData = new FormData();
+        formData.append("file", input_text.files[0]);
+        axios.post('/predict', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then(function (response) {
+            var prediction_results_text = response.data;
+            console.log(prediction_results_text);
+
+            if (prediction_results_text["prediction_label"].length < 3) {
+                prediction_label_text.innerHTML = "Text file does not have enough content.";
+            }
+            else {
+               prediction_label_text.innerHTML = prediction_results_text["prediction_label"]; 
+            }
+        });
+        }
+
     // Attach an onchange event
     input_file.onchange = input_file_onchange;
+    input_text.onchange = input_text_onchange;
 </script>
 
 </html>
