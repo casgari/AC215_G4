@@ -172,3 +172,62 @@ def make_prediction_vertexai(image_path):
         # "accuracy": 1,
         # "poisonous": "",
     }
+
+
+def generate_transcript_vertexai(image_path):
+    print("Generate transcript using Vertex AI endpoint")
+
+    # Get the endpoint
+    # Endpoint format: endpoint_name="projects/{PROJECT_NUMBER}/locations/us-central1/endpoints/{ENDPOINT_ID}"
+    endpoint = aiplatform.Endpoint(
+        "projects/36357732856/locations/us-central1/endpoints/1708924743563870208"
+    )
+
+    with open(image_path, "rb") as f:
+        data = f.read()
+    data = data.decode("utf-8")
+    
+    # tokenize the data
+    tokenizer = AutoTokenizer.from_pretrained("distilroberta-base")
+    example_text = tokenizer(data, truncation=True, return_token_type_ids=True)
+
+    # The format of each instance should conform to the deployed model's prediction input schema.
+    instances = [example_text]
+
+    result = endpoint.predict(instances=instances)
+
+    print("Result:", result)
+    # prediction = result.predictions[0]
+    # print(prediction, prediction.index(max(prediction)))
+
+    # index2label = {0: "oyster", 1: "crimini", 2: "amanita"}
+
+    # prediction_label = index2label[prediction.index(max(prediction))]
+
+    # poisonous = False
+    # if prediction_label == "amanita":
+    #     poisonous = True
+    logits = result.predictions[0]
+        
+    predictions = np.argmax(logits, axis=-1)
+    keyphrases = []
+    keyphrase = []
+    for label, token in zip(predictions, example_text["input_ids"]):
+        if label == 0:
+            keyphrase = [tokenizer.decode(token)]
+        elif label == 1 and len(keyphrase) > 0:
+            keyphrase.append(tokenizer.decode(token))
+        elif label == 2 and len(keyphrase) > 0:
+            keyphrases.append(''.join(keyphrase))
+            keyphrase = []
+    print("Keywords:", keyphrases)
+    ## UPLOAD TO BUCKET
+    keyphrases_string = ", ".join(keyphrases)
+
+    return {
+        "prediction_label": keyphrases_string,
+        # "prediction": [],
+        # "accuracy": 1,
+        # "poisonous": "",
+    }
+

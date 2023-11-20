@@ -21,7 +21,7 @@ def makedirs():
     os.makedirs(input_audios, exist_ok=True)
     os.makedirs(text_prompts, exist_ok=True)
 
-def download():
+def download(filename=None):
     print("download")
 
     # Clear
@@ -34,8 +34,13 @@ def download():
     blobs = bucket.list_blobs(prefix=input_audios + "/")
     for blob in blobs:
         print(blob.name)
-        if not blob.name.endswith("/"):
-            blob.download_to_filename(blob.name)
+        if filename is None: # Download all files
+            if not blob.name.endswith("/"):
+                blob.download_to_filename(blob.name)
+        else: # Download specific file
+            if blob.name == filename:
+                blob.download_to_filename(blob.name)
+
 
 def transcribe():
     print("transcribe")
@@ -89,6 +94,11 @@ def main(args=None):
         transcribe()
         upload()
 
+    if args.filename != "":
+        download(filename=args.filename)
+        transcribe()
+        upload()
+
 
 if __name__ == "__main__":
     # Generate the inputs arguments parser
@@ -96,7 +106,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Transcribe audio file to text")
 
     parser.add_argument(
-        "-t", "--transcribe", action="store_true", help="Transcribe audio files to text"
+        "-t", "--transcribe", action="store_true", help="Transcribe all audio files in bucket to text"
+    )
+
+    parser.add_argument(
+        "-f", "--filename", type=str, default="", help="Transcribe specific audio file to text"
     )
 
     args = parser.parse_args()

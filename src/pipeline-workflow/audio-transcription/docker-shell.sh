@@ -12,9 +12,9 @@ export GCP_PROJECT="ac215-group-4"
 export GCS_BUCKET_NAME="mega-ppp-ml-workflow"
 
 # Build the image based on the Dockerfile
-docker build -t $IMAGE_NAME -f Dockerfile .
+# docker build -t $IMAGE_NAME -f Dockerfile .
 # Build the image based on the Dockerfile
-# docker build -t $IMAGE_NAME --platform=linux/arm64/v8 -f Dockerfile .
+docker build -t $IMAGE_NAME --platform=linux/amd64/v2 -f Dockerfile .
 
 # Run Container
 docker run --rm --name $IMAGE_NAME -ti \
