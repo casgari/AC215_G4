@@ -115,14 +115,15 @@ from transformers import AutoTokenizer
 #         "poisonous": poisonous,
 #     }
 
-def upload(path):
+def upload(path, num):
     gcp_project = "ac215-group-4"
     bucket_name = "mega-ppp-ml-workflow"
+    filename = f"video{num}.mp4"
 
     # Upload to bucket
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
-    destination_blob_name = "input_videos"
+    destination_blob_name = f"input_videos/{filename}"
     blob = bucket.blob(destination_blob_name)
     blob.upload_from_filename(path)
     return 0

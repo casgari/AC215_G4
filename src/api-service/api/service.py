@@ -69,19 +69,22 @@ async def predict(file: bytes = File(...)):
     # Save the video
     num = random.randint(1, 999999)
     with TemporaryDirectory() as video_dir:
-        video_path = os.path.join(video_dir, f"video{num}.mp4")
+        filename = f"video{num}.mp4"
+        video_path = os.path.join(video_dir, filename)
         with open(video_path, "wb") as output:
             output.write(file)
-        
+        print("")
+        print(video_path)
+        print("")
         # Upload video to GCP
-        uploaded = model.upload(video_path)
-        if not uploaded:
+        upload_flag = model.upload(video_path, num)
+        if upload_flag:
             raise Exception("Failed to upload video")
-        print("DONE!!!!!")
-        exit()
     
-    # Convert to audio using cloud function
-    # response = requests.get("https://us-central1-ac215-group-4.cloudfunctions.net/data-preprocessing?"
+        # Convert to audio using cloud function
+        response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/data-preprocessing?filename={filename}")
+        print("DONE!!!!")
+        exit()
     # Transcribe audio file using cloud run
 
     # Extract keywords using endpoint
