@@ -4,11 +4,11 @@
 set -e
 
 # Define some environment variables
-export IMAGE_NAME="mushroom-app-api-service"
+export IMAGE_NAME="ppp-app-api-service"
 export BASE_DIR=$(pwd)
 export SECRETS_DIR=$(pwd)/../../secrets/
 export PERSISTENT_DIR=$(pwd)/../../persistent-folder/
-export GCS_BUCKET_NAME="mushroom-app-models"
+export GCS_BUCKET_NAME="ppp-app-models"
 
 # Build the image based on the Dockerfile
 #docker build -t $IMAGE_NAME -f Dockerfile .
