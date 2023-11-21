@@ -200,7 +200,7 @@
         // Post the image to the /predict API
         var formData = new FormData();
         formData.append("file", input_text.files[0]);
-        axios.post('/predict', formData, {
+        axios.post('/predicttext', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

@@ -19,6 +19,13 @@ const DataService = {
             }
         });
     },
+    PredictText: async function (formData) {
+        return await axios.post(BASE_API_URL + "/predicttext", formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+    },
 }
 
 export default DataService;

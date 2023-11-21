@@ -2,6 +2,8 @@ import {
     createMuiTheme,
 } from '@material-ui/core';
 
+//import './fonts/fonts.css';
+
 const Theme = createMuiTheme({
     palette: {
         type: 'light',

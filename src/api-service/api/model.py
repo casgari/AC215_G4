@@ -26,6 +26,17 @@ def upload(path, num):
     blob.upload_from_filename(path)
     return 0
 
+def upload_text(path, num):
+    gcp_project = "ac215-group-4"
+    filename = f"text{num}.mp4"
+
+    # Upload to bucket
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(GCS_BUCKET_NAME)
+    destination_blob_name = f"text_prompts/{filename}"
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_filename(path)
+    return 0
 
 def download(folder, filename):
     storage_client = storage.Client()
@@ -38,9 +49,10 @@ def download(folder, filename):
 
     blobs = bucket.list_blobs(prefix=folder + "/")
     for blob in blobs:
-        if blob.name == (folder + "/" + filename):
-            blob.download_to_filename(blob.name)
-            return blob.name
+        blob_name = blob.name[:-4] + ".txt"
+        if blob_name == (folder + "/" + filename):
+            blob.download_to_filename(blob_name)
+            return blob_name
 
 
 def make_prediction_vertexai(image_path):
@@ -81,7 +93,7 @@ def make_prediction_vertexai(image_path):
             keyphrase = []
     print("Keywords:", keyphrases)
     ## UPLOAD TO BUCKET
-    keyphrases_string = ", ".join(keyphrases)
+    keyphrases_string = "\n".join(keyphrases)
 
     return {
         "prediction_label": keyphrases_string,

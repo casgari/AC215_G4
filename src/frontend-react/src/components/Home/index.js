@@ -12,9 +12,11 @@ const Home = (props) => {
     console.log("================================== Home ======================================");
 
     const inputFile = useRef(null);
+    const inputText = useRef(null);
 
     // Component States
     const [video, setImage] = useState(null);
+    const [text, setText] = useState(null);
     const [prediction, setPrediction] = useState(null);
 
     // Setup Component
@@ -39,20 +41,27 @@ const Home = (props) => {
             })
     }
 
+    // Handlers
+    const handleTextUploadClick = () => {
+        inputText.current.click();
+    }
+    const handleTextOnChange = (event) => {
+        console.log(event.target.files);
+        setText(URL.createObjectURL(event.target.files[0]));
+
+        var formData = new FormData();
+        formData.append("file", event.target.files[0]);
+        DataService.PredictText(formData)
+            .then(function (response) {
+                console.log(response.data);
+                setPrediction(response.data);
+            })
+    }
+// BACKGROUND IF IT DOESNT WORK CHANGE TODO TODO TODO
     return (
-        <div className={classes.root}>
+        <div className={classes.root}> 
             <main className={classes.main}>
-                <Container maxWidth="md" className={classes.container}>
-                    {prediction &&
-                        <Typography variant="h4" gutterBottom align='center'>
-                            {prediction.prediction_label.length<3 &&
-                                <span className={classes.safe}>{"Not enough text in video."}</span>
-                            }
-                            {prediction.prediction_label.length >= 3 &&
-                                <span className={classes.safe}>{prediction.prediction_label}&nbsp;&nbsp;H</span>
-                            }
-                        </Typography>
-                    }
+                <Container maxWidth='lg' className={classes.container}>
                     <div className={classes.dropzone} onClick={() => handleVideoUploadClick()}>
                         <input
                             type="file"
@@ -67,6 +76,51 @@ const Home = (props) => {
                         <div><img className={classes.preview} src={video} /></div>
                         <div className={classes.help}>Click to upload video.</div>
                     </div>
+                    <div className={classes.dropzone} onClick={() => handleTextUploadClick()}>
+                        <input
+                            type="file"
+                            accept=".txt"
+                            on
+                            autocomplete="off"
+                            tabindex="-1"
+                            className={classes.fileInput}
+                            ref={inputText}
+                            onChange={(event) => handleTextOnChange(event)}
+                        />
+                        <div><img className={classes.preview} src={text} /></div>
+                        <div className={classes.help}>Click to upload text.</div>
+                    </div>
+                </Container>
+
+                <Container maxWidth="lg" className={classes.container}>
+                    
+                    <div className={classes.textblock}>
+                        <div className={classes.textm}>KEYWORDS</div>
+                        {prediction &&
+                            <Typography variant="h4" align='center' text-align='center'>
+                                {prediction.prediction_label.length < 3 &&
+                                    <span className={classes.safe}>{"Not enough text in transcript."}</span>
+                                }
+                                {prediction.prediction_label.length >= 3 &&
+                                    <span className={classes.result}>{prediction.prediction_label}</span>
+                                }
+                            </Typography>
+                        }
+                    </div>
+
+                    <div className={classes.textblock}>
+                        <div className={classes.textm}>QUIZ</div>
+                        {prediction &&
+                            <Typography variant="h4" align='center' text-align='center'>
+                                {prediction.prediction_label.length < 3 &&
+                                    <span className={classes.safe}>{"Not enough text in transcript."}</span>
+                                }
+                                {prediction.prediction_label.length >= 3 &&
+                                    <span className={classes.result}>{prediction.quiz}</span>
+                                }
+                            </Typography>
+                        }
+                    </div>  
                 </Container>
             </main>
         </div>
