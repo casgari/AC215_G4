@@ -11,9 +11,6 @@ import requests
 import random
 
 from google.cloud import storage
-import shutil
-
-GCS_BUCKET_NAME = "mega-ppp-ml-workflow"
 
 # Initialize Tracker Service
 tracker_service = TrackerService()
@@ -42,30 +39,7 @@ async def startup():
 @app.get("/")
 async def get_index():
     return {"message": "Welcome to the API Service"}
-
-
-@app.get("/experiments")
-def experiments_fetch():
-    # Fetch experiments
-    df = pd.read_csv("/persistent/experiments/experiments.csv")
-
-    df["id"] = df.index
-    df = df.fillna("")
-
-    return df.to_dict("records")
-
-
-@app.get("/best_model")
-async def get_best_model():
-    model.check_model_change()
-    if model.best_model is None:
-        return {"message": "No model available to serve"}
-    else:
-        return {
-            "message": "Current model being served:" + model.best_model["model_name"],
-            "model_details": model.best_model,
-        }
-
+    
 
 @app.post("/predict")
 async def predict(file: bytes = File(...)):
@@ -92,7 +66,7 @@ async def predict(file: bytes = File(...)):
         response = requests.get(f"https://audio-transcription-hcsan6rz2q-uc.a.run.app/?filename={filename}.mp3")
        
     
-    transcript_path = download("text_prompts", f"{filename}.txt")
+    transcript_path = model.download("text_prompts", f"{filename}.txt")
 
 
     # Extract keywords using endpoint
@@ -110,20 +84,4 @@ async def predict(file: bytes = File(...)):
     prediction_results["quiz"] = quiz
     print(prediction_results)
     return prediction_results
-
-def download(folder, filename):
-    print("download")
-
-    storage_client = storage.Client()
-    bucket = storage_client.get_bucket(GCS_BUCKET_NAME)
-    # bucket = storage_client.get_bucket(bucket_n) 
-
-    # Clear
-    shutil.rmtree(folder, ignore_errors=True, onerror=None)
-    os.makedirs(folder)
-
-    blobs = bucket.list_blobs(prefix=folder + "/")
-    for blob in blobs:
-        if blob.name == (folder + "/" + filename):
-            blob.download_to_filename(blob.name)
-            return blob.name
+    
