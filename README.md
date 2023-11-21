@@ -122,7 +122,7 @@ To run the container locally:
 
 **Frontend Implementation**
 
-A user friendly React app was built to extract keywords and generate quizzes using our LLM KeyBert model from the backend. Using the app, a user easily upload there lecture video file. The app will send the video through o the backend api to get prediction results where keyword extraction occurs. Within this, the lecture video will go through preprocessing steps deployed as cloud functions or runs on GCP - video to audio conversion and audio transcription - before keyword extraction occurs using the trained DistilBERT model's on GCP and quiz generation, using the corresponding deployed cloud function, occurs.
+A user friendly React app was built to extract keywords and generate quizzes using our LLM KeyBert model from the backend. Using the app, a user easily upload there lecture video file. The app will send the video through o the backend api to get prediction results where keyword extraction occurs. Within this, the lecture video will go through preprocessing steps deployed as cloud functions or runs on GCP - video to audio conversion and audio transcription - before keyword extraction occurs using the trained DistilBERT model's endpoint on GCP and quiz generation, using the corresponding deployed cloud function, occurs.
 
 Here are some screenshots of our app:
 
