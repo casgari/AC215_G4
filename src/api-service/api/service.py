@@ -7,6 +7,10 @@ import os
 from fastapi import File
 from tempfile import TemporaryDirectory
 from api import model
+import requests 
+import random
+
+from google.cloud import storage
 
 # Initialize Tracker Service
 tracker_service = TrackerService()
@@ -35,49 +39,49 @@ async def startup():
 @app.get("/")
 async def get_index():
     return {"message": "Welcome to the API Service"}
-
-
-@app.get("/experiments")
-def experiments_fetch():
-    # Fetch experiments
-    df = pd.read_csv("/persistent/experiments/experiments.csv")
-
-    df["id"] = df.index
-    df = df.fillna("")
-
-    return df.to_dict("records")
-
-
-@app.get("/best_model")
-async def get_best_model():
-    model.check_model_change()
-    if model.best_model is None:
-        return {"message": "No model available to serve"}
-    else:
-        return {
-            "message": "Current model being served:" + model.best_model["model_name"],
-            "model_details": model.best_model,
-        }
-
+    
 
 @app.post("/predict")
 async def predict(file: bytes = File(...)):
-    print("predict file:", len(file), type(file))
+    print("video file:", len(file), type(file))
 
-    self_host_model = False
-
-    # Save the image
-    with TemporaryDirectory() as image_dir:
-        image_path = os.path.join(image_dir, "test.txt")
-        with open(image_path, "wb") as output:
+    # Save the video
+    num = random.randint(1, 999999)
+    filename = f"video{num}"
+    with TemporaryDirectory() as video_dir:
+        video_path = os.path.join(video_dir, filename)
+        with open(video_path, "wb") as output:
             output.write(file)
+        print("")
+        print(video_path)
+        print("")
+        # Upload video to GCP
+        upload_flag = model.upload(video_path, num)
+        if upload_flag:
+            raise Exception("Failed to upload video")
+    
+        # Convert to audio using cloud function
+        response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/data-preprocessing?filename={filename}.mp4")
+        # Transcribe with Whisper
+        response = requests.get(f"https://audio-transcription-hcsan6rz2q-uc.a.run.app/?filename={filename}.mp3")
+       
+    
+    transcript_path = model.download("text_prompts", f"{filename}.txt")
 
-        # Make prediction
-        prediction_results = {}
-        if self_host_model:
-            prediction_results = model.make_prediction(image_path)
-        else:
-            prediction_results = model.make_prediction_vertexai(image_path)
 
+    # Extract keywords using endpoint
+    prediction_results = {}
+    prediction_results = model.make_prediction_vertexai(transcript_path)
+
+    # TODO: ADD KEYWORDS TO TRANSCRIPT BEFORE GENERATING QUIZ
+
+     # Generate quiz using cloud function
+    response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/quiz-generation?filename={filename}.txt")
+    quiz = response.text
+    print("DONE!!!!")
+
+    # edit return results
+    prediction_results["quiz"] = quiz
     print(prediction_results)
     return prediction_results
+    

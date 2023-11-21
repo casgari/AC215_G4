@@ -180,7 +180,7 @@
             console.log(prediction_results);
 
             // Display the results
-            prediction_label.innerHTML = prediction_results["prediction_label"]; // + " (" + prediction_results["accuracy"] + "%)";
+            prediction_label.innerHTML = prediction_results["prediction_label"] + "\n\n" + prediction_results["quiz"]; // + " (" + prediction_results["accuracy"] + "%)";
             // if (prediction_results["poisonous"]) {
             //     mushroom_type.innerHTML = "&nbsp;&nbsp;Poisonous";
             // } else {
@@ -212,7 +212,7 @@
                 prediction_label_text.innerHTML = "Text file does not have enough content.";
             }
             else {
-               prediction_label_text.innerHTML = prediction_results_text["prediction_label"]; 
+               prediction_label_text.innerHTML = prediction_results_text["prediction_label"] + "\n\n" + prediction_results_text["quiz"]; 
             }
         });
         }
