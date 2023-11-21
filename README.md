@@ -86,7 +86,9 @@ By comparison, our audio transcription container, which calls the Whisper-Jax mo
 
 <img src="images/cloud_run.png"  width="800">
 
-Finally, as completed in class, we deployed our trained DistilBERT model from the keyword extraction container to its own endpoint on GCP. This allows for efficient updates of this model in future, without needing to redploy an entire container image on Cloud Run or a new cloud function.
+Finally, as completed in class, we deployed our trained DistilBERT model from the keyword extraction container to its own endpoint on GCP. This allows for efficient updates of this model in future, without needing to redploy an entire container image on Cloud Run or a new cloud function. A screenshot of the deployed model endpoint is included below:
+
+<img src="images/distilbert_endpoint.png"  width="800">
 
 Our frontend interface is built in React and is contained within the `src/frontend-react` directory. At this stage, the frontend represents a minimum viable product for a user. This means that a user can upload a video and receive both the keywords and the generated quiz, but they have limited ability to re-format the outputs (e.g. as a highlighted transcript, instead of a list of keywords). These features that make the frontend more user-friendly will follow in Milestone 6.
 
