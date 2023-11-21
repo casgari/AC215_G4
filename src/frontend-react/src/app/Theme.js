@@ -1,10 +1,10 @@
 import {
-    createMuiTheme,
-} from '@material-ui/core';
+    createTheme,
+} from '@material-ui/core/styles';
 
 //import './fonts/fonts.css';
 
-const Theme = createMuiTheme({
+const Theme = createTheme({
     palette: {
         type: 'light',
         primary: {

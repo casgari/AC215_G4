@@ -18,6 +18,7 @@ const Home = (props) => {
     const [video, setImage] = useState(null);
     const [text, setText] = useState(null);
     const [prediction, setPrediction] = useState(null);
+    const [fileContent, setFileContent] = useState('');
 
     // Setup Component
     useEffect(() => {
@@ -46,6 +47,19 @@ const Home = (props) => {
         inputText.current.click();
     }
     const handleTextOnChange = (event) => {
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const content = e.target.result;
+                setFileContent(content);
+            };
+
+            reader.readAsText(file);
+        }
+
         console.log(event.target.files);
         setText(URL.createObjectURL(event.target.files[0]));
 
@@ -87,8 +101,14 @@ const Home = (props) => {
                             ref={inputText}
                             onChange={(event) => handleTextOnChange(event)}
                         />
-                        <div><img className={classes.preview} src={text} /></div>
                         <div className={classes.help}>Click to upload text.</div>
+                        <Typography variant="h6" align='center' text-align='center'>
+                            {fileContent && (
+                                <div color='black' >
+                                    <pre>{fileContent.substring(0, 100)}</pre>
+                                </div>
+                            )}
+                        </Typography>
                     </div>
                 </Container>
 
