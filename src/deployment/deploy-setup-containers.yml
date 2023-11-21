@@ -39,7 +39,7 @@
     - name: Create frontend container
       docker_container:
         name: "frontend"
-        image: "gcr.io/{{ gcp_project }}/mushroom-app-frontend-react:{{ tag.stdout}}"
+        image: "gcr.io/{{ gcp_project }}/ppp-app-frontend-react:{{ tag.stdout}}"
         state: started
         recreate: yes
         pull: yes
@@ -59,14 +59,14 @@
     - name: Create api-service container
       docker_container:
         name: "api-service"
-        image: "gcr.io/{{ gcp_project }}/mushroom-app-api-service:{{ tag.stdout}}"
+        image: "gcr.io/{{ gcp_project }}/ppp-app-api-service:{{ tag.stdout}}"
         state: started
         recreate: yes
         published_ports:
           - 9000:9000
         env:
           GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp-service.json"
-          GCS_BUCKET_NAME: "mushroom-app-models"
+          GCS_BUCKET_NAME: "ppp-app-models"
         networks:
           - name: "{{docker_network_name}}"
         volumes:

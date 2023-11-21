@@ -1,5 +1,5 @@
 REM Define some environment variables
-SET IMAGE_NAME=mushroom-app-frontend-simple
+SET IMAGE_NAME=ppp-app-frontend-simple
 SET BASE_DIR=%cd%
 
 REM Build the image based on the Dockerfile
