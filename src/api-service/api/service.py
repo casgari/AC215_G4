@@ -10,6 +10,11 @@ from api import model
 import requests 
 import random
 
+from google.cloud import storage
+import shutil
+
+GCS_BUCKET_NAME = "mega-ppp-ml-workflow"
+
 # Initialize Tracker Service
 tracker_service = TrackerService()
 
@@ -68,8 +73,8 @@ async def predict(file: bytes = File(...)):
 
     # Save the video
     num = random.randint(1, 999999)
+    filename = f"video{num}"
     with TemporaryDirectory() as video_dir:
-        filename = f"video{num}.mp4"
         video_path = os.path.join(video_dir, filename)
         with open(video_path, "wb") as output:
             output.write(file)
@@ -82,18 +87,43 @@ async def predict(file: bytes = File(...)):
             raise Exception("Failed to upload video")
     
         # Convert to audio using cloud function
-        response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/data-preprocessing?filename={filename}")
-        print("DONE!!!!")
-        exit()
-    # Transcribe audio file using cloud run
+        response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/data-preprocessing?filename={filename}.mp4")
+        # Transcribe with Whisper
+        response = requests.get(f"https://audio-transcription-hcsan6rz2q-uc.a.run.app/?filename={filename}.mp3")
+       
+    
+    transcript_path = download("text_prompts", f"{filename}.txt")
+
 
     # Extract keywords using endpoint
-    
-    # Generate quiz using cloud function
-
-    # Make prediction
     prediction_results = {}
-    prediction_results = model.make_prediction_vertexai(image_path)
+    prediction_results = model.make_prediction_vertexai(transcript_path)
 
+    # TODO: ADD KEYWORDS TO TRANSCRIPT BEFORE GENERATING QUIZ
+
+     # Generate quiz using cloud function
+    response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/quiz-generation?filename={filename}.txt")
+    quiz = response.text
+    print("DONE!!!!")
+
+    # edit return results
+    prediction_results["quiz"] = quiz
     print(prediction_results)
     return prediction_results
+
+def download(folder, filename):
+    print("download")
+
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(GCS_BUCKET_NAME)
+    # bucket = storage_client.get_bucket(bucket_n) 
+
+    # Clear
+    shutil.rmtree(folder, ignore_errors=True, onerror=None)
+    os.makedirs(folder)
+
+    blobs = bucket.list_blobs(prefix=folder + "/")
+    for blob in blobs:
+        if blob.name == (folder + "/" + filename):
+            blob.download_to_filename(blob.name)
+            return blob.name
