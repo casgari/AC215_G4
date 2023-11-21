@@ -4,6 +4,7 @@ import Home from "../components/Home";
 import Error404 from '../components/Error/404';
 import Experiments from '../components/Experiments';
 import Currentmodel from '../components/Currentmodel';
+import About from '../components/About';
 
 const AppRouter = (props) => {
 
@@ -15,6 +16,7 @@ const AppRouter = (props) => {
         <Route path="/" exact component={Home} />
         <Route path="/experiments" exact component={Experiments} />
         <Route path="/currentmodel" exact component={Currentmodel} />
+        <Route path="/about" exact component={About} />
         <Route component={Error404} />
       </Switch>
     </React.Fragment>

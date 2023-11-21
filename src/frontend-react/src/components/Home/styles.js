@@ -12,7 +12,7 @@ const styles = theme => ({
     },
     container: {
         backgroundColor: "#F0E9DF",
-        paddingTop: "30px",
+        paddingTop: "80px",
         paddingBottom: "20px",
     },
     dropzone: {
@@ -22,7 +22,7 @@ const styles = theme => ({
         alignItems: "center",
         margin: "20px",
         borderWidth: "2px",
-        borderRadius: "2px",
+        borderRadius: "20px",
         borderColor: "#cccccc",
         borderStyle: "dashed",
         backgroundColor: "#F0E9DF",

@@ -14,7 +14,7 @@ const Home = (props) => {
     const inputFile = useRef(null);
 
     // Component States
-    const [image, setImage] = useState(null);
+    const [video, setImage] = useState(null);
     const [prediction, setPrediction] = useState(null);
 
     // Setup Component
@@ -45,11 +45,11 @@ const Home = (props) => {
                 <Container maxWidth="md" className={classes.container}>
                     {prediction &&
                         <Typography variant="h4" gutterBottom align='center'>
-                            {!prediction.poisonous &&
-                                <span className={classes.safe}>{prediction.prediction_label + " (" + prediction["accuracy"] + "%)"}</span>
+                            {prediction.prediction_label.length<3 &&
+                                <span className={classes.safe}>{"Not enough text in video."}</span>
                             }
-                            {prediction.poisonous &&
-                                <span className={classes.poisonous}>{prediction.prediction_label + " (" + prediction["accuracy"] + "%)"}&nbsp;&nbsp;Poisonous</span>
+                            {prediction.prediction_label.length >= 3 &&
+                                <span className={classes.safe}>{prediction.prediction_label}&nbsp;&nbsp;H</span>
                             }
                         </Typography>
                     }
@@ -64,7 +64,7 @@ const Home = (props) => {
                             ref={inputFile}
                             onChange={(event) => handleOnChange(event)}
                         />
-                        <div><img className={classes.preview} src={image} /></div>
+                        <div><img className={classes.preview} src={video} /></div>
                         <div className={classes.help}>Click to upload video.</div>
                     </div>
                 </Container>

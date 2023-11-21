@@ -49,7 +49,7 @@ const Theme = createMuiTheme({
     overrides: {
         MuiOutlinedInput: {
             root: {
-                backgroundColor: "#EC4126",
+                backgroundColor: "#6182DF",
                 position: "relative",
                 borderRadius: "4px",
             }
