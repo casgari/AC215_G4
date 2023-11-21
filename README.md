@@ -87,12 +87,74 @@ In the remainder of this update, we will explain the code structure of the [deli
 
 **Backend API Service Implementation**
 
-TODO
+We built a backend api service using fast API to expose model functionality to the frontend. 
+
+INSERT PICTURE OF API SERVER DOCS, should just be predict
+
+
+
+The API service container has all the python files to run and expose thr backend apis.
+
+To run the container locally:
+- Open a terminal and go to the location where `/src/api-service`
+- Run `sh docker-shell.sh`
+- Once inside the docker container run `uvicorn_server`
+- To view and test APIs go to `http://localhost:9000/docs`
 
 **Frontend Implementation**
 
-TODO
+A user friendly React app was built to extract keywords and generate quizzes using our LLM KeyBert model from the backend. Using the app, a user easily upload there lecture video file. The app will send the video through o the backend api to get prediction results where keyword extraction occurs. Within this, the lecture video will go through preprocessing steps deployed as cloud functions or runs on GCP - video to audio conversion and audio transcription - before keyword extraction occurs using the trained DistilBERT model's on GCP and quiz generation, using the corresponding deployed cloud function, occurs.
 
-**Ansible Usage**
+Here are some screenshots of our app:
 
-TODO
+INSERT SS OF FRONTEND HERE
+
+The frontend container contains all the files to develop and build a react app.
+
+To run the container locally:
+- Open a terminal and go to the location where `/src/frontend-react`
+- Run `sh docker-shell.sh`
+- If running the container for the first time, run `yarn install`
+- Once inside the docker container run `yarn start`
+- Go to `http://localhost:3000` to access the app locally
+
+**Ansible Usage For Automated Deployment**
+
+We use Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion. Ansible allows us to manage infrastructure as code, helping us keep track of our app infrastructure as code in GitHub. It helps use setup deployments in an automated way.
+
+Here is our deployed app on a single VM in GCP:
+
+INSERT SS HERE
+
+
+The deployment container helps manage building and deploying all our app containers through ansible. The deployment is to GCP and all docker images go to GCR. 
+
+To run the container locally:
+- Open a terminal and go to the location where `/src/deployment`
+- Run `sh docker-shell.sh`
+- Build and Push Docker Containers to GCR (Google Container Registry)
+```
+ansible-playbook deploy-docker-images.yml -i inventory.yml
+```
+
+- Create Compute Instance (VM) Server in GCP
+```
+ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present
+```
+
+- Provision Compute Instance in GCP
+Install and setup all the required things for deployment.
+```
+ansible-playbook deploy-provision-instance.yml -i inventory.yml
+```
+
+- Setup Docker Containers in the  Compute Instance
+```
+ansible-playbook deploy-setup-containers.yml -i inventory.yml
+```
+
+- Setup Webserver on the Compute Instance
+```
+ansible-playbook deploy-setup-webserver.yml -i inventory.yml
+```
+Once the command runs go to `http://<External IP>/` 
