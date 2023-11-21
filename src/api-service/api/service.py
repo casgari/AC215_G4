@@ -7,6 +7,8 @@ import os
 from fastapi import File
 from tempfile import TemporaryDirectory
 from api import model
+import requests 
+import random
 
 # Initialize Tracker Service
 tracker_service = TrackerService()
@@ -62,22 +64,33 @@ async def get_best_model():
 
 @app.post("/predict")
 async def predict(file: bytes = File(...)):
-    print("predict file:", len(file), type(file))
+    print("video file:", len(file), type(file))
 
-    self_host_model = False
-
-    # Save the image
-    with TemporaryDirectory() as image_dir:
-        image_path = os.path.join(image_dir, "test.txt")
-        with open(image_path, "wb") as output:
+    # Save the video
+    num = random.randint(1, 999999)
+    with TemporaryDirectory() as video_dir:
+        video_path = os.path.join(video_dir, f"video{num}.mp4")
+        with open(video_path, "wb") as output:
             output.write(file)
+        
+        # Upload video to GCP
+        uploaded = model.upload(video_path)
+        if not uploaded:
+            raise Exception("Failed to upload video")
+        print("DONE!!!!!")
+        exit()
+    
+    # Convert to audio using cloud function
+    # response = requests.get("https://us-central1-ac215-group-4.cloudfunctions.net/data-preprocessing?"
+    # Transcribe audio file using cloud run
 
-        # Make prediction
-        prediction_results = {}
-        if self_host_model:
-            prediction_results = model.make_prediction(image_path)
-        else:
-            prediction_results = model.make_prediction_vertexai(image_path)
+    # Extract keywords using endpoint
+    
+    # Generate quiz using cloud function
+
+    # Make prediction
+    prediction_results = {}
+    prediction_results = model.make_prediction_vertexai(image_path)
 
     print(prediction_results)
     return prediction_results
