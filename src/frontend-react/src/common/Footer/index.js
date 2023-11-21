@@ -18,9 +18,9 @@ const Footer = (props) => {
     }, []);
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} background="#0000FF">
             <Typography align='center'>
-                Mushroom Identifier App
+                © 2023 Deep Learners AI
             </Typography>
 
         </div>

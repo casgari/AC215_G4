@@ -68,9 +68,9 @@ const Header = (props) => {
                             <Icon>experiments</Icon>
                             <Typography variant="caption">&nbsp;Experiments</Typography>
                         </IconButton>
-                        <IconButton color="inherit" component={Link} to="/currentmodel">
-                            <Icon>model_training</Icon>
-                            <Typography variant="caption">&nbsp;Model</Typography>
+                        <IconButton color="inherit" component={Link} to="/about">
+                            <Icon>about</Icon>
+                            <Typography variant="caption">&nbsp;About</Typography>
                         </IconButton>
                         {/* <IconButton color="inherit">
                             <Icon>login</Icon>
@@ -102,9 +102,9 @@ const Header = (props) => {
 
                         </List>
                         <List>
-                            <ListItem button key='menuitem12' component={Link} to="/currentmodel">
+                            <ListItem button key='menuitem12' component={Link} to="/about">
                                 <ListItemIcon><Icon>star</Icon></ListItemIcon>
-                                <ListItemText primary='Current Model' />
+                                <ListItemText primary='About' />
                             </ListItem>
                         </List>
                     </div>
