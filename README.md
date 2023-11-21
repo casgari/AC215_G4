@@ -75,7 +75,26 @@ Upon completing training, our four main containers were formulated into a Vertex
 
 In this milestone, we have focused on the development and deployment of a backend API service and the client-side of the application. Before implementing this, we created a detailed design document outlining the application’s Solution and Technical architectures, which can be found in `reports/application_design.pdf`.
 
-Our backend leverages many of the tools made accessible by AC215. Our [video to audio preprocessing container](https://us-central1-ac215-group-4.cloudfunctions.net/data-preprocessing) and [quiz generation container](https://us-central1-ac215-group-4.cloudfunctions.net/quiz-generation) are deployed as cloud functions on GCP, since they are relatively lightweight. By comparison, our audio transcription container, which calls the Whisper-Jax model, takes far longer to run, and so benefits further optimization within its own Docker container. Thus, we chose to deploy the [audio transcription container](https://audio-transcription-hcsan6rz2q-uc.a.run.app/) in Cloud Run. Finally, as completed in class, we deployed our trained DistilBERT model from the keyword extraction container to its own endpoint on GCP. This allows for efficient updates of this model in future, without needing to redploy an entire container image on Cloud Run or a new cloud function.
+INSERT IMAGE OF SOLUTION AND TECHNICAL ARCHITECTURE
+
+Our backend leverages many of the tools made accessible by AC215. Our [video to audio preprocessing container](https://us-central1-ac215-group-4.cloudfunctions.net/data-preprocessing) and [quiz generation container](https://us-central1-ac215-group-4.cloudfunctions.net/quiz-generation) are deployed as cloud functions on GCP, since they are relatively lightweight. A screenshot of these deployed cloud functions, which run severlessly, is included below:
+
+<img src="images/cloud_function.png"  width="800">
+
+
+
+By comparison, our audio transcription container, which calls the Whisper-Jax model, takes far longer to run, and so benefits further optimization within its own Docker container. Thus, we chose to deploy the [audio transcription container](https://audio-transcription-hcsan6rz2q-uc.a.run.app/) in Cloud Run. A screenshot of the deployed cloud run, which also runs severlessly, is included below:
+
+<img src="images/cloud_run.png"  width="800">
+
+
+
+Finally, as completed in class, we deployed our trained DistilBERT model from the keyword extraction container to its own endpoint on GCP. This allows for efficient updates of this model in future, without needing to redploy an entire container image on Cloud Run or a new cloud function. A screenshot of the deployed model endpoint is included below:
+
+<img src="images/distilbert_endpoint.png"  width="800">
+
+
+
 
 Our frontend interface is built in React and is contained within the `src/frontend-react` directory. At this stage, the frontend represents a minimum viable product for a user. This means that a user can upload a video and receive both the keywords and the generated quiz, but they have limited ability to re-format the outputs (e.g. as a highlighted transcript, instead of a list of keywords). These features that make the frontend more user-friendly will follow in Milestone 6.
 
@@ -87,12 +106,74 @@ In the remainder of this update, we will explain the code structure of the [deli
 
 **Backend API Service Implementation**
 
-TODO
+We built a backend api service using fast API to expose model functionality to the frontend. 
+
+INSERT PICTURE OF API SERVER DOCS, should just be predict
+
+
+
+The API service container has all the python files to run and expose thr backend apis.
+
+To run the container locally:
+- Open a terminal and go to the location where `/src/api-service`
+- Run `sh docker-shell.sh`
+- Once inside the docker container run `uvicorn_server`
+- To view and test APIs go to `http://localhost:9000/docs`
 
 **Frontend Implementation**
 
-TODO
+A user friendly React app was built to extract keywords and generate quizzes using our LLM KeyBert model from the backend. Using the app, a user easily upload there lecture video file. The app will send the video through o the backend api to get prediction results where keyword extraction occurs. Within this, the lecture video will go through preprocessing steps deployed as cloud functions or runs on GCP - video to audio conversion and audio transcription - before keyword extraction occurs using the trained DistilBERT model's endpoint on GCP and quiz generation, using the corresponding deployed cloud function, occurs.
 
-**Ansible Usage**
+Here are some screenshots of our app:
 
-TODO
+INSERT SS OF FRONTEND HERE
+
+The frontend container contains all the files to develop and build a react app.
+
+To run the container locally:
+- Open a terminal and go to the location where `/src/frontend-react`
+- Run `sh docker-shell.sh`
+- If running the container for the first time, run `yarn install`
+- Once inside the docker container run `yarn start`
+- Go to `http://localhost:3000` to access the app locally
+
+**Ansible Usage For Automated Deployment**
+
+We use Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion. Ansible allows us to manage infrastructure as code, helping us keep track of our app infrastructure as code in GitHub. It helps use setup deployments in an automated way.
+
+Here is our deployed app on a single VM in GCP:
+
+INSERT SS HERE
+
+
+The deployment container helps manage building and deploying all our app containers through ansible. The deployment is to GCP and all docker images go to GCR. 
+
+To run the container locally:
+- Open a terminal and go to the location where `/src/deployment`
+- Run `sh docker-shell.sh`
+- Build and Push Docker Containers to GCR (Google Container Registry)
+```
+ansible-playbook deploy-docker-images.yml -i inventory.yml
+```
+
+- Create Compute Instance (VM) Server in GCP
+```
+ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present
+```
+
+- Provision Compute Instance in GCP
+Install and setup all the required things for deployment.
+```
+ansible-playbook deploy-provision-instance.yml -i inventory.yml
+```
+
+- Setup Docker Containers in the  Compute Instance
+```
+ansible-playbook deploy-setup-containers.yml -i inventory.yml
+```
+
+- Setup Webserver on the Compute Instance
+```
+ansible-playbook deploy-setup-webserver.yml -i inventory.yml
+```
+Once the command runs go to `http://<External IP>/` 
