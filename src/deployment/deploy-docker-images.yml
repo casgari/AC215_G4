@@ -14,12 +14,12 @@
       build:
         path: /frontend-react
         platform: linux/amd64/v2
-      name: gcr.io/{{ gcp_project }}/mushroom-app-frontend-react:{{ tag.stdout}}
+      name: gcr.io/{{ gcp_project }}/ppp-app-frontend-react:{{ tag.stdout}}
       source: build
   - name: Push frontend image to GCR
     community.general.docker_image:
-      name: gcr.io/{{ gcp_project }}/mushroom-app-frontend-react:{{ tag.stdout}}
-      repository: gcr.io/{{ gcp_project }}/mushroom-app-frontend-react:{{ tag.stdout}}
+      name: gcr.io/{{ gcp_project }}/ppp-app-frontend-react:{{ tag.stdout}}
+      repository: gcr.io/{{ gcp_project }}/ppp-app-frontend-react:{{ tag.stdout}}
       push: yes
       source: local
   - name: Build api-service container image
@@ -27,12 +27,12 @@
       build:
         path: /api-service
         platform: linux/amd64/v2
-      name: gcr.io/{{ gcp_project }}/mushroom-app-api-service:{{ tag.stdout}}
+      name: gcr.io/{{ gcp_project }}/ppp-app-api-service:{{ tag.stdout}}
       source: build
   - name: Push api-service image to GCR
     community.general.docker_image:
-      name: gcr.io/{{ gcp_project }}/mushroom-app-api-service:{{ tag.stdout}}
-      repository: gcr.io/{{ gcp_project }}/mushroom-app-api-service:{{ tag.stdout}}
+      name: gcr.io/{{ gcp_project }}/ppp-app-api-service:{{ tag.stdout}}
+      repository: gcr.io/{{ gcp_project }}/ppp-app-api-service:{{ tag.stdout}}
       push: yes
       source: local
   - name: "Save docker tag"
