@@ -109,10 +109,11 @@ In the remainder of this update, we will explain the code structure of the [deli
 
 **Backend API Service Implementation**
 
-We built a backend api service using fast API to expose model functionality to the frontend. 
+We built a backend api service using fast API to expose model functionality to the frontend. Fast API gives us an interactive API documentation and exploration tool for free. An image of the documation tool is included below:
 
-INSERT PICTURE OF API SERVER DOCS, should just be predict
+<img src="images/api_docs.png"  width="800">
 
+/predict is called when users upload a lecture video to the frontend and wish to extract keywords and generate a quiz from it. /predicttext is used when users upload a lecture transcript to the frontend and wish to extract keywords and generate a quiz from it. These options are clear to see in the frontend below.
 
 
 The `api-service` container has all the files to run and expose the backend APIs.
