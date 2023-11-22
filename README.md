@@ -10,11 +10,11 @@ Project Organization
     │   └── tf_intial_model_construction_with_multigpu.ipynb
     ├── README.md
     ├── reports              <- Reports, midterm presentation, application design document
-    │   ├── application_design.md
-    │   ├── milestone2.md
-    │   ├── milestone3.md
+    │   ├── application_design.pdf
+    │   ├── milestone2.pdf
+    │   ├── milestone3.pdf
     │   ├── milestone4.md
-    │   └── milestone4_presentation.md
+    │   └── milestone4_presentation.pdf
     ├── images               <- Folder containing images used in reports
     ├── cli.py               <- Files in the root of repo for data versioning
     ├── docker-shell.sh
