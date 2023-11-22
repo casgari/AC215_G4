@@ -119,6 +119,8 @@ We can also easily test our APIs using this tool. Screenshots from successful te
 
 <img src="images/predict_api_test.png"  width="800">
 
+It is clear to see from this testing that the server response is successful, with the response body returning keywords and a generated quiz as expected.
+
 <img src="images/predicttext_api_test.png"  width="800">
 
 
