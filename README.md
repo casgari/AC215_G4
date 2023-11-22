@@ -101,6 +101,10 @@ Finally, as completed in class, we deployed our trained DistilBERT model from th
 
 Our frontend interface is built in React and is contained within the `src/frontend-react` directory. At this stage, the frontend represents a minimum viable product for a user. This means that a user can upload either a video or a text file and receive both the keywords and the generated quiz, but they have limited ability to re-format the outputs (e.g. as a highlighted transcript, instead of a list of keywords). Such features that make the frontend more user-friendly will follow in Milestone 6.
 
+<img src="images/homepage.png" width="800">
+<img src="images/react_predict.png" width="800">
+<img src="images/react_predicttext.png" width="800">
+
 Finally, we used Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion.
 
 In the remainder of this update, we will explain the code structure of the [deliverables](https://harvard-iacs.github.io/2023-AC215/milestone5/) for Milestone 5. Given the size of the codebase, please note that we reserve this space for describing the deliverables for Milestone 5 only, and usage of other parts of the codebase is desribed in earlier reports (see `reports/`).
