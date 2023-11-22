@@ -101,9 +101,6 @@ Finally, as completed in class, we deployed our trained DistilBERT model from th
 
 Our frontend interface is built in React and is contained within the `src/frontend-react` directory. At this stage, the frontend represents a minimum viable product for a user. This means that a user can upload either a video or a text file and receive both the keywords and the generated quiz, but they have limited ability to re-format the outputs (e.g. as a highlighted transcript, instead of a list of keywords). Such features that make the frontend more user-friendly will follow in Milestone 6.
 
-<img src="images/homepage.png" width="800">
-<img src="images/react_predict.png" width="800">
-<img src="images/react_predicttext.png" width="800">
 
 Finally, we used Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion.
 
@@ -143,7 +140,9 @@ We have built a React app to extract keywords and generate quizzes from lecture 
 
 Here are some screenshots of our app:
 
-INSERT SS OF FRONTEND HERE
+<img src="images/homepage.png" width="800">
+<img src="images/react_predict.png" width="800">
+<img src="images/react_predicttext.png" width="800">
 
 The `frontend-react` container contains all the files to develop and build our React app.
 
