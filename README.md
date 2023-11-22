@@ -56,15 +56,19 @@ Project Organization
 # AC215 - Milestone5 - Learning Tools for Transcribed Lecture Audio
 
 **Team Members**
+
 Cyrus Asgari, Ben Ray, Caleb Saul, Warren Sunada Wong, Chase Van Amburg
 
 **Group Name**
+
 Pavlos' Perceptron Pals
 
 **Project**
+
 In this project we aim to develop an application that can process lecture videos to generate transcripts with key-word highlighting and offer auto-generated quizzes with both questions and answers.
 
 **Recap of work to date (see `reports/` for more details)**
+
 We built the four main containers - video to audio preprocessing, audio transcription, keyword highlighting, quiz generation - that are deployed in our pipeline. These can be run atomically from the `individual-containers/` directory. In addition, we have a container that takes care of data versioning (found in the root of the repository) and a container that runs training for our keyword extraction model (found in `pipeline-workflow/model-training`). 
 
 We have utilized several advanced tools to optimize our data preprocessing and training workflows, including usage of TensorFlow Data, Dask for efficient transformations of lecture videos, support for serverless training with Vertex AI on multiple GPUs, and performance tracking with Weights & Biases. Our training efforts were primarily focused on training our keyword extraction model, using different derivations of the BERT model. All experiments were run on a single A100 GPU on Vertex AI, although we have also fully implemented and tested support for training on multiple GPUs, using TensorFlow's support for distributed training (i.e. `tf.distribute.MirroredStrategy()`). We chose to deploy the `distilbert-base-uncased` model, which performed well in terms of inference time and achieved 99% of the performance of the undistilled `bert-base-uncased` model.
@@ -86,7 +90,7 @@ Our backend leverages many of the tools made accessible by AC215. Our [video to 
 
 
 
-By comparison, our audio transcription container, which calls the Whisper-Jax model, takes far longer to run, and so benefits further optimization within its own Docker container. Thus, we chose to deploy the [audio transcription container](https://audio-transcription-hcsan6rz2q-uc.a.run.app/) in Cloud Run. A screenshot of the deployed cloud run, which also runs severlessly, is included below:
+By comparison, our audio transcription container, which calls the Whisper-Jax model, takes far longer to run, and so benefits from further optimization within its own Docker container. Thus, we chose to deploy the [audio transcription container](https://audio-transcription-hcsan6rz2q-uc.a.run.app/) in Cloud Run. A screenshot of the deployed cloud run, which also runs severlessly, is included below:
 
 <img src="images/cloud_run.png"  width="800">
 
@@ -114,17 +118,17 @@ We built a backend api service using fast API to expose model functionality to t
 
 <img src="images/api_docs.png"  width="800">
 
-/predict is called when users upload a lecture video to the frontend and wish to extract keywords and generate a quiz from it. /predicttext is used when users upload a lecture transcript to the frontend and wish to extract keywords and generate a quiz from it. These options are clear to see in the frontend below.
+`/predict` is called when users upload a lecture video to the frontend and wish to extract keywords and generate a quiz from it. `/predicttext` is used when users upload a lecture transcript to the frontend and wish to extract keywords and generate a quiz from it. These options are clear to see in the frontend below.
 
-We can also easily test our APIs using this tool. Screenshots from successful tests of both /predict and /predicttext are included below:
+We can also easily test our APIs using this tool. Screenshots from successful tests of both `/predict` and `/predicttext` are included below:
 
 <img src="images/predict_api_test.png"  width="800">
 
-It is clear to see from this /predict testing that the server response is successful, with the response body returning keywords and a generated quiz as expected.
+It is clear to see from this `/predict` testing that the server response is successful, with the response body returning keywords and a generated quiz as expected.
 
 <img src="images/predicttext_api_test.png"  width="800">
 
-A sucessful sever response is also observed from /predicttext.
+A sucessful sever response is also observed from `/predicttext`.
 
 The `api-service` container has all the files to run and expose the backend APIs.
 
