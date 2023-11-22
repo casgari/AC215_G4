@@ -9,7 +9,7 @@ Project Organization
     │   ├── intial_model_construction.ipynb
     │   └── tf_intial_model_construction_with_multigpu.ipynb
     ├── README.md
-    ├── reports              <- Folder containing past milestone markdown submissions
+    ├── reports              <- Reports, midterm presentation, application design document
     │   ├── application_design.md
     │   ├── milestone2.md
     │   ├── milestone3.md
@@ -24,7 +24,7 @@ Project Organization
     ├── requirements.txt
     ├── keyword_dataset.dvc
     └── src                  <- Source code and Dockerfiles for training and deployment
-        ├── individual-containers   <- initial iteration of containers to be run independently of the pipeline, from earlier milestones
+        ├── individual-containers   <- Initial iteration of containers to be run independently of the pipeline, from earlier milestones
         ├── pipeline-workflow
         │   ├── model-deployment    <- Script to deploy and get predictions from the keyword extraction model
         │   │   └── ...
@@ -96,7 +96,7 @@ Finally, as completed in class, we deployed our trained DistilBERT model from th
 
 
 
-Our frontend interface is built in React and is contained within the `src/frontend-react` directory. At this stage, the frontend represents a minimum viable product for a user. This means that a user can upload a video and receive both the keywords and the generated quiz, but they have limited ability to re-format the outputs (e.g. as a highlighted transcript, instead of a list of keywords). These features that make the frontend more user-friendly will follow in Milestone 6.
+Our frontend interface is built in React and is contained within the `src/frontend-react` directory. At this stage, the frontend represents a minimum viable product for a user. This means that a user can upload either a video or a text file and receive both the keywords and the generated quiz, but they have limited ability to re-format the outputs (e.g. as a highlighted transcript, instead of a list of keywords). Such features that make the frontend more user-friendly will follow in Milestone 6.
 
 Finally, we used Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion.
 
@@ -112,28 +112,28 @@ INSERT PICTURE OF API SERVER DOCS, should just be predict
 
 
 
-The API service container has all the python files to run and expose thr backend apis.
+The `api-service` container has all the files to run and expose the backend APIs.
 
 To run the container locally:
-- Open a terminal and go to the location where `/src/api-service`
+- Open a terminal and navigate to `/src/api-service`
 - Run `sh docker-shell.sh`
 - Once inside the docker container run `uvicorn_server`
 - To view and test APIs go to `http://localhost:9000/docs`
 
 **Frontend Implementation**
 
-A user friendly React app was built to extract keywords and generate quizzes using our LLM KeyBert model from the backend. Using the app, a user easily upload there lecture video file. The app will send the video through o the backend api to get prediction results where keyword extraction occurs. Within this, the lecture video will go through preprocessing steps deployed as cloud functions or runs on GCP - video to audio conversion and audio transcription - before keyword extraction occurs using the trained DistilBERT model's endpoint on GCP and quiz generation, using the corresponding deployed cloud function, occurs.
+We have built a React app to extract keywords and generate quizzes from lecture videos or lecture transcripts. Using the app, a user easily uploads their lecture video file. The app will send the video or text file through to the backend API to get the outputs.
 
 Here are some screenshots of our app:
 
 INSERT SS OF FRONTEND HERE
 
-The frontend container contains all the files to develop and build a react app.
+The `frontend-react` container contains all the files to develop and build our React app.
 
 To run the container locally:
-- Open a terminal and go to the location where `/src/frontend-react`
+- Open a terminal and navigate to `/src/frontend-react`
 - Run `sh docker-shell.sh`
-- If running the container for the first time, run `yarn install`
+- If running the container for the first time, run `npm install`
 - Once inside the docker container run `yarn start`
 - Go to `http://localhost:3000` to access the app locally
 
@@ -146,12 +146,12 @@ Here is our deployed app on a single VM in GCP:
 INSERT SS HERE
 
 
-The deployment container helps manage building and deploying all our app containers through ansible. The deployment is to GCP and all docker images go to GCR. 
+The deployment container helps manage building and deploying all our app containers through Ansible, with all Docker images going to the Google Container Registry (GCR). 
 
 To run the container locally:
-- Open a terminal and go to the location where `/src/deployment`
+- Open a terminal and navigate to `/src/deployment`
 - Run `sh docker-shell.sh`
-- Build and Push Docker Containers to GCR (Google Container Registry)
+- Build and push Docker Containers to GCR
 ```
 ansible-playbook deploy-docker-images.yml -i inventory.yml
 ```
@@ -161,8 +161,7 @@ ansible-playbook deploy-docker-images.yml -i inventory.yml
 ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present
 ```
 
-- Provision Compute Instance in GCP
-Install and setup all the required things for deployment.
+- Provision Compute Instance in GCP, install and setup all the required things for deployment.
 ```
 ansible-playbook deploy-provision-instance.yml -i inventory.yml
 ```
@@ -176,4 +175,4 @@ ansible-playbook deploy-setup-containers.yml -i inventory.yml
 ```
 ansible-playbook deploy-setup-webserver.yml -i inventory.yml
 ```
-Once the command runs go to `http://<External IP>/` 
+Once the command runs go to `http://<External IP>/` to interact with the website.
