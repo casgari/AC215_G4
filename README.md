@@ -115,6 +115,12 @@ We built a backend api service using fast API to expose model functionality to t
 
 /predict is called when users upload a lecture video to the frontend and wish to extract keywords and generate a quiz from it. /predicttext is used when users upload a lecture transcript to the frontend and wish to extract keywords and generate a quiz from it. These options are clear to see in the frontend below.
 
+We can also easily test our APIs using this tool. Screenshots from successful tests of both /predict and /predicttext are included below:
+
+<img src="images/predict_api_test.png"  width="800">
+
+<img src="images/predicttext_api_test.png"  width="800">
+
 
 The `api-service` container has all the files to run and expose the backend APIs.
 
