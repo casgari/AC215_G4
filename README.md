@@ -143,7 +143,7 @@ We use Ansible to create, provision, and deploy our frontend and backend to GCP 
 
 Here is our deployed app on a single VM in GCP:
 
-INSERT SS HERE
+<img src="images/vminstance.png"  width="800">
 
 
 The deployment container helps manage building and deploying all our app containers through Ansible, with all Docker images going to the Google Container Registry (GCR). 
