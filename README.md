@@ -75,7 +75,10 @@ Upon completing training, our four main containers were formulated into a Vertex
 
 In this milestone, we have focused on the development and deployment of a backend API service and the client-side of the application. Before implementing this, we created a detailed design document outlining the application’s Solution and Technical architectures, which can be found in `reports/application_design.pdf`.
 
-INSERT IMAGE OF SOLUTION AND TECHNICAL ARCHITECTURE
+<img src="images/solution.png"  width="800">
+
+<img src="images/technical.png"  width="800">
+
 
 Our backend leverages many of the tools made accessible by AC215. Our [video to audio preprocessing container](https://us-central1-ac215-group-4.cloudfunctions.net/data-preprocessing) and [quiz generation container](https://us-central1-ac215-group-4.cloudfunctions.net/quiz-generation) are deployed as cloud functions on GCP, since they are relatively lightweight. A screenshot of these deployed cloud functions, which run severlessly, is included below:
 
