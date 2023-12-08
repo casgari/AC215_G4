@@ -27,20 +27,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @app.on_event("startup")
 async def startup():
     print("Startup tasks")
     # Start the tracker service
     asyncio.create_task(tracker_service.track())
 
-
 # Routes
 @app.get("/")
 async def get_index():
     return {"message": "Welcome to the API Service"}
     
-
 @app.post("/predict")
 async def predict(file: bytes = File(...)):
     print("video file:", len(file), type(file))
@@ -65,9 +62,7 @@ async def predict(file: bytes = File(...)):
         # Transcribe with Whisper
         response = requests.get(f"https://audio-transcription-hcsan6rz2q-uc.a.run.app/?filename={filename}.mp3")
        
-
     transcript_path = model.download("text_prompts", f"{filename}.txt")
-
 
     # Extract keywords using endpoint
     prediction_results = {}
@@ -108,7 +103,6 @@ async def predict_text(file: bytes = File(...)):
     print("Hey boss")
     print(filename)
     transcript_path = model.download("text_prompts", f"{filename}.txt")
-
 
     # Extract keywords using endpoint
     prediction_results = {}
