@@ -1,0 +1,27 @@
+# PIPELINE DEFINITION
+# Name: keyword-extraction-pipeline
+components:
+  comp-keyword-extraction:
+    executorLabel: exec-keyword-extraction
+deploymentSpec:
+  executors:
+    exec-keyword-extraction:
+      container:
+        args:
+        - cli.py
+        - -p
+        image: the20thduck/ppp-workflow:model-deployment-cli-v2
+pipelineInfo:
+  name: keyword-extraction-pipeline
+root:
+  dag:
+    tasks:
+      keyword-extraction:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-keyword-extraction
+        taskInfo:
+          name: keyword-extraction
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.3.0

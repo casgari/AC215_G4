@@ -1,0 +1,6 @@
+outs:
+- md5: f8b3ed3b90096bf8b2017a484efc793e.dir
+  size: 2404714
+  nfiles: 2
+  hash: md5
+  path: keyword_dataset

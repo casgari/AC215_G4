@@ -1,0 +1,78 @@
+# PIPELINE DEFINITION
+# Name: ml-pipeline
+components:
+  comp-audio-transcription:
+    executorLabel: exec-audio-transcription
+  comp-data-conversion:
+    executorLabel: exec-data-conversion
+  comp-keyword-extraction:
+    executorLabel: exec-keyword-extraction
+  comp-quiz-generation:
+    executorLabel: exec-quiz-generation
+deploymentSpec:
+  executors:
+    exec-audio-transcription:
+      container:
+        args:
+        - cli.py
+        - --transcribe
+        image: cbsaul/ppp-workflow:mega-ppp-audio-transcription
+    exec-data-conversion:
+      container:
+        args:
+        - cli.py
+        - --convert
+        image: the20thduck/ppp-workflow:data-conversionv2
+    exec-keyword-extraction:
+      container:
+        args:
+        - cli.py
+        - -p
+        image: the20thduck/ppp-workflow:model-deployment-cli-v2
+    exec-quiz-generation:
+      container:
+        args:
+        - cli.py
+        - --generate
+        image: cvanamburg/mega-ppp-quiz-generation
+pipelineInfo:
+  name: ml-pipeline
+root:
+  dag:
+    tasks:
+      audio-transcription:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-audio-transcription
+        dependentTasks:
+        - data-conversion
+        taskInfo:
+          name: Audio Transcription
+      data-conversion:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-data-conversion
+        taskInfo:
+          name: Data Conversion
+      keyword-extraction:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-keyword-extraction
+        dependentTasks:
+        - audio-transcription
+        taskInfo:
+          name: Keyword Extraction
+      quiz-generation:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-quiz-generation
+        dependentTasks:
+        - audio-transcription
+        taskInfo:
+          name: Quiz Generation
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.3.0

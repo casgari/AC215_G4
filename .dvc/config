@@ -1,0 +1,4 @@
+[core]
+    remote = keyword_dataset
+['remote "keyword_dataset"']
+    url = gs://mega-ppp/dvc_store
