@@ -7,7 +7,7 @@ const Content = props => {
     const children = props.children;
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} color="primary">
             {children}
         </div>
     );

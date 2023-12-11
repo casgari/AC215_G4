@@ -8,10 +8,10 @@ const styles = theme => ({
         flexGrow: 1,
     },
     main: {
-
+        backgroundColor: '#FFFFFF'
     },
     container: {
-        backgroundColor: "#ffffff",
+        backgroundColor: "#FFFFFF",
         paddingTop: "30px",
         paddingBottom: "20px",
     },

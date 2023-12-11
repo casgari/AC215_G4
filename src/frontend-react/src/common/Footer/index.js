@@ -18,12 +18,13 @@ const Footer = (props) => {
     }, []);
 
     return (
-        <div className={classes.root} background="#0000FF">
+        <div className={classes.root} backgroundColor="#FFFFFF">
             <Typography align='center'>
-                © 2023 Deep Learners AI
+                © 2023 Pavvy AI
             </Typography>
 
         </div>
+        //<div></div>
     );
 };
 

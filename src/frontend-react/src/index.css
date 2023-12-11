@@ -10,7 +10,9 @@ body {
   }
 
   #root {
-    background-color: #efefef;
+    background-color: #591DFF;
+    color: #FFFFFF;
+    align-items: center;
   }
   
   code {

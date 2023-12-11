@@ -2,20 +2,20 @@ import {
     createTheme,
 } from '@material-ui/core/styles';
 
-//import './fonts/fonts.css';
+import '../fonts/fonts.css';
 
 const Theme = createTheme({
     palette: {
         type: 'light',
         primary: {
             // light: will be calculated from palette.primary.main,
-            main: '#6182DF',
+            main: '#591DFF',
             // dark: will be calculated from palette.primary.main,
             // contrastText: will be calculated to contrast with palette.primary.main
         },
         secondary: {
             light: '#EC4126',
-            main: '#6182DF',
+            main: '#000000',
             // dark: will be calculated from palette.secondary.main,
             contrastText: '#ffffff',
         },
@@ -28,25 +28,27 @@ const Theme = createTheme({
         },
     },
     typography: {
+        fontFamily: 'Rubik, sans-serif',
         useNextVariants: true,
-        h6: {
-            color: "#6182DF",
-            fontSize: "1.1rem",
-            fontFamily: "Roboto, Helvetica, Arial, sans-serif",
-            fontWeight: 800
+        h7: {
+            color: "#000000",
+            fontSize: "3.8rem",
+            fontFamily: "Rubik, sans-serif",
+            fontWeight: 2000
         },
-        h5: {
-            color: "#6182DF",
-            fontSize: "1.2rem",
-            fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+        h6: {
+            color: "#000000",
+            fontSize: "1.8rem",
+            fontFamily: "Rubik, sans-serif",
             fontWeight: 800
         },
         h4: {
-            color: "#6182DF",
-            fontSize: "1.8rem",
-            fontFamily: "Roboto, Helvetica, Arial, sans-serif",
-            fontWeight: 900
+            color: "#FFFFFF",
+            fontSize: "1.1rem",
+            fontFamily: "Rubik, sans-serif",
+            fontWeight: 800
         },
+        
     },
     overrides: {
         MuiOutlinedInput: {
@@ -57,6 +59,26 @@ const Theme = createTheme({
             }
         },
     }
-});
+}); //        useNextVariants: true,
 
 export default Theme;
+
+//useNextVariants: True
+//     h6: {
+//     color: "#6182DF",
+//     fontSize: "1.1rem",
+//     fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+//     fontWeight: 800
+// },
+//     h5: {
+//     color: "#6182DF",
+//     fontSize: "1.2rem",
+//     fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+//     fontWeight: 800
+// },
+//     h4: {
+//     color: "#6182DF",
+//     fontSize: "1.8rem",
+//     fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+//     fontWeight: 900
+// },

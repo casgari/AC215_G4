@@ -3,7 +3,9 @@ const styles = theme => ({
         flexGrow: 1,
     },
     root: {
-        minHeight: "100vh"
+        minHeight: "100vh",
+        backgroundColor: "#FFFFFF",
+
     },
 });
 

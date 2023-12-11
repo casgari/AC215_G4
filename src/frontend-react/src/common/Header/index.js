@@ -45,14 +45,14 @@ const Header = (props) => {
 
     return (
         <div className={classes.root}>
-            <AppBar position="static" elevation={0}>
+            <AppBar position="sticky" elevation={0} color="primary">
                 <Toolbar variant="dense">
                     <IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={toggleDrawer(true)}>
                         <MenuIcon />
                     </IconButton>
                     <Link to="/" className={classes.appLink}>
                         <Typography className={classes.appTitle} >
-                            Deep Learners
+                            P A V V Y
                         </Typography>
                     </Link>
 
@@ -64,22 +64,14 @@ const Header = (props) => {
                             <Icon>home</Icon>
                             <Typography variant="caption">&nbsp;Home</Typography>
                         </IconButton>
-                        <IconButton color="inherit" component={Link} to="/experiments">
-                            <Icon>experiments</Icon>
-                            <Typography variant="caption">&nbsp;Experiments</Typography>
-                        </IconButton>
                         <IconButton color="inherit" component={Link} to="/about">
-                            <Icon>about</Icon>
+                            <Icon>star</Icon>
                             <Typography variant="caption">&nbsp;About</Typography>
                         </IconButton>
-                        {/* <IconButton color="inherit">
-                            <Icon>login</Icon>
-                            <Typography variant="caption">&nbsp;Login</Typography>
-                        </IconButton> */}
                     </div>
                 </Toolbar>
             </AppBar>
-            <Drawer open={drawerOpen} onClose={toggleDrawer(false)}>
+            <Drawer open={drawerOpen} onClose={toggleDrawer(false)} color='inherit'>
                 <div
                     tabIndex={0}
                     role="button"
@@ -88,21 +80,14 @@ const Header = (props) => {
                 >
                     <div className={classes.list}>
                         <List>
-                            <ListItem button key='home' component={Link} to="/">
+                            <ListItem button key='home' component={Link} to="/" color="inherit">
                                 <ListItemIcon><Icon>home</Icon></ListItemIcon>
                                 <ListItemText primary='Home' />
                             </ListItem>
                         </List>
                         <Divider />
                         <List>
-                            <ListItem button key='menuitem12' component={Link} to="/experiments">
-                                <ListItemIcon><Icon>experiments</Icon></ListItemIcon>
-                                <ListItemText primary='Experiments' />
-                            </ListItem>
-
-                        </List>
-                        <List>
-                            <ListItem button key='menuitem12' component={Link} to="/about">
+                            <ListItem button key='menuitem12' component={Link} to="/about" color="inherit">
                                 <ListItemIcon><Icon>star</Icon></ListItemIcon>
                                 <ListItemText primary='About' />
                             </ListItem>
@@ -113,5 +98,7 @@ const Header = (props) => {
         </div>
     );
 }
+
+//sx={{ color: pink[500] }}
 
 export default withStyles(styles)(Header);
