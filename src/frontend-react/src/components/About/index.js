@@ -37,104 +37,15 @@ const Currentmodel = (props) => {
     return (
         <div className={classes.root}>
             <main className={classes.main}>
-                <Container maxWidth="sm" className={classes.container}>
-                    <Typography variant="h5" gutterBottom>
-                        Current Love Details
-                    </Typography>
-                    <Divider />
-                    {model &&
-                        <TableContainer component={Paper}>
-                            <Table>
-                                <TableBody>
-                                    <TableRow>
-                                        <TableCell><Typography variant="h6">Name</Typography></TableCell>
-                                        <TableCell>{model.model_name}</TableCell>
-                                    </TableRow>
-
-                                    <TableRow>
-                                        <TableCell><Typography variant="h6">Trainable Parameters</Typography></TableCell>
-                                        <TableCell>
-                                            <NumberFormat
-                                                value={model.trainable_parameters}
-                                                displayType="text"
-                                                thousandSeparator={true}
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell><Typography variant="h6">Training Time (mins)</Typography></TableCell>
-                                        <TableCell>
-                                            <NumberFormat
-                                                value={model.execution_time}
-                                                displayType="text"
-                                                decimalSeparator="."
-                                                decimalScale={2}
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell><Typography variant="h6">Loss</Typography></TableCell>
-                                        <TableCell>
-                                            <NumberFormat
-                                                value={model.loss}
-                                                displayType="text"
-                                                format="####"
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell><Typography variant="h6">Accuracy</Typography></TableCell>
-                                        <TableCell>
-                                            <NumberFormat
-                                                value={model.accuracy * 100.00}
-                                                displayType="text"
-                                                decimalSeparator="."
-                                                decimalScale={2}
-                                                suffix="%"
-
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell><Typography variant="h6">Model Size (Mb)</Typography></TableCell>
-                                        <TableCell>
-                                            <NumberFormat
-                                                value={model.model_size / 1000000.00}
-                                                displayType="text"
-                                                decimalSeparator="."
-                                                decimalScale={2}
-
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell><Typography variant="h6">Learning Rate</Typography></TableCell>
-                                        <TableCell>
-                                            {model.learning_rate}
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell><Typography variant="h6">Batch Size</Typography></TableCell>
-                                        <TableCell>
-                                            {model.batch_size}
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell><Typography variant="h6">Epochs</Typography></TableCell>
-                                        <TableCell>
-                                            {model.epochs}
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell><Typography variant="h6">Optimizer</Typography></TableCell>
-                                        <TableCell>
-                                            {model.optimizer}
-                                        </TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    }
+                <Container maxwidth='lg' className={classes.container}>
+                    <div className={classes.titleblock}>
+                        <Typography variant="h6">Our Mission</Typography>
+                    </div>
+                </Container>
+                <Container maxwidth='lg' className={classes.container}>
+                    <div className={classes.titleblock}>
+                        <Typography variant="h6">Our Founders</Typography>
+                    </div>
                 </Container>
             </main>
         </div>
@@ -142,3 +53,110 @@ const Currentmodel = (props) => {
 };
 
 export default withStyles(styles)(Currentmodel);
+
+
+// return (
+//     <div className={classes.root}>
+//         <main className={classes.main}>
+//             <Container maxWidth="sm" className={classes.container}>
+//                 <Typography variant="h5" gutterBottom>
+//                     Current Love Details
+//                 </Typography>
+//                 <Divider />
+//                 {model &&
+//                     <TableContainer component={Paper}>
+//                         <Table>
+//                             <TableBody>
+//                                 <TableRow>
+//                                     <TableCell><Typography variant="h6">Name</Typography></TableCell>
+//                                     <TableCell>{model.model_name}</TableCell>
+//                                 </TableRow>
+
+//                                 <TableRow>
+//                                     <TableCell><Typography variant="h6">Trainable Parameters</Typography></TableCell>
+//                                     <TableCell>
+//                                         <NumberFormat
+//                                             value={model.trainable_parameters}
+//                                             displayType="text"
+//                                             thousandSeparator={true}
+//                                         />
+//                                     </TableCell>
+//                                 </TableRow>
+//                                 <TableRow>
+//                                     <TableCell><Typography variant="h6">Training Time (mins)</Typography></TableCell>
+//                                     <TableCell>
+//                                         <NumberFormat
+//                                             value={model.execution_time}
+//                                             displayType="text"
+//                                             decimalSeparator="."
+//                                             decimalScale={2}
+//                                         />
+//                                     </TableCell>
+//                                 </TableRow>
+//                                 <TableRow>
+//                                     <TableCell><Typography variant="h6">Loss</Typography></TableCell>
+//                                     <TableCell>
+//                                         <NumberFormat
+//                                             value={model.loss}
+//                                             displayType="text"
+//                                             format="####"
+//                                         />
+//                                     </TableCell>
+//                                 </TableRow>
+//                                 <TableRow>
+//                                     <TableCell><Typography variant="h6">Accuracy</Typography></TableCell>
+//                                     <TableCell>
+//                                         <NumberFormat
+//                                             value={model.accuracy * 100.00}
+//                                             displayType="text"
+//                                             decimalSeparator="."
+//                                             decimalScale={2}
+//                                             suffix="%"
+
+//                                         />
+//                                     </TableCell>
+//                                 </TableRow>
+//                                 <TableRow>
+//                                     <TableCell><Typography variant="h6">Model Size (Mb)</Typography></TableCell>
+//                                     <TableCell>
+//                                         <NumberFormat
+//                                             value={model.model_size / 1000000.00}
+//                                             displayType="text"
+//                                             decimalSeparator="."
+//                                             decimalScale={2}
+
+//                                         />
+//                                     </TableCell>
+//                                 </TableRow>
+//                                 <TableRow>
+//                                     <TableCell><Typography variant="h6">Learning Rate</Typography></TableCell>
+//                                     <TableCell>
+//                                         {model.learning_rate}
+//                                     </TableCell>
+//                                 </TableRow>
+//                                 <TableRow>
+//                                     <TableCell><Typography variant="h6">Batch Size</Typography></TableCell>
+//                                     <TableCell>
+//                                         {model.batch_size}
+//                                     </TableCell>
+//                                 </TableRow>
+//                                 <TableRow>
+//                                     <TableCell><Typography variant="h6">Epochs</Typography></TableCell>
+//                                     <TableCell>
+//                                         {model.epochs}
+//                                     </TableCell>
+//                                 </TableRow>
+//                                 <TableRow>
+//                                     <TableCell><Typography variant="h6">Optimizer</Typography></TableCell>
+//                                     <TableCell>
+//                                         {model.optimizer}
+//                                     </TableCell>
+//                                 </TableRow>
+//                             </TableBody>
+//                         </Table>
+//                     </TableContainer>
+//                 }
+//             </Container>
+//         </main>
+//     </div>
+// );

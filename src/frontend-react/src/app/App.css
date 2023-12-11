@@ -14,14 +14,14 @@
   }
   
   .App-header {
-    background-color: #4462b600;
+    background-color: #591DFF;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     font-size: calc(10px + 2vmin);
-    color: #000000;
+    color: #591DFF;
   }
   
   .App-link {
@@ -42,8 +42,8 @@
     font-family: inherit;
     line-height: 1.66667;
     padding: 8px;
-    background-color: #00000000;
-    color: #000000;
+    background-color: #FFFFFF;
+    color: #FFFFFF;
     word-wrap: break-word;
     flex: 0.5;
     display: flex;

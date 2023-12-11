@@ -11,6 +11,7 @@ import Content from "../common/Content";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
 import DataService from '../services/DataService';
+import 'bootstrap/dist/css/bootstrap.css';
 
 
 const App = (props) => {
@@ -33,6 +34,7 @@ const App = (props) => {
           <Footer></Footer>
         </Router>
       </ThemeProvider>
+      
     </React.Fragment>
   )
 
