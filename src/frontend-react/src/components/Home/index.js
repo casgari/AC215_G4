@@ -113,8 +113,8 @@ const Home = (props) => {
 // BACKGROUND IF IT DOESNT WORK CHANGE TODO TODO TODO
     return (
         <div className={classes.root}>
-            <main className={classes.main}>
-                <Container maxwidth='lg' className={classes.container} style={containerStyle}>
+            <main className={classes.main} style={containerStyle}>
+                <Container maxwidth='lg' className={classes.container}>
                     <div className={classes.titleblock} align="left">
                         <Typography variant="h7" color="primary">P A V V Y</Typography>
                         <Typography variant="h6" width="10rem">Our cutting-edge AI assistant helps</Typography> 
