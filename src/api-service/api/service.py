@@ -91,7 +91,7 @@ async def predict_text(file: bytes = File(...)):
 
     # Save the video
     num = random.randint(1, 999999)
-    filename = f"text{num}"
+    filename = f"video{num}"
     with TemporaryDirectory() as text_dir:
         text_path = os.path.join(text_dir, filename)
         with open(text_path, "wb") as output:
@@ -113,7 +113,7 @@ async def predict_text(file: bytes = File(...)):
     prediction_results = model.make_prediction_vertexai(transcript_path)
 
     # TODO: ADD KEYWORDS TO TRANSCRIPT BEFORE GENERATING QUIZ
-
+    
      # Generate quiz using cloud function
     response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/quiz-generation?filename={filename}.txt")
     quiz = response.text

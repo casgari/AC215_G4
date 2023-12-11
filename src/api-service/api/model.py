@@ -28,7 +28,7 @@ def upload(path, num):
 
 def upload_text(path, num):
     gcp_project = "ac215-group-4"
-    filename = f"text{num}.mp4"
+    filename = f"video{num}.txt"
 
     # Upload to bucket
     storage_client = storage.Client()
