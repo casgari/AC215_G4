@@ -95,8 +95,8 @@ def make_prediction_vertexai(image_path):
     keyphrases = list(set(keyphrases))
     print("Keywords:", keyphrases)
     ## UPLOAD TO BUCKET
-    keyphrases_string = ", ".join(keyphrases)
+    # keyphrases_string = ", ".join(keyphrases)
 
     return {
-        "prediction_label": keyphrases_string,
+        "prediction_label": keyphrases,
     }

@@ -58,10 +58,13 @@ async def predict(file: bytes = File(...)):
             raise Exception("Failed to upload video")
     
         # Convert to audio using cloud function
+        print("Start Filetype Conversion")
         response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/data-preprocessing?filename={filename}.mp4")
         # Transcribe with Whisper
+        print("Start Audio Transcription")
         response = requests.get(f"https://audio-transcription-hcsan6rz2q-uc.a.run.app/?filename={filename}.mp3")
-       
+    
+    print("Start Transcript Analysis")  
     transcript_path = model.download("text_prompts", f"{filename}.txt")
 
     # Extract keywords using endpoint
@@ -71,6 +74,7 @@ async def predict(file: bytes = File(...)):
     # TODO: ADD KEYWORDS TO TRANSCRIPT BEFORE GENERATING QUIZ
 
      # Generate quiz using cloud function
+    print("Start Quiz Generation")
     response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/quiz-generation?filename={filename}.txt")
     quiz = response.text
     print("DONE!!!!")
@@ -100,7 +104,7 @@ async def predict_text(file: bytes = File(...)):
         if upload_flag:
             raise Exception("Failed to upload text file")
        
-    print("Hey boss")
+    print("Start Transcript Analysis")
     print(filename)
     transcript_path = model.download("text_prompts", f"{filename}.txt")
 

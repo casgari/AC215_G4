@@ -52,9 +52,29 @@ const Home = (props) => {
     }
 
     const processKeywords = (ks) => {
-        console.log(ks);
-        return ks;
+        let kl = "";
+        for (let i = 0; i < ks.length; i++) {
+            kl += String(i+1);
+            kl += ". ";
+            kl += ks[i];
+            kl += "\n";
+        }
+        return kl;
     }
+
+    const renderMultilineText = (te) => {
+        const lines = te.split('\n');
+        return (
+            <div>
+                {lines.map((line, index) => (
+                    <React.Fragment key={index}>
+                        {line}
+                        {index !== lines.length - 1 && <br />} {/* Add <br /> after each line except the last one */}
+                    </React.Fragment>
+                ))}
+            </div>
+        );
+    };
 
     const handleTextOnChange = (event) => {
         const file = event.target.files[0];
@@ -135,19 +155,42 @@ const Home = (props) => {
                     </div>
                 </Container>
                 <Container maxwidth='lg' className={classes.container} height="40vh">
-                    <Typography variant="h4" color="primary">Keywords</Typography>
-                    <div className={classes.textblock}>
-                        {prediction &&
-                            <Typography variant="h4">
-                                {prediction.prediction_label.length < 3 &&
-                                    <span className={classes.safe}>{"Not enough text in transcript."}</span>
-                                }
-                                {prediction.prediction_label.length >= 3 &&
-                                    <span className={classes.result}>{processKeywords(prediction.prediction_label)}</span>
-                                }
-                            </Typography>
-                        }
-                    </div>
+                    <Container maxwidth='lg' className={classes.opContainer}>
+                        <Typography variant="h6" color="primary">Keywords</Typography>
+                        <div className={classes.textblock}>
+                            {prediction &&
+                                <Typography variant="h4" className={classes.preds}>
+                                    {prediction.prediction_label.length < 1 &&
+                                        <span className={classes.safe}>{"Not enough text in transcript."}</span>
+                                    }
+                                    {prediction.prediction_label.length >= 1 &&
+                                        <span className={classes.result}>
+                                            {renderMultilineText(processKeywords(prediction.prediction_label))}
+                                        </span>
+                                    }
+                                </Typography>
+                            }
+                        </div>
+                    </Container>
+                    
+                    <Container maxwidth='lg' className={classes.opContainer}>
+                        <Typography variant="h6" color="primary">Quiz</Typography>
+                        <div className={classes.textblock}>
+                            {prediction &&
+                                <Typography variant="h4" className={classes.preds}>
+                                    {prediction.prediction_label.length < 1 &&
+                                        <span className={classes.safe}>{"Not enough text in transcript."}</span>
+                                    }
+                                    {prediction.prediction_label.length >= 1 &&
+                                        <span className={classes.result}>
+                                            {renderMultilineText(prediction.quiz)}
+                                        </span>
+                                    }
+                                </Typography>
+                            }
+                        </div>
+                    </Container> 
+                    
                 </Container>
                 <Container maxwidth='lg' className={classes.container}>
                     <img className={classes.preview} src={video} />
