@@ -111,6 +111,18 @@ async def predict_text(file: bytes = File(...)):
     # Extract keywords using endpoint
     prediction_results = {}
     prediction_results = model.make_prediction_vertexai(transcript_path)
+    filename_kw = f"keywords{num}"
+    with TemporaryDirectory() as text_dir:
+        text_path = os.path.join(text_dir, filename_kw)
+        with open(text_path, "wb") as output:
+            output.write(prediction_results['prediction_label'])
+        print("")
+        print(text_path)
+        print("")
+        # Upload video to GCP
+        upload_flag = model.upload_kw(text_path, num)
+        if upload_flag:
+            raise Exception("Failed to upload text file")
 
     # TODO: ADD KEYWORDS TO TRANSCRIPT BEFORE GENERATING QUIZ
     
@@ -119,7 +131,10 @@ async def predict_text(file: bytes = File(...)):
     quiz = response.text
     print("DONE!!!!")
 
+    response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/clean-keywords?filename={filename}.txt&keywords={filename_kw}.txt")
+    cleaned_kw = response.text
     # edit return results
     prediction_results["quiz"] = quiz
+    prediction_results["keywords"] = cleaned_kw
     print(prediction_results)
     return prediction_results 
