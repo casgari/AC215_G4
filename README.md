@@ -220,7 +220,7 @@ To run the container locally:
 
 Note that the above will only be hosted if the `api-service` container is running as well.
 
-## Deployment to Kubernetes Cluster using Ansible.
+## Deployment to Kubernetes Cluster using Ansible
 
 **Ansible Usage For Automated Deployment**
 
