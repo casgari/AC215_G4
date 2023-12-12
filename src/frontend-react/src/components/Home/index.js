@@ -141,9 +141,9 @@ const Home = (props) => {
             <main className={classes.main}>
                 <div style={containerStyle}>
                 <Container maxwidth='lg' className={classes.container}>
-                    <div className={classes.titleblock} align="left">
-                            <Typography variant="h7" color="primary">P A V V Y</Typography>
-                        <Typography variant="h6" width="10rem">Our cutting-edge AI assistant helps</Typography> 
+                    <div align="left">
+                        <Typography variant="h7" color="primary" style={{fontSize: "4rem", fontFamily:"Oswald"}}>P A V V Y</Typography>
+                        <Typography variant="h6">Our cutting-edge AI assistant helps</Typography> 
                         <Typography variant="h6"> you get the most out of school.</Typography>
                     </div>
                 </Container>

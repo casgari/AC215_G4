@@ -86,9 +86,9 @@ const styles = theme => ({
         alignItems:"left",
         textAlign: "left",
         margin: "40px",
-        color: "#000000",
+        color: "#591dff",
         backgroundColor: "none",
-        fontFamily: "Rubik+Bubbles",
+        fontFamily: "Oswald",
     },
     textm: {
         flex: 1.0,
