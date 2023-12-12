@@ -22,7 +22,7 @@ This repository was produced as part of the final project for Harvard’s AC215 
 - [Deployment to Kubernetes Cluster using Ansible](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#deployment-to-kubernetes-cluster-using-ansible)
   * [Ansible Usage For Automated Deployment](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#ansible-usage-for-automated-deployment)
   * [Continuous Integration/Deployment with Github Actions](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#continuous-integration-deployment-with-github-actions)
-  * [Deployment to Kubernetes**](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#deployment-to-kubernetes--)
+  * [Deployment to Kubernetes](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#deployment-to-kubernetes--)
 - [Areas for Future Updates](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#areas-for-future-updates)
 
 ## Introduction
@@ -286,7 +286,7 @@ We use CI/CD to continuously and automatically build and deploy our containers t
 The code describing our CI/CD workflow is in `/.github/workflows/ci-cd.yml`. To redeploy our app, we simply add the phrase `/run-deploy-app` to our github commit message.
 
 
-### Deployment to Kubernetes**
+### Deployment to Kubernetes
 
 Kubernetes (K8s) is an open-source container orchestration system for automated scaling and management. We use Kubernetes to deploy our app on multiple servers with automatic load balancing and failovers. To create the Kubernetes Cluster, enable the relevant APIs and run the following code to start the container:
 
