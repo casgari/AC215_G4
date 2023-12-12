@@ -5,8 +5,8 @@ ENV PATH /app/node_modules/.bin:$PATH
 ENV PUBLIC_URL /
 
 COPY package.json ./
-COPY yarn.lock ./
-RUN yarn install
+# COPY yarn.lock ./
+RUN npm install
 
 COPY . ./
 RUN yarn run build

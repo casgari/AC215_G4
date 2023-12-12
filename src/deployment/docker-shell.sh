@@ -6,7 +6,7 @@
 # Define some environment variables
 export IMAGE_NAME="ppp-app-deployment"
 export BASE_DIR=$(pwd)
-export SECRETS_DIR=$(pwd)/../../../secrets/
+export SECRETS_DIR=$(pwd)/../../secrets/
 export GCP_PROJECT="ac215-group-4" # Change to your GCP Project
 export GCP_ZONE="us-central1-a"
 export GOOGLE_APPLICATION_CREDENTIALS=/secrets/deployment.json

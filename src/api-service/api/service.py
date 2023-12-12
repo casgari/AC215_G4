@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 import asyncio
-from api.tracker import TrackerService
+# from api.tracker import TrackerService
 import pandas as pd
 import os
 from fastapi import File
@@ -13,7 +13,7 @@ import random
 from google.cloud import storage
 
 # Initialize Tracker Service
-tracker_service = TrackerService()
+# tracker_service = TrackerService()
 
 # Setup FastAPI app
 app = FastAPI(title="API Server", description="API Server", version="v1")
@@ -31,7 +31,7 @@ app.add_middleware(
 async def startup():
     print("Startup tasks")
     # Start the tracker service
-    asyncio.create_task(tracker_service.track())
+    # asyncio.create_task(tracker_service.track())
 
 # Routes
 @app.get("/")
