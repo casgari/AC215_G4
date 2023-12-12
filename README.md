@@ -118,7 +118,7 @@ with flag `-d` to download audio files from the bucket, and `-t` to transcribe t
 
 `/model-deployment`
 
-We have our trained DistilBERT model saved on GCP from our model traing workflow (more on this below). To run, use
+We have our trained DistilBERT model saved on GCP from our model training workflow (more on this below). To run, use
 ```
 python cli.py
 ```
