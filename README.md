@@ -154,6 +154,7 @@ ansible-playbook deploy-setup-webserver.yml -i inventory.yml
 Once the command runs go to `http://<External IP>/` to interact with the website.
 
 **Deployment to Kubernetes**
+
 Kubernetes (K8s) is an open-source container orchestration system for automated scaling and management. We use Kubernetes to deploy our app on multiple servers with automatic load balancing and failovers.
 
 Here is our deployed app on the GCP Kubernetes Engine:
