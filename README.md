@@ -14,7 +14,13 @@ We utilized several MLOps tools to optimize our data preprocessing and training 
 
 The trained model was deployed to an endpoint in Vertex AI, while the other containers were deployed to cloud functions and Cloud Run, accessible via an API. The final application comprises of a frontend built using React (found in `src/frontend-react`) and a backend API service using FastAPI to expose the models' functionality to the frontend (found in `src/api-service`). The entire application is then deployed to a Kubernetes Cluster using Ansible (using the files found in `src/deployment`).
 
-The usage of these directories is explained in this `README` to allow a developer to replicate our steps. Despite the process being simple to follow, a developer is expected to have robust coding experience and some experience with MLOps to be able to fully interact with the external services (such as Google Cloud Platform) that are necessary for this project.
+The usage of these directories is explained in this `README` to allow a developer to replicate our steps. Despite the process being simple to follow, a developer is expected to have robust coding experience and some experience with MLOps to be able to fully interact with the external services (such as Google Cloud Platform) that are necessary for this project. Before digging into how to use this repository, it is helpful to spend some time familiarizing yourself with the following overview of the application design and project organization.
+
+## Application Design
+
+<img src="images/solution.png"  width="800">
+
+<img src="images/technical.png"  width="800">
 
 ## Project Organization
 ------------
@@ -30,7 +36,9 @@ The usage of these directories is explained in this `README` to allow a develope
     │   ├── milestone2.pdf
     │   ├── milestone3.pdf
     │   ├── milestone4.md
-    │   └── milestone4_presentation.pdf
+    │   ├── milestone4_presentation.pdf
+    │   ├── milestone5.pdf
+    │   └── final.pdf
     ├── images               <- Folder containing images used in reports
     ├── cli.py               <- Files in the root of repo for data versioning
     ├── docker-shell.sh
@@ -160,7 +168,6 @@ Here is a screenshot of our original version of the frontend:
 
 And here are a set of screenshots of the final frontend:
 <img src="images/homepage_final.png" width="800">
-<img src="images/frontend_predict.png" width="800">
 
 The structure of the frontend is described by Material UI `<Container>` components, along with `<Typography>` and `<Button>` elements. Background images are custom .svg elements. File upload is the input that gets sent through the backend, and the Keyword and Quiz boxes are the output from the backend to the frontend. The `frontend-react` container contains all the files to develop and build our React app. 
 
@@ -174,7 +181,7 @@ To run the container locally:
 - Once inside the docker container run `yarn start`
 - Go to `http://localhost:3000` to access the app locally
 
-Note that the above will only be hosted is the `api-service` container is running as well.
+Note that the above will only be hosted if the `api-service` container is running as well.
 
 ## Deployment to Kubernetes Cluster using Ansible.
 
