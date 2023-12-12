@@ -98,7 +98,7 @@ Full details of the application design, including the solution and technical arc
 ## Individual Containers 
 We have four different containers comprising the different components of our pipeline, which can be run locally or on the cloud. Here are the steps to get a container running: First, pick a container, for example `data-conversion`, then open up a terminal and run
 ```
-cd src/individual-containers/<CONTAINER NAME>
+cd src/pipeline-workflow/<CONTAINER NAME>
 sh docker-shell.sh
 ```
 The instructions for how to use each container are as follows:
@@ -114,7 +114,7 @@ python cli.py -c
 
 ### Audio Transcription
 
-`/transcribe_audio`
+`/audio-transcription`
 
 This container transcribes lecture audio using OpenAI's Whisper JAX. To run, use
 ```
@@ -135,7 +135,7 @@ The `-p` flag runs a prediction using the VertexAI endpoint. To deploy a new ver
 
 ### Quiz Generation
 
-`/generate_quiz`
+`/quiz-generation`
 
 For quiz generation we make use of the OpenAI ChatGPT 3.5 API. This container takes in a lecture transcript in `.txt` format, then uses prompt engineering to get a quiz from ChatGPT. We generate the quiz with
 ```
