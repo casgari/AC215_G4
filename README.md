@@ -6,6 +6,25 @@ This repository was produced as part of the final project for Harvard’s AC215 
 
 <img src="images/pavvy_logo.png" width="800">
 
+## Contents
+- [Introduction](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#introduction)
+- [Application Design](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#application-design)
+- [Project Organization](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#project-organization)
+- [Individual Containers](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#individual-containers)
+  * [Video to Audio Preprocessing](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#video-to-audio-preprocessing)
+  * [Audio Transcription](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#audio-transcription)
+  * [Keyword Highlighting](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#keyword-highlighting)
+  * [Quiz Generation](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#quiz-generation)
+- [Model Training Workflow](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#model-training-workflow)
+- [Application Design](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#application-design-1)
+  * [Backend API Service](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#backend-api-service)
+  * [Frontend Implementation](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#frontend-implementation)
+- [Deployment to Kubernetes Cluster using Ansible](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#deployment-to-kubernetes-cluster-using-ansible)
+  * [Ansible Usage For Automated Deployment](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#ansible-usage-for-automated-deployment)
+  * [Continuous Integration/Deployment with Github Actions](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#continuous-integration-deployment-with-github-actions)
+  * [Deployment to Kubernetes**](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#deployment-to-kubernetes--)
+- [Areas for Future Updates](https://github.com/casgari/AC215_G4/tree/main?tab=readme-ov-file#areas-for-future-updates)
+
 ## Introduction
 
 PAVVY is an application that can process lecture videos or transcripts to produce keyphrases and generate quizzes, which allow learners to better review and engage with lecture content.
