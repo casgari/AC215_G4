@@ -88,18 +88,50 @@ The usage of these directories is explained in this `README` to allow a develope
 --------
 
 ## Individual Containers 
+We have four different containers comprising the different components of our pipeline, which can be run locally or on the cloud. Here are the steps to get a container running: First, pick a container, for example `data-conversion`, then open up a terminal and run
+```
+cd src/individual-containers/<CONTAINER NAME>
+sh docker-shell.sh
+```
+The instructions for how to use each container are as follows:
+
 ### Video to Audio Preprocessing
-TODO: M2
+
+`/data-conversion`
+
+This container converts .mp4 files to .mp3 for later use using the MoviePy library. First it downloads input video files from the Cloud Bucket, then it converts them and uploads back to a different folder in the Cloud Bucket. The code uses Dask to run the preprocessing steps in parallel. From within the container, run:
+```
+python cli.py -c 
+```
 
 ### Audio Transcription
-TODO: M2
+
+`/transcribe_audio`
+
+This container transcribes lecture audio using OpenAI's Whisper JAX. To run, use
+```
+python transcribe.py
+```
+with flag `-d` to download audio files from the bucket, and `-t` to transcribe the downloaded files.
 
 ### Keyword Highlighting
-TODO: M2
+
+`/model-deployment`
+
+We have our trained DistilBERT model saved on GCP from our model traing workflow (more on this below). To run, use
+```
+python cli.py
+```
+The `-p` flag runs a prediction using the VertexAI endpoint. To deploy a new version of the model, use the `-d` flag. Or to make a prediction locally, use `-l`.
 
 ### Quiz Generation
-TODO: M2
 
+`/generate_quiz`
+
+For quiz generation we make use of the OpenAI ChatGPT 3.5 API. This container takes in a lecture transcript in `.txt` format, then uses prompt engineering to get a quiz from ChatGPT. We generate the quiz with
+```
+python generate.py -g
+```
 
 ## Model Training Workflow
 TODO: M3 + M4
