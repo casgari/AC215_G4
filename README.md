@@ -112,7 +112,6 @@ TODO: M5
 TODO: M5
 
 ## Deployment to Kubernetes Cluster using Ansible.
-TODO: M5 + M6
 
 **Ansible Usage For Automated Deployment**
 
@@ -158,22 +157,21 @@ Once the command runs go to `http://<External IP>/` to interact with the website
 Kubernetes (K8s) is an open-source container orchestration system for automated scaling and management. We use Kubernetes to deploy our app on multiple servers with automatic load balancing and failovers.
 
 Here is our deployed app on the GCP Kubernetes Engine:
+
 <img width="573" alt="image" src="https://github.com/casgari/AC215_G4/assets/37743253/8839e8d7-f7b7-4462-b948-f3e43ea94011">
 
-To create the Kubernetes Cluster, we enable the relevant APIs, and complete the following steps:
+To create the Kubernetes Cluster, enable the relevant APIs and run the following code to start the container:
 ```
 cd deployment
-```
-```
 sh docker-shell.sh
 ```
+From inside the container, initialize the cluster on Google Cloud:
 ```
 gcloud container clusters create test-cluster --num-nodes 2 --zone us-east1-c
 ```
-Deploy the app 
+And finally deploy the app:
 ```
 kubectl apply -f deploy-k8s-tic-tac-toe.yml
 ```
-Copy the External IP from the kubectl get services
-Go to `http://<YOUR EXTERNAL IP>`
+Copy the External IP from the kubectl get services, then go to `http://<YOUR EXTERNAL IP>` to use Pavvy.
 
