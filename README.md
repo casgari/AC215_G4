@@ -259,6 +259,12 @@ Once the command runs go to `http://<External IP>/` to interact with the website
 <img src="images/vminstance.png"  width="800">
 <img src="images/ansible_laststep.png"  width="800">
 
+**Continuous Integration/Deployment with Github Actions**
+We use CI/CD to continuously and automatically build and deploy our containers to production whenever we make a change to our codebase using Github Actions. Streamlined processes allow for faster deployment. Since we already have a deployment container which builds our docker images, runs the Vertex AI jobs, and deploys our app to Kubernetes, we simply build and run the deployment container.
+
+The code describing our CI/CD workflow is in `/.github/workflows/ci-cd.yml`. To redeploy our app, we simply add the phrase `/run-deploy-app` to our github commit message.
+
+
 **Deployment to Kubernetes**
 
 Kubernetes (K8s) is an open-source container orchestration system for automated scaling and management. We use Kubernetes to deploy our app on multiple servers with automatic load balancing and failovers. To create the Kubernetes Cluster, enable the relevant APIs and run the following code to start the container:
