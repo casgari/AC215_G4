@@ -33,7 +33,6 @@ const App = (props) => {
           <Footer></Footer>
         </Router>
       </ThemeProvider>
-      
     </React.Fragment>
   )
 

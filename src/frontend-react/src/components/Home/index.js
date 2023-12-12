@@ -60,12 +60,34 @@ const Home = (props) => {
     const processKeywords = (ks) => {
         let kl = "";
         for (let i = 0; i < ks.length; i++) {
+            if (i < 9) {kl += ' ';}
             kl += String(i+1);
             kl += ". ";
             kl += ks[i];
-            kl += "\n";
+            kl += "\n\n";
         }
         return kl;
+    }
+
+    const formatQuiz = (q) => {
+        let lines = q.split('\n');
+        let fq = "";
+        for (let line of lines) {
+            console.log(line);
+            if (line.length === 0) {
+                fq += "\n";
+            }
+            else if (line.charAt(0) < 10) {
+                fq += line;
+                fq += "\n";
+            }
+            else {
+                //fq += "\v  ";
+                fq += line;
+                fq += "\n";
+            }
+        }
+        return fq;
     }
 
     const renderMultilineText = (te) => {
@@ -84,7 +106,25 @@ const Home = (props) => {
 
     function stringToList(inputString) {
         // Split the string by commas and use map to trim whitespace from each element
-        return inputString.split(',').map(phrase => phrase.trim());
+        let sl = inputString.split(',').map(phrase => phrase.trim());
+        let al = [];
+        for (let i = 0; i < sl.length; i++) {
+            let flag = false;
+            let wl = sl[i].split(' ').map(phrase => phrase.trim());
+            console.log(wl);
+            for (let j = 0; j < wl.length; j++) {
+                let word = wl[j];
+                if (word.length < 3) {wl[j]=word.toUpperCase(); flag=true;}
+                else {wl[j] = word.charAt(0).toUpperCase() + word.slice(1);}
+                if (i === sl.length - 1 && j === wl.length - 1) {
+                    wl[j] = wl[j].slice(0, word.length);
+                }
+            }
+            if (!flag) {al.push(wl.join(' '));}
+        }
+        let fl = Array.from(new Set(al));
+        console.log(fl);
+        return fl;
     }
 
     const handleTextOnChange = (event) => {
@@ -223,7 +263,7 @@ const Home = (props) => {
                                     }
                                     {prediction.prediction_label.length >= 1 &&
                                         <span className={classes.result}>
-                                            {renderMultilineText(prediction.quiz)}
+                                            {renderMultilineText(formatQuiz(prediction.quiz))}
                                         </span>
                                     }
                                 </Typography>
@@ -232,9 +272,10 @@ const Home = (props) => {
                     </Container> 
                     
                 </Container>
-                <Container maxwidth='lg' className={classes.container}>
+                
+                {/* <Container maxwidth='lg' className={classes.container}>
                     <img className={classes.preview} src={video} />
-                </Container> 
+                </Container>  */}
                     </div>
                 </div>
             </main>
