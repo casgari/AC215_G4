@@ -1,1 +1,0 @@
-{"trainable_parameters": 11112323, "execution_time": 7.36799787680308, "loss": 1.0564566850662231, "accuracy": 0.4909090995788574, "model_size": 44493568, "learning_rate": 0.01, "batch_size": 32, "epochs": 25, "optimizer": "SGD"}

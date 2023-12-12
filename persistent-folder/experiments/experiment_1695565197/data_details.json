@@ -1,1 +1,0 @@
-{"image_width": 224, "image_height": 224, "num_channels": 3, "num_classes": 3, "label2index": {"crimini": 0, "amanita": 1, "oyster": 2}, "index2label": {"0": "crimini", "1": "amanita", "2": "oyster"}}

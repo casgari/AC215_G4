@@ -1,1 +1,0 @@
-{"trainable_parameters": 2306051, "execution_time": 2.5078550974527998, "loss": 42.71113967895508, "accuracy": 0.9272727370262146, "model_size": 9595256, "learning_rate": 0.001, "batch_size": 32, "epochs": 10, "optimizer": "SGD", "experiment": "experiment_1695565197", "model_name": "tfhub_mobilenetv2_train_base_True"}
