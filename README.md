@@ -178,16 +178,10 @@ Note that the above will only be hosted
 
 **Ansible Usage For Automated Deployment**
 
-We use Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion. Ansible allows us to manage infrastructure as code, helping us keep track of our app infrastructure as code in GitHub. It helps use setup deployments in an automated way.
+We use Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion. Ansible allows us to manage infrastructure as code, helping us keep track of our app infrastructure as code in GitHub. 
 
-Here is our deployed app on a single VM in GCP:
+The `src/deployment` directory helps manage building and deploying all our app containers through Ansible, with all Docker images going to the Google Container Registry (GCR). To run the deployment process on your local device:
 
-<img src="images/vminstance.png"  width="800">
-
-
-The deployment container helps manage building and deploying all our app containers through Ansible, with all Docker images going to the Google Container Registry (GCR). 
-
-To run the container locally:
 - Open a terminal and navigate to `/src/deployment`
 - Run `sh docker-shell.sh`
 - Build and push Docker Containers to GCR
@@ -195,17 +189,19 @@ To run the container locally:
 ansible-playbook deploy-docker-images.yml -i inventory.yml
 ```
 
-- Create Compute Instance (VM) Server in GCP
+- Create Compute Instance (VM) in GCP
 ```
 ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present
 ```
+
+- Once the command runs successfully, get the IP address of the compute instance from GCP Console and update the `appserver>hosts` in `src/deployment/inventory.yml` file
 
 - Provision Compute Instance in GCP, install and setup all the required things for deployment.
 ```
 ansible-playbook deploy-provision-instance.yml -i inventory.yml
 ```
 
-- Setup Docker Containers in the  Compute Instance
+- Setup Docker Containers in the Compute Instance
 ```
 ansible-playbook deploy-setup-containers.yml -i inventory.yml
 ```
@@ -214,28 +210,29 @@ ansible-playbook deploy-setup-containers.yml -i inventory.yml
 ```
 ansible-playbook deploy-setup-webserver.yml -i inventory.yml
 ```
-Once the command runs go to `http://<External IP>/` to interact with the website.
+Once the command runs go to `http://<External IP>/` to interact with the website, where `<External IP>` is shown in the GCP console and in the return statement from last step above. For reference, these images show our app deployed on a single VM in GCP and an image from the output of the last step of the process (taken on December 12, 2023):
+
+<img src="images/vminstance.png"  width="800">
+<img src="images/ansible_laststep.png"  width="800">
 
 **Deployment to Kubernetes**
 
-Kubernetes (K8s) is an open-source container orchestration system for automated scaling and management. We use Kubernetes to deploy our app on multiple servers with automatic load balancing and failovers.
+Kubernetes (K8s) is an open-source container orchestration system for automated scaling and management. We use Kubernetes to deploy our app on multiple servers with automatic load balancing and failovers. To create the Kubernetes Cluster, enable the relevant APIs and run the following code to start the container:
 
-Here is our deployed app on the GCP Kubernetes Engine:
+- Open a terminal and navigate to `/src/deployment`
+- Run `sh docker-shell.sh`
+- Build and push Docker Containers to GCR
+```
+ansible-playbook deploy-docker-images.yml -i inventory.yml
+```
+- Create and deploy the Cluster
+```
+ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --extra-vars cluster_state=present
+```
+Once the command runs go to `http://<External IP>.sslip.io` to interact with the website, where `<External IP>` is shown in the GCP console and in the return statement from last step above. For reference, these images show our app deployed on a Kubernetes Cluster in GCP and an image showing part of the output from the last step of the process (taken on December 12, 2023):
 
-<img width="573" alt="image" src="https://github.com/casgari/AC215_G4/assets/37743253/8839e8d7-f7b7-4462-b948-f3e43ea94011">
+<img src="images/kubernetes.png"  width="800">
+<img src="images/kubernetesengine.png"  width="800">
+<img src="images/kubernetes_laststep.png"  width="800">
 
-To create the Kubernetes Cluster, enable the relevant APIs and run the following code to start the container:
-```
-cd deployment
-sh docker-shell.sh
-```
-From inside the container, initialize the cluster on Google Cloud:
-```
-gcloud container clusters create test-cluster --num-nodes 2 --zone us-east1-c
-```
-And finally deploy the app:
-```
-kubectl apply -f deploy-k8s-tic-tac-toe.yml
-```
-Copy the External IP from the kubectl get services, then go to `http://<YOUR EXTERNAL IP>` to use Pavvy.
 
