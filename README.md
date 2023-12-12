@@ -17,10 +17,10 @@ The trained model was deployed to an endpoint in Vertex AI, while the other cont
 The usage of these directories is explained in this `README` to allow a developer to replicate our steps. Despite the process being simple to follow, a developer is expected to have robust coding experience and some experience with MLOps to be able to fully interact with the external services (such as Google Cloud Platform) that are necessary for this project. Before digging into how to use this repository, it is helpful to spend some time familiarizing yourself with the following overview of the application design and project organization.
 
 ## Application Design
+Full details of the application design, including the solution and technical architecture, can be found in `reports/application_design.pdf`. However, a useful schema for the four main containers in the project and the relationship between these containers and the Google Cloud Platform (GCP) Bucket can be seen here:
 
-<img src="images/solution.png"  width="800">
+<img src="images/app_schema.png"  width="800">
 
-<img src="images/technical.png"  width="800">
 
 ## Project Organization
 ------------
@@ -31,14 +31,14 @@ The usage of these directories is explained in this `README` to allow a develope
     │   ├── intial_model_construction.ipynb
     │   └── tf_intial_model_construction_with_multigpu.ipynb
     ├── README.md
-    ├── reports              <- Reports, midterm presentation, application design document
+    ├── reports              <- Reports, midterm/final presentation, application design document
     │   ├── application_design.pdf
     │   ├── milestone2.pdf
     │   ├── milestone3.pdf
     │   ├── milestone4.md
     │   ├── milestone4_presentation.pdf
     │   ├── milestone5.pdf
-    │   └── final.pdf
+    │   └── final_presentation.pdf
     ├── images               <- Folder containing images used in reports
     ├── cli.py               <- Files in the root of repo for data versioning
     ├── docker-shell.sh
