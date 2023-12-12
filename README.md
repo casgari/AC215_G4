@@ -106,10 +106,54 @@ TODO: M3 + M4
 
 ## Application Design
 ### Backend API Service
-TODO: M5
+
+We built a backend api service using fast API to expose model functionality to the frontend. Fast API gives us an interactive API documentation and exploration tool for free. An image of the documation tool is included below:
+
+<img src="images/api_docs.png"  width="800">
+
+`/predict` is called when users upload a lecture video to the frontend and wish to extract keywords and generate a quiz from it. `/predicttext` is used when users upload a lecture transcript to the frontend and wish to extract keywords and generate a quiz from it. These options are clear to see in the frontend below.
+
+We can also easily test our APIs using this tool. Screenshots from successful tests of both `/predict` and `/predicttext` are included below:
+
+<img src="images/predict_api_test.png"  width="800">
+
+It is clear to see from this `/predict` testing that the server response is successful, with the response body returning keywords and a generated quiz as expected.
+
+<img src="images/predicttext_api_test.png"  width="800">
+
+A sucessful sever response is also observed from `/predicttext`.
+
+The `api-service` container has all the files to run and expose the backend APIs.
+
+To run the container locally:
+- Open a terminal and navigate to `/src/api-service`
+- Run `sh docker-shell.sh`
+- Once inside the docker container run `uvicorn_server`
+- To view and test APIs go to `http://localhost:9000/docs`
 
 ### Frontend Implementation
-TODO: M5
+
+We have built a React app with Material UI framework to extract keywords and generate quizzes from lecture videos or lecture transcripts. Using the app, a user easily uploads their lecture video or text file. The app will send the video or text file through to the backend API to get the outputs. 
+
+Here is a screenshot of our original version of the frontend:
+
+<img src="images/homepage.png" width="800">
+
+And here are a set of screenshots of the final frontend:
+<img src="images/homepage_final.png" width="800">
+<img src="images/frontend_predict.png" width="800">
+
+The structure of the frontend is described by Material UI `<Container>` components, along with `<Typography>` and `<Button>` elements. Background images are custom .svg elements. File upload is the input that gets sent through the backend, and the Keyword and Quiz boxes are the output from the backend to the frontend. The `frontend-react` container contains all the files to develop and build our React app. 
+
+To run the container locally:
+- Open a terminal and navigate to `/src/frontend-react`
+- Run `sh docker-shell.sh`
+- If running the container for the first time, run `npm install`
+- To include additional dependencies, run `npm install @emotion/react react-spinners`
+- Once inside the docker container run `yarn start`
+- Go to `http://localhost:3000` to access the app locally
+
+Note that the above will only be hosted 
 
 ## Deployment to Kubernetes Cluster using Ansible.
 TODO: M5 + M6
