@@ -2,7 +2,7 @@
 
 *Pavlos' Perceptron Pals (Cyrus Asgari, Ben Ray, Caleb Saul, Warren Sunada Wong, Chase Van Amburg)*
 
-This repository was produced as part of the final project for Harvard’s AC215 Fall 2023 course. The purpose of this `README` is to explain to a developer how to utilize this repository, including usage of the individual containers that comprise the PAVVY app, the model training workflow, and deployment to a Kubernetes Cluster using Ansible. For a more accessible overview of the project, please see our Medium post [here](TODO) and a video (including a live demo of PAVVY) [here](https://youtu.be/cfEjLLcUEgk?si=rVn4BaZa7n7fj4o8).
+This repository was produced as part of the final project for Harvard’s AC215 Fall 2023 course. The purpose of this `README` is to explain to a developer how to utilize this repository, including usage of the individual containers that comprise the PAVVY app, the model training workflow, and deployment to a Kubernetes Cluster using Ansible. For a more accessible overview of the project, please see our Medium post [here](https://medium.com/@cbsaul/pavvy-learning-tools-for-lecture-content-aab450895ee1) and a video (including a live demo of PAVVY) [here](https://youtu.be/cfEjLLcUEgk?si=rVn4BaZa7n7fj4o8).
 
 <img src="images/pavvy_logo.png" width="800">
 
@@ -102,7 +102,7 @@ Full details of the application design, including the solution and technical arc
 ## Individual Containers 
 We have four different containers comprising the different components of our pipeline, which can be run locally or on the cloud. Here are the steps to get a container running: First, pick a container, for example `data-conversion`, then open up a terminal and run
 ```
-cd src/individual-containers/<CONTAINER NAME>
+cd src/pipeline-workflow/<CONTAINER NAME>
 sh docker-shell.sh
 ```
 The instructions for how to use each container are as follows:
@@ -118,7 +118,7 @@ python cli.py -c
 
 ### Audio Transcription
 
-`/transcribe_audio`
+`/audio-transcription`
 
 This container transcribes lecture audio using OpenAI's Whisper JAX. To run, use
 ```
@@ -139,7 +139,7 @@ The `-p` flag runs a prediction using the VertexAI endpoint. To deploy a new ver
 
 ### Quiz Generation
 
-`/generate_quiz`
+`/quiz-generation`
 
 For quiz generation we make use of the OpenAI ChatGPT 3.5 API. This container takes in a lecture transcript in `.txt` format, then uses prompt engineering to get a quiz from ChatGPT. We generate the quiz with
 ```
@@ -162,11 +162,11 @@ We experimented with small models (e.g. `roberta-tiny-cased-trained`) which has 
 
 To replicate this, the relevant files can be found in the `src/pipeline-workflow/model-training` directory with usage as follows:
 
-(1) `src/pipeline-workflow/model_training/docker-shell.sh` - this script creates a container (defined in `src/pipeline-workflow/model_training/Dockerfile`) for running training in a standardized environment. Run with `sh docker-shell.sh`.
+(1) `src/pipeline-workflow/model-training/docker-shell.sh` - this script creates a container (defined in `src/pipeline-workflow/model_training/Dockerfile`) for running training in a standardized environment. Run with `sh docker-shell.sh`.
 
-(2) `src/pipeline-workflow/model_training/package` - this package contains all the necessary scripts for running training, tracking performance via Weights & Biases, and saving the trained model artifact. Before running serverless training, this package is compiled by running `sh package-trainer.sh` inside the Docker container.
+(2) `src/pipeline-workflow/model-training/package` - this package contains all the necessary scripts for running training, tracking performance via Weights & Biases, and saving the trained model artifact. Before running serverless training, this package is compiled by running `sh package-trainer.sh` inside the Docker container.
 
-(3) `src/pipeline-workflow/model_training/cli.sh` - we use this script to submit the serverless job to Vertex AI, specifying parameters for training and the `ACCELERATOR_COUNT` for running training with multiple GPUs. Run with `sh cli.sh`.
+(3) `src/pipeline-workflow/model-training/cli.sh` - we use this script to submit the serverless job to Vertex AI, specifying parameters for training and the `ACCELERATOR_COUNT` for running training with multiple GPUs. Run with `sh cli.sh`.
 
 ## Application Design
 ### Backend API Service
