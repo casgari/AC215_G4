@@ -258,10 +258,10 @@ const Home = (props) => {
                             }
                             {prediction &&
                                 <Typography variant="h4" className={classes.preds}>
-                                    {prediction.prediction_label.length < 1 &&
-                                        <span className={classes.safe}>{"Not enough text in transcript."}</span>
+                                    {prediction.prediction_label.length < 2 &&
+                                        <span className={classes.result}>{"Not enough text in transcript."}</span>
                                     }
-                                    {prediction.prediction_label.length >= 1 &&
+                                    {prediction.prediction_label.length >= 2 &&
                                         <span className={classes.result}>
                                             {renderMultilineText(formatQuiz(prediction.quiz))}
                                         </span>

@@ -125,10 +125,117 @@ To replicate this, the relevant files can be found in the `src/pipeline-workflow
 
 ## Application Design
 ### Backend API Service
-TODO: M5
+
+We built a backend api service using fast API to expose model functionality to the frontend. Fast API gives us an interactive API documentation and exploration tool for free. An image of the documation tool is included below:
+
+<img src="images/api_docs.png"  width="800">
+
+`/predict` is called when users upload a lecture video to the frontend and wish to extract keywords and generate a quiz from it. `/predicttext` is used when users upload a lecture transcript to the frontend and wish to extract keywords and generate a quiz from it. These options are clear to see in the frontend below.
+
+We can also easily test our APIs using this tool. Screenshots from successful tests of both `/predict` and `/predicttext` are included below:
+
+<img src="images/predict_api_test.png"  width="800">
+
+It is clear to see from this `/predict` testing that the server response is successful, with the response body returning keywords and a generated quiz as expected.
+
+<img src="images/predicttext_api_test.png"  width="800">
+
+A sucessful sever response is also observed from `/predicttext`.
+
+The `api-service` container has all the files to run and expose the backend APIs.
+
+To run the container locally:
+- Open a terminal and navigate to `/src/api-service`
+- Run `sh docker-shell.sh`
+- Once inside the docker container run `uvicorn_server`
+- To view and test APIs go to `http://localhost:9000/docs`
 
 ### Frontend Implementation
-TODO: M5
+
+We have built a React app with Material UI framework to extract keywords and generate quizzes from lecture videos or lecture transcripts. Using the app, a user easily uploads their lecture video or text file. The app will send the video or text file through to the backend API to get the outputs. 
+
+Here is a screenshot of our original version of the frontend:
+
+<img src="images/homepage.png" width="800">
+
+And here are a set of screenshots of the final frontend:
+<img src="images/homepage_final.png" width="800">
+<img src="images/frontend_predict.png" width="800">
+
+The structure of the frontend is described by Material UI `<Container>` components, along with `<Typography>` and `<Button>` elements. Background images are custom .svg elements. File upload is the input that gets sent through the backend, and the Keyword and Quiz boxes are the output from the backend to the frontend. The `frontend-react` container contains all the files to develop and build our React app. 
+
+To run the container locally:
+- Open a terminal and navigate to `/src/frontend-react`
+- Run `sh docker-shell.sh`
+- If running the container for the first time, run `npm install`
+- To include additional dependencies, run `npm install @emotion/react react-spinners`
+- Once inside the docker container run `yarn start`
+- Go to `http://localhost:3000` to access the app locally
+
+Note that the above will only be hosted 
 
 ## Deployment to Kubernetes Cluster using Ansible.
-TODO: M5 + M6
+
+**Ansible Usage For Automated Deployment**
+
+We use Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion. Ansible allows us to manage infrastructure as code, helping us keep track of our app infrastructure as code in GitHub. It helps use setup deployments in an automated way.
+
+Here is our deployed app on a single VM in GCP:
+
+<img src="images/vminstance.png"  width="800">
+
+
+The deployment container helps manage building and deploying all our app containers through Ansible, with all Docker images going to the Google Container Registry (GCR). 
+
+To run the container locally:
+- Open a terminal and navigate to `/src/deployment`
+- Run `sh docker-shell.sh`
+- Build and push Docker Containers to GCR
+```
+ansible-playbook deploy-docker-images.yml -i inventory.yml
+```
+
+- Create Compute Instance (VM) Server in GCP
+```
+ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present
+```
+
+- Provision Compute Instance in GCP, install and setup all the required things for deployment.
+```
+ansible-playbook deploy-provision-instance.yml -i inventory.yml
+```
+
+- Setup Docker Containers in the  Compute Instance
+```
+ansible-playbook deploy-setup-containers.yml -i inventory.yml
+```
+
+- Setup Webserver on the Compute Instance
+```
+ansible-playbook deploy-setup-webserver.yml -i inventory.yml
+```
+Once the command runs go to `http://<External IP>/` to interact with the website.
+
+**Deployment to Kubernetes**
+
+Kubernetes (K8s) is an open-source container orchestration system for automated scaling and management. We use Kubernetes to deploy our app on multiple servers with automatic load balancing and failovers.
+
+Here is our deployed app on the GCP Kubernetes Engine:
+
+<img width="573" alt="image" src="https://github.com/casgari/AC215_G4/assets/37743253/8839e8d7-f7b7-4462-b948-f3e43ea94011">
+
+To create the Kubernetes Cluster, enable the relevant APIs and run the following code to start the container:
+```
+cd deployment
+sh docker-shell.sh
+```
+From inside the container, initialize the cluster on Google Cloud:
+```
+gcloud container clusters create test-cluster --num-nodes 2 --zone us-east1-c
+```
+And finally deploy the app:
+```
+kubectl apply -f deploy-k8s-tic-tac-toe.yml
+```
+Copy the External IP from the kubectl get services, then go to `http://<YOUR EXTERNAL IP>` to use Pavvy.
+
