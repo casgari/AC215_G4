@@ -283,7 +283,7 @@ Once the command runs go to `http://<External IP>/` to interact with the website
 ### Continuous Integration/Deployment with Github Actions
 We use CI/CD to continuously and automatically build and deploy our containers to production whenever we make a change to our codebase using Github Actions. Streamlined processes allow for faster deployment. Since we already have a deployment container which builds our docker images, runs the Vertex AI jobs, and deploys our app to Kubernetes, we simply build and run the deployment container.
 
-The code describing our CI/CD workflow is in `/.github/workflows/ci-cd.yml`. To redeploy our app, we simply add the phrase `/run-deploy-app` to our github commit message. Alternatively, to run Vertex AI Pipelines on code commits, add the following to code commit comment: '/run-ml-pipeline'. Here is a successful execution of our CI/CD workflow:
+The code describing our CI/CD workflow is in `/.github/workflows/ci-cd.yml`. To redeploy our app, we simply add the phrase `/run-deploy-app` to our github commit message. Alternatively, to run Vertex AI Pipelines on code commits, add the following to code commit comment: `/run-ml-pipeline`. Here is a successful execution of our CI/CD workflow:
 
 <img src="images/cicd.png"  width="800">
 
