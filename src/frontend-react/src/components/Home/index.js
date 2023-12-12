@@ -60,12 +60,34 @@ const Home = (props) => {
     const processKeywords = (ks) => {
         let kl = "";
         for (let i = 0; i < ks.length; i++) {
+            if (i < 9) {kl += ' ';}
             kl += String(i+1);
             kl += ". ";
             kl += ks[i];
             kl += "\n\n";
         }
         return kl;
+    }
+
+    const formatQuiz = (q) => {
+        let lines = q.split('\n');
+        let fq = "";
+        for (let line of lines) {
+            console.log(line);
+            if (line.length === 0) {
+                fq += "\n";
+            }
+            else if (line.charAt(0) < 10) {
+                fq += line;
+                fq += "\n";
+            }
+            else {
+                //fq += "\v  ";
+                fq += line;
+                fq += "\n";
+            }
+        }
+        return fq;
     }
 
     const renderMultilineText = (te) => {
@@ -241,7 +263,7 @@ const Home = (props) => {
                                     }
                                     {prediction.prediction_label.length >= 1 &&
                                         <span className={classes.result}>
-                                            {renderMultilineText(prediction.quiz)}
+                                            {renderMultilineText(formatQuiz(prediction.quiz))}
                                         </span>
                                     }
                                 </Typography>
@@ -250,9 +272,10 @@ const Home = (props) => {
                     </Container> 
                     
                 </Container>
-                <Container maxwidth='lg' className={classes.container}>
+                
+                {/* <Container maxwidth='lg' className={classes.container}>
                     <img className={classes.preview} src={video} />
-                </Container> 
+                </Container>  */}
                     </div>
                 </div>
             </main>
