@@ -14,7 +14,7 @@ The deployed PAVVY application comprises of four main containers - video to audi
 
 We utilized several MLOps tools to optimize our data preprocessing and training workflows, including usage of TensorFlow Data, Dask for efficient transformations of lecture videos, support for serverless training with Vertex AI on multiple GPUs, and performance tracking with Weights & Biases. Upon completing training, our four main containers were formulated into a Vertex AI (Kubeflow) pipeline, allowing for effective orchestration of our app's components.
 
-The trained model was deployed to an endpoint in Vertex AI, while the other containers were deployed to cloud functions and Cloud Run, accessible via an API. The final application comprises of a frontend built using React (found in `src/frontend-react`) and a backend API service using FastAPI to expose the models' functionality to the frontend (found in `src/api-service`). The entire application is then deployed to a Kubernetes Cluster using Ansible (using the files found in `src/deployment`).
+The trained model was deployed to an endpoint in Vertex AI, while the other containers were deployed to cloud functions and Cloud Run, accessible via an API. The final application comprises of a frontend, built using React (found in `src/frontend-react`), and a backend API service, using FastAPI to expose the models' functionality to the frontend (found in `src/api-service`). The entire application is then deployed to a Kubernetes Cluster using Ansible (using the files found in `src/deployment`).
 
 The usage of these directories is explained in this `README` to allow a developer to replicate our steps. Despite the process being simple to follow, a developer is expected to have robust coding experience and some experience with MLOps to be able to fully interact with the external services (such as Google Cloud Platform) that are necessary for this project. Before digging into how to use this repository, it is helpful to spend some time familiarizing yourself with the following overview of the application design and project organization.
 
@@ -28,7 +28,9 @@ Full details of the application design, including the solution and technical arc
 ------------
     .
     ├── LICENSE
-    ├── .dvc 
+    ├── .dvc
+    ├── .github            <- Files for automated CI/CD via GitHub Actions
+    │   └── cicdworkflow.yml
     ├── notebooks            <- Jupyter notebooks for EDA and model testing
     │   ├── intial_model_construction.ipynb
     │   └── tf_intial_model_construction_with_multigpu.ipynb
@@ -149,7 +151,7 @@ The purpose of model training was to train an optimal derivation of the BERT mod
 
 To optimize the training workflow, we take advantage of distributed computing by handling our data as TF Datasets, shuffling the data appropriately, and prefetching batches of the data for training, on multiple GPUs if available (look for the `model.prepare_tf_dataset` method in `src/pipeline-workflow/model-training/package/trainer/task.py`). Furthermore, we have fully implemented support for serverless training on multiple GPUs on Vertex AI, using TensorFlow's support for distributed training (look for `tf.distribute.MirroredStrategy()` in `src/pipeline-workflow/model-training/package/trainer/task.py`).
 
-Having set up the workflow to handle data in a distributed way, we ran our serverless experiments with different versions and derivations of the BERT model (accessed via `TFAutoModelForTokenClassification`) to improve our performance on keyword extraction. The training data was a large set of labelled scientific abstracts obtained from [Inspec](https://huggingface.co/datasets/midas/inspec), where the labels (`B`, `I`, or `O`), represent a word being at the beginning, inside, or outside a keyword phrase. All experiments were run on a single A100 GPU on Vertex AI. We tracked our performance of our many training runs using Weights & Biases and stored our model artifacts on the platform.
+Having set up the workflow to handle data in a distributed way, we ran our serverless experiments with different versions and derivations of the BERT model (accessed via `TFAutoModelForTokenClassification`) to improve our performance on keyword extraction. The training data was a large set of labelled scientific abstracts obtained from the Hugging Face [Inspec](https://huggingface.co/datasets/midas/inspec) dataset, where the labels (`B`, `I`, or `O`), represent a word being at the beginning, inside, or outside a keyword phrase. All experiments were run on a single A100 GPU on Vertex AI. We tracked our performance of our many training runs using Weights & Biases and stored our model artifacts on the platform.
 
 We experimented with small models (e.g. `roberta-tiny-cased-trained`) which has only 28M parameters, and large models (e.g. the original BERT and RoBERTa models) which have over 100M parameters. Naturally, the smaller models performed inference faster but with a lower accuracy. We were able to find a useful compromise using model distillation. The distilled BERT and RoBERTa models achieved 99% of the accuracy achieved by the full-sized models with an acceptable inference time for deployment. Finally, we chose to deploy the `distilbert-base-uncased` model because of its very slight performance advantage over `distilroberta-base`. Below you can see the results of our serverless training experiments and an image of the successful serverless training job on Vertex AI.
 
@@ -280,3 +282,13 @@ Once the command runs go to `http://<External IP>.sslip.io` to interact with the
 <img src="images/kubernetes_laststep.png"  width="800">
 
 
+## Areas for Future Updates
+While this marks the end of PAVVY within AC215, future updates will look to include:
+
+- Capacity for upload of different file types (accept audio files, .mov files, word documents, etc.)
+- Increased customization for quiz generation (multiple levels of difficulty, various quiz lengths, etc.)
+- Personalized accounts to keep track of users’ past transcripts, lectures, and content
+- Increased speed and efficiency (faster transcription, quicker inference, etc.) on all levels
+- Further improved model performance through additional training
+
+Enjoy using PAVVY!
