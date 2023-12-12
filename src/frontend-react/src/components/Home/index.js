@@ -10,7 +10,7 @@ import styles from './styles';
 import backgroundSVG from './b1.svg';
 import b2SVG from './b2.svg';
 import LoadingAnimation from './loading';
-import './fonts.css';
+//import './fonts.css';
 
 const Home = (props) => {
     const { classes } = props;
@@ -230,7 +230,7 @@ const Home = (props) => {
                 <div style={containerStyle2}>
                 <Container maxwidth='lg' className={classes.container} height="40vh">
                     <Container maxwidth='lg' className={classes.opContainer}>
-                        <Typography variant="h6" color="primary">Keywords</Typography>
+                        <Typography variant="h6" color="primary">Key Phrases</Typography>
                         <div className={classes.textblock}>
                                 {loading &&
                                     <LoadingAnimation />
