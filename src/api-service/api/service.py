@@ -135,10 +135,13 @@ async def predict_text(file: bytes = File(...)):
      # Generate quiz using cloud function
     response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/quiz-generation?filename={filename}.txt")
     quiz = response.text
-    print("DONE!!!!")
+    
 
     response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/clean-keywords?filename={filename}.txt&keywords={filename_kw}.txt")
     cleaned_kw = response.text
+    print(cleaned_kw)
+    print("DONE!!!!")
+
     # edit return results
     prediction_results["quiz"] = quiz
     prediction_results["keywords"] = cleaned_kw

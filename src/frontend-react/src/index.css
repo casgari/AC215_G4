@@ -12,7 +12,7 @@ body {
   #root {
     background-color: #591DFF;
     color: #FFFFFF;
-    align-items: center;
+    align-items: baseline;
   }
   
   code {

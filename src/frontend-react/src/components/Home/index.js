@@ -8,7 +8,9 @@ import Button from '@material-ui/core/Button';
 import DataService from "../../services/DataService";
 import styles from './styles';
 import backgroundSVG from './b1.svg';
-//import '.../fonts/fonts.css';
+import b2SVG from './b2.svg';
+import LoadingAnimation from './loading';
+import './fonts.css';
 
 const Home = (props) => {
     const { classes } = props;
@@ -23,6 +25,7 @@ const Home = (props) => {
     const [text, setText] = useState(null);
     const [prediction, setPrediction] = useState(null);
     const [fileContent, setFileContent] = useState('');
+    const [loading, setLoading] = useState(false);
 
     // Setup Component
     useEffect(() => {
@@ -33,8 +36,10 @@ const Home = (props) => {
     const handleVideoUploadClick = () => {
         inputFile.current.click();
     }
+
     const handleOnChange = (event) => {
         console.log(event.target.files);
+       
         setImage(URL.createObjectURL(event.target.files[0]));
 
         var formData = new FormData();
@@ -43,6 +48,7 @@ const Home = (props) => {
             .then(function (response) {
                 console.log(response.data);
                 setPrediction(response.data);
+                setLoading(false);
             })
     }
 
@@ -104,6 +110,7 @@ const Home = (props) => {
             .then(function (response) {
                 console.log(response.data);
                 setPrediction(response.data);
+                setLoading(false);
             })
     }
 
@@ -115,60 +122,85 @@ const Home = (props) => {
         height: '100vh', // Adjust as needed
         // Add other styles as needed
     };
-// BACKGROUND IF IT DOESNT WORK CHANGE TODO TODO TODO
+
+    const containerStyle2 = {
+        background: `url(${b2SVG})`,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        width: '100%',
+        height: '100vh', // Adjust as needed
+    };
+
+    const tStyle = {
+        fontFamily: 'RubikBubbles-Regular',
+        color: "#000000"
+    };
+
     return (
         <div className={classes.root}>
-            <main className={classes.main} style={containerStyle}>
+            <main className={classes.main}>
+                <div style={containerStyle}>
                 <Container maxwidth='lg' className={classes.container}>
                     <div className={classes.titleblock} align="left">
-                        <Typography variant="h7" color="primary">P A V V Y</Typography>
+                            <Typography variant="h7" color="primary">P A V V Y</Typography>
                         <Typography variant="h6" width="10rem">Our cutting-edge AI assistant helps</Typography> 
                         <Typography variant="h6"> you get the most out of school.</Typography>
                     </div>
                 </Container>
                 <Container maxwidth='lg' className={classes.container}>
-                    <div className={classes.textblock}>
-                        <Typography variant="h6">Pavvy is a great tool, and he wants to help you. </Typography> 
+                    <div className={classes.textblock} style={{textAlign: 'left', alignItems: 'left'}}>
+                        <Typography variant="h6">With our unparalleled generative AI models at your fingertips, identify keywords and 
+                        create unique quizzes to test your knowledge from lecture.</Typography>
+                            <Typography variant="h6" style={{ color: '#ff8f92' }}>Activate PAVVY by uploading material!</Typography>  
                     </div>
                     <div className={classes.textblock}>
-                        <input
-                            type="file"
-                            accept=".mp3, .mp4"
-                            on
-                            autocomplete="off"
-                            tabindex="-1"
-                            className={classes.fileInput}
-                            ref={inputFile}
-                            onChange={(event) => handleOnChange(event)}
-                        />
-                        <Button variant="contained" color="primary" size="large" onClick={() => {
-                            handleVideoUploadClick();
-                        }}><Typography variant="h4">Upload Video</Typography></Button>
-                        <input
-                            type="file"
-                            accept=".txt"
-                            on
-                            autocomplete="off"
-                            tabindex="-1"
-                            className={classes.textInput}
-                            ref={inputText}
-                            onChange={(event) => handleTextOnChange(event)}
-                        />
-                        <Button variant="contained" color="primary" size="large" onClick={() => {
-                            handleTextUploadClick();
-                        }}><Typography variant="h4">Upload Text</Typography></Button>
+                            <div className={classes.buttonContainer}>
+                            <input
+                                type="file"
+                                accept=".mp3, .mp4"
+                                on
+                                autocomplete="off"
+                                tabindex="-1"
+                                className={classes.fileInput}
+                                ref={inputFile}
+                                onChange={(event) => handleOnChange(event)}
+                            />
+                                <Button variant="contained" color="primary" size="large" onClick={() => {
+                                    handleVideoUploadClick(); setLoading(true);
+                                }}><Typography variant="h4">Upload Video</Typography></Button>
+                            </div>
+                            <div>
+                                <input
+                                    type="file"
+                                    accept=".txt"
+                                    on
+                                    autocomplete="off"
+                                    tabindex="-1"
+                                    className={classes.textInput}
+                                    ref={inputText}
+                                    onChange={(event) => handleTextOnChange(event)}
+                                />
+                                <Button variant="contained" color="primary" size="large" width="10rem" onClick={() => {
+                                    handleTextUploadClick(); setLoading(true);
+                                }}><Typography variant="h4">Upload Text</Typography></Button>
+                            </div>
                     </div>
                 </Container>
+                
+                <div style={containerStyle2}>
                 <Container maxwidth='lg' className={classes.container} height="40vh">
                     <Container maxwidth='lg' className={classes.opContainer}>
                         <Typography variant="h6" color="primary">Keywords</Typography>
                         <div className={classes.textblock}>
+                                {loading &&
+                                    <LoadingAnimation />
+                                }
                             {prediction &&
-                                <Typography variant="h4" className={classes.preds}>
-                                    {prediction.prediction_label.length < 1 &&
-                                        <span className={classes.safe}>{"Not enough text in transcript."}</span>
+                                <Typography variant="h4" className={classes.preds}> 
+                                    {(prediction.prediction_label.length < 2) &&
+                                        <span className={classes.result}>{"Not enough text in transcript."}</span>
                                     }
-                                    {prediction.prediction_label.length >= 1 &&
+                                    {prediction.prediction_label.length >= 2 &&
                                         <span className={classes.result}>
                                             {renderMultilineText(processKeywords(stringToList(prediction.keywords)))}
                                         </span>
@@ -181,6 +213,9 @@ const Home = (props) => {
                     <Container maxwidth='lg' className={classes.opContainer}>
                         <Typography variant="h6" color="primary">Quiz</Typography>
                         <div className={classes.textblock}>
+                            {loading &&
+                                    <LoadingAnimation />
+                            }
                             {prediction &&
                                 <Typography variant="h4" className={classes.preds}>
                                     {prediction.prediction_label.length < 1 &&
@@ -200,6 +235,8 @@ const Home = (props) => {
                 <Container maxwidth='lg' className={classes.container}>
                     <img className={classes.preview} src={video} />
                 </Container> 
+                    </div>
+                </div>
             </main>
         </div>
     );
