@@ -2,7 +2,7 @@
 
 *Pavlos' Perceptron Pals (Cyrus Asgari, Ben Ray, Caleb Saul, Warren Sunada Wong, Chase Van Amburg)*
 
-This repository was produced as part of the final project for Harvard’s AC215 Fall 2023 course. The purpose of this `README` is to explain to a developer how to utilize this repository, including usage of the individual containers that comprise the PAVVY app, the model training workflow, and deployment to a Kubernetes Cluster using Ansible. For a more accessible overview of the project, please see our Medium post [here](TODO) and a video (including a live demo of PAVVY) [here](TODO).
+This repository was produced as part of the final project for Harvard’s AC215 Fall 2023 course. The purpose of this `README` is to explain to a developer how to utilize this repository, including usage of the individual containers that comprise the PAVVY app, the model training workflow, and deployment to a Kubernetes Cluster using Ansible. For a more accessible overview of the project, please see our Medium post [here](TODO) and a video (including a live demo of PAVVY) [here](https://youtu.be/cfEjLLcUEgk?si=rVn4BaZa7n7fj4o8).
 
 ## Introduction
 
@@ -124,6 +124,7 @@ python cli.py
 ```
 The `-p` flag runs a prediction using the VertexAI endpoint. To deploy a new version of the model, use the `-d` flag. Or to make a prediction locally, use `-l`.
 
+
 ### Quiz Generation
 
 `/generate_quiz`
@@ -134,7 +135,26 @@ python generate.py -g
 ```
 
 ## Model Training Workflow
-TODO: M3 + M4
+The purpose of model training was to train an optimal derivation of the BERT model for usage in the Keyword Extraction container.
+
+To optimize the training workflow, we take advantage of distributed computing by handling our data as TF Datasets, shuffling the data appropriately, and prefetching batches of the data for training, on multiple GPUs if available (look for the `model.prepare_tf_dataset` method in `src/pipeline-workflow/model-training/package/trainer/task.py`). Furthermore, we have fully implemented support for serverless training on multiple GPUs on Vertex AI, using TensorFlow's support for distributed training (look for `tf.distribute.MirroredStrategy()` in `src/pipeline-workflow/model-training/package/trainer/task.py`).
+
+Having set up the workflow to handle data in a distributed way, we ran our serverless experiments with different versions and derivations of the BERT model (accessed via `TFAutoModelForTokenClassification`) to improve our performance on keyword extraction. The training data was a large set of labelled scientific abstracts obtained from [Inspec](https://huggingface.co/datasets/midas/inspec), where the labels (`B`, `I`, or `O`), represent a word being at the beginning, inside, or outside a keyword phrase. All experiments were run on a single A100 GPU on Vertex AI. We tracked our performance of our many training runs using Weights & Biases and stored our model artifacts on the platform.
+
+We experimented with small models (e.g. `roberta-tiny-cased-trained`) which has only 28M parameters, and large models (e.g. the original BERT and RoBERTa models) which have over 100M parameters. Naturally, the smaller models performed inference faster but with a lower accuracy. We were able to find a useful compromise using model distillation. The distilled BERT and RoBERTa models achieved 99% of the accuracy achieved by the full-sized models with an acceptable inference time for deployment. Finally, we chose to deploy the `distilbert-base-uncased` model because of its very slight performance advantage over `distilroberta-base`. Below you can see the results of our serverless training experiments and an image of the successful serverless training job on Vertex AI.
+
+![wnb image](images/wandb.png)
+![training_results image](images/training_results.png)
+
+![wnb image](images/serverless.jpeg)
+
+To replicate this, the relevant files can be found in the `src/pipeline-workflow/model-training` directory with usage as follows:
+
+(1) `src/pipeline-workflow/model_training/docker-shell.sh` - this script creates a container (defined in `src/pipeline-workflow/model_training/Dockerfile`) for running training in a standardized environment. Run with `sh docker-shell.sh`.
+
+(2) `src/pipeline-workflow/model_training/package` - this package contains all the necessary scripts for running training, tracking performance via Weights & Biases, and saving the trained model artifact. Before running serverless training, this package is compiled by running `sh package-trainer.sh` inside the Docker container.
+
+(3) `src/pipeline-workflow/model_training/cli.sh` - we use this script to submit the serverless job to Vertex AI, specifying parameters for training and the `ACCELERATOR_COUNT` for running training with multiple GPUs. Run with `sh cli.sh`.
 
 ## Application Design
 ### Backend API Service
@@ -177,6 +197,8 @@ And here are a set of screenshots of the final frontend:
 
 The structure of the frontend is described by Material UI `<Container>` components, along with `<Typography>` and `<Button>` elements. Background images are custom .svg elements. File upload is the input that gets sent through the backend, and the Keyword and Quiz boxes are the output from the backend to the frontend. The `frontend-react` container contains all the files to develop and build our React app. 
 
+Based on the Material UI framework, the `/app` folder contains specifications for high-level styling, such as for general `<Typography>` elements,  and overall structure of the application. The `index.js` file of the homepage holds the bulk of Pavvy's frontend code, under `/components/home`. Here, we connect with `api-service/service.py` to communicate with the backend.
+
 To run the container locally:
 - Open a terminal and navigate to `/src/frontend-react`
 - Run `sh docker-shell.sh`
@@ -185,22 +207,16 @@ To run the container locally:
 - Once inside the docker container run `yarn start`
 - Go to `http://localhost:3000` to access the app locally
 
-Note that the above will only be hosted 
+Note that the above will only be hosted is the `api-service` container is running as well.
 
 ## Deployment to Kubernetes Cluster using Ansible.
 
 **Ansible Usage For Automated Deployment**
 
-We use Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion. Ansible allows us to manage infrastructure as code, helping us keep track of our app infrastructure as code in GitHub. It helps use setup deployments in an automated way.
+We use Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion. Ansible allows us to manage infrastructure as code, helping us keep track of our app infrastructure as code in GitHub. 
 
-Here is our deployed app on a single VM in GCP:
+The `src/deployment` directory helps manage building and deploying all our app containers through Ansible, with all Docker images going to the Google Container Registry (GCR). To run the deployment process on your local device:
 
-<img src="images/vminstance.png"  width="800">
-
-
-The deployment container helps manage building and deploying all our app containers through Ansible, with all Docker images going to the Google Container Registry (GCR). 
-
-To run the container locally:
 - Open a terminal and navigate to `/src/deployment`
 - Run `sh docker-shell.sh`
 - Build and push Docker Containers to GCR
@@ -208,17 +224,19 @@ To run the container locally:
 ansible-playbook deploy-docker-images.yml -i inventory.yml
 ```
 
-- Create Compute Instance (VM) Server in GCP
+- Create Compute Instance (VM) in GCP
 ```
 ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present
 ```
+
+- Once the command runs successfully, get the IP address of the compute instance from GCP Console and update the `appserver>hosts` in `src/deployment/inventory.yml` file
 
 - Provision Compute Instance in GCP, install and setup all the required things for deployment.
 ```
 ansible-playbook deploy-provision-instance.yml -i inventory.yml
 ```
 
-- Setup Docker Containers in the  Compute Instance
+- Setup Docker Containers in the Compute Instance
 ```
 ansible-playbook deploy-setup-containers.yml -i inventory.yml
 ```
@@ -227,28 +245,29 @@ ansible-playbook deploy-setup-containers.yml -i inventory.yml
 ```
 ansible-playbook deploy-setup-webserver.yml -i inventory.yml
 ```
-Once the command runs go to `http://<External IP>/` to interact with the website.
+Once the command runs go to `http://<External IP>/` to interact with the website, where `<External IP>` is shown in the GCP console and in the return statement from last step above. For reference, these images show our app deployed on a single VM in GCP and an image from the output of the last step of the process (taken on December 12, 2023):
+
+<img src="images/vminstance.png"  width="800">
+<img src="images/ansible_laststep.png"  width="800">
 
 **Deployment to Kubernetes**
 
-Kubernetes (K8s) is an open-source container orchestration system for automated scaling and management. We use Kubernetes to deploy our app on multiple servers with automatic load balancing and failovers.
+Kubernetes (K8s) is an open-source container orchestration system for automated scaling and management. We use Kubernetes to deploy our app on multiple servers with automatic load balancing and failovers. To create the Kubernetes Cluster, enable the relevant APIs and run the following code to start the container:
 
-Here is our deployed app on the GCP Kubernetes Engine:
+- Open a terminal and navigate to `/src/deployment`
+- Run `sh docker-shell.sh`
+- Build and push Docker Containers to GCR
+```
+ansible-playbook deploy-docker-images.yml -i inventory.yml
+```
+- Create and deploy the Cluster
+```
+ansible-playbook deploy-k8s-cluster.yml -i inventory.yml --extra-vars cluster_state=present
+```
+Once the command runs go to `http://<External IP>.sslip.io` to interact with the website, where `<External IP>` is shown in the GCP console and in the return statement from last step above. For reference, these images show our app deployed on a Kubernetes Cluster in GCP and an image showing part of the output from the last step of the process (taken on December 12, 2023):
 
-<img width="573" alt="image" src="https://github.com/casgari/AC215_G4/assets/37743253/8839e8d7-f7b7-4462-b948-f3e43ea94011">
+<img src="images/kubernetes.png"  width="800">
+<img src="images/kubernetesengine.png"  width="800">
+<img src="images/kubernetes_laststep.png"  width="800">
 
-To create the Kubernetes Cluster, enable the relevant APIs and run the following code to start the container:
-```
-cd deployment
-sh docker-shell.sh
-```
-From inside the container, initialize the cluster on Google Cloud:
-```
-gcloud container clusters create test-cluster --num-nodes 2 --zone us-east1-c
-```
-And finally deploy the app:
-```
-kubectl apply -f deploy-k8s-tic-tac-toe.yml
-```
-Copy the External IP from the kubectl get services, then go to `http://<YOUR EXTERNAL IP>` to use Pavvy.
 
