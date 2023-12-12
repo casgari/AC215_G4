@@ -26,9 +26,21 @@ def upload(path, num):
     blob.upload_from_filename(path)
     return 0
 
+def upload_kw(path, num):
+    gcp_project = "ac215-group-4"
+    filename = f"keywords{num}.txt"
+
+    # Upload to bucket
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(GCS_BUCKET_NAME)
+    destination_blob_name = f"extracted_keywords/{filename}"
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_filename(path)
+    return 0
+
 def upload_text(path, num):
     gcp_project = "ac215-group-4"
-    filename = f"text{num}.mp4"
+    filename = f"video{num}.txt"
 
     # Upload to bucket
     storage_client = storage.Client()
@@ -95,7 +107,9 @@ def make_prediction_vertexai(image_path):
     keyphrases = list(set(keyphrases))
     print("Keywords:", keyphrases)
     ## UPLOAD TO BUCKET
+    
     # keyphrases_string = ", ".join(keyphrases)
+    # upload_kw(keyphrases_string)
 
     return {
         "prediction_label": keyphrases,
