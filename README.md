@@ -164,6 +164,8 @@ And here are a set of screenshots of the final frontend:
 
 The structure of the frontend is described by Material UI `<Container>` components, along with `<Typography>` and `<Button>` elements. Background images are custom .svg elements. File upload is the input that gets sent through the backend, and the Keyword and Quiz boxes are the output from the backend to the frontend. The `frontend-react` container contains all the files to develop and build our React app. 
 
+Based on the Material UI framework, the `/app` folder contains specifications for high-level styling, such as for general `<Typography>` elements,  and overall structure of the application. The `index.js` file of the homepage holds the bulk of Pavvy's frontend code, under `/components/home`. Here, we connect with `api-service/service.py` to communicate with the backend.
+
 To run the container locally:
 - Open a terminal and navigate to `/src/frontend-react`
 - Run `sh docker-shell.sh`
@@ -172,7 +174,7 @@ To run the container locally:
 - Once inside the docker container run `yarn start`
 - Go to `http://localhost:3000` to access the app locally
 
-Note that the above will only be hosted 
+Note that the above will only be hosted is the `api-service` container is running as well.
 
 ## Deployment to Kubernetes Cluster using Ansible.
 
