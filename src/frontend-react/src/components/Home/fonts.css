@@ -1,0 +1,13 @@
+/* fonts.css */
+@font-face {
+    font-family: 'RubikBubbles-Regular';
+    src: local('RubikBubbles-Regular') url('./RubikBubbles-Regular.ttf') format('ttf');
+}
+@font-face {
+    font-family: 'Raleway-Regular';
+    src: local('Raleway-Regular') url('./Raleway-Regular.ttf') format('ttf');
+}
+@font-face {
+    font-family: 'Oswald-Regular';
+    src: local('Oswald-Regular') url('./Oswald-Regular.ttf') format('ttf');
+}

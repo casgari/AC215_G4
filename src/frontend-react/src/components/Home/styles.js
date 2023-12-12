@@ -10,7 +10,8 @@ const styles = theme => ({
         backgroundColor: '#FFFFFF',
         margin: "0px 0px 0px 0px",
         padding: "0px 0px 0px 0px",
-        width: "100%"
+        width: "100%",
+        height: "330vh"
     },
     container: {
         backgroundColor: 'rgba(255, 255, 255, 0.0)',
@@ -26,19 +27,36 @@ const styles = theme => ({
         margin: "0px, 0px, 0px, 0px",
     },
     opContainer: {
-        backgroundColor: "#ff8f92",
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
         paddingTop: "20px",
         paddingBottom: "20px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         textAlign: "left",
-        margin: "40px 40px 40px 40px",
         borderWidth: "2px",
         borderRadius: "40px",
+        borderColor: "#591dff",
+        borderStyle: "solid",
+        margin: "40px 40px 40px 40px",
         flex: 0.4,
         width: "100%",
         height: '80vh',
+        margin: "0px, 0px, 0px, 0px",
+    },
+    buttonContainer: {
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        paddingTop: "20px",
+        paddingBottom: "20px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "left",
+        borderWidth: "2px",
+        borderRadius: "40px",
+        margin: "40px 40px 40px 40px",
+        flex: 0.5,
+        width: "100%",
         margin: "0px, 0px, 0px, 0px",
     },
     dropzone: {
@@ -112,6 +130,7 @@ const styles = theme => ({
     preds: {
         flex: 0.5,
         textAlign: "left",
+        backgroundColor: 'rgba(255, 255, 255, 0.0)',
     }
 });
 

@@ -2,7 +2,7 @@ import {
     createTheme,
 } from '@material-ui/core/styles';
 
-import '../fonts/fonts.css';
+import './fonts.css';
 
 const Theme = createTheme({
     palette: {
@@ -28,8 +28,8 @@ const Theme = createTheme({
         },
     },
     typography: {
-        fontFamily: 'Rubik, sans-serif',
-        useNextVariants: true,
+        fontFamily: 'RubikBubbles-Regular, sans-serif',
+        useNextVariants: false,
         h7: {
             color: "#000000",
             fontSize: "3.8rem",

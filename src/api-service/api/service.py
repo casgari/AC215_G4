@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 import asyncio
-from api.tracker import TrackerService
+# from api.tracker import TrackerService
 import pandas as pd
 import os
 from fastapi import File
@@ -9,11 +9,12 @@ from tempfile import TemporaryDirectory
 from api import model
 import requests 
 import random
+import shutil
 
 from google.cloud import storage
 
 # Initialize Tracker Service
-tracker_service = TrackerService()
+# tracker_service = TrackerService()
 
 # Setup FastAPI app
 app = FastAPI(title="API Server", description="API Server", version="v1")
@@ -31,7 +32,7 @@ app.add_middleware(
 async def startup():
     print("Startup tasks")
     # Start the tracker service
-    asyncio.create_task(tracker_service.track())
+    # asyncio.create_task(tracker_service.track())
 
 # Routes
 @app.get("/")
@@ -111,16 +112,21 @@ async def predict_text(file: bytes = File(...)):
     # Extract keywords using endpoint
     prediction_results = {}
     prediction_results = model.make_prediction_vertexai(transcript_path)
+    local_kw_file = ','.join(prediction_results['prediction_label'])
+    kw_file_path = f"keywords{num}.txt"
+
+    # Write the contents to kw_file_path
+    with open(kw_file_path, 'w') as file:
+        file.write(local_kw_file)
+
     filename_kw = f"keywords{num}"
     with TemporaryDirectory() as text_dir:
-        text_path = os.path.join(text_dir, filename_kw)
-        with open(text_path, "wb") as output:
-            output.write(prediction_results['prediction_label'])
-        print("")
-        print(text_path)
-        print("")
+        # Copy the file to the temporary directory
+        temp_file_path = os.path.join(text_dir, kw_file_path)
+        shutil.copy(kw_file_path, temp_file_path)
+
         # Upload video to GCP
-        upload_flag = model.upload_kw(text_path, num)
+        upload_flag = model.upload_kw(temp_file_path, num)
         if upload_flag:
             raise Exception("Failed to upload text file")
 
@@ -129,10 +135,13 @@ async def predict_text(file: bytes = File(...)):
      # Generate quiz using cloud function
     response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/quiz-generation?filename={filename}.txt")
     quiz = response.text
-    print("DONE!!!!")
+    
 
     response = requests.get(f"https://us-central1-ac215-group-4.cloudfunctions.net/clean-keywords?filename={filename}.txt&keywords={filename_kw}.txt")
     cleaned_kw = response.text
+    print(cleaned_kw)
+    print("DONE!!!!")
+
     # edit return results
     prediction_results["quiz"] = quiz
     prediction_results["keywords"] = cleaned_kw
