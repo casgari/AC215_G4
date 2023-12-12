@@ -76,6 +76,11 @@ const Home = (props) => {
         );
     };
 
+    function stringToList(inputString) {
+        // Split the string by commas and use map to trim whitespace from each element
+        return inputString.split(',').map(phrase => phrase.trim());
+    }
+
     const handleTextOnChange = (event) => {
         const file = event.target.files[0];
 
@@ -165,7 +170,7 @@ const Home = (props) => {
                                     }
                                     {prediction.prediction_label.length >= 1 &&
                                         <span className={classes.result}>
-                                            {renderMultilineText(processKeywords(prediction.prediction_label))}
+                                            {renderMultilineText(processKeywords(stringToList(prediction.keywords)))}
                                         </span>
                                     }
                                 </Typography>

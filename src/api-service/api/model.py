@@ -28,7 +28,7 @@ def upload(path, num):
 
 def upload_kw(path, num):
     gcp_project = "ac215-group-4"
-    filename = f"keyword{num}.txt"
+    filename = f"keywords{num}.txt"
 
     # Upload to bucket
     storage_client = storage.Client()
