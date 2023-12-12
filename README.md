@@ -113,3 +113,67 @@ TODO: M5
 
 ## Deployment to Kubernetes Cluster using Ansible.
 TODO: M5 + M6
+
+**Ansible Usage For Automated Deployment**
+
+We use Ansible to create, provision, and deploy our frontend and backend to GCP in an automated fashion. Ansible allows us to manage infrastructure as code, helping us keep track of our app infrastructure as code in GitHub. It helps use setup deployments in an automated way.
+
+Here is our deployed app on a single VM in GCP:
+
+<img src="images/vminstance.png"  width="800">
+
+
+The deployment container helps manage building and deploying all our app containers through Ansible, with all Docker images going to the Google Container Registry (GCR). 
+
+To run the container locally:
+- Open a terminal and navigate to `/src/deployment`
+- Run `sh docker-shell.sh`
+- Build and push Docker Containers to GCR
+```
+ansible-playbook deploy-docker-images.yml -i inventory.yml
+```
+
+- Create Compute Instance (VM) Server in GCP
+```
+ansible-playbook deploy-create-instance.yml -i inventory.yml --extra-vars cluster_state=present
+```
+
+- Provision Compute Instance in GCP, install and setup all the required things for deployment.
+```
+ansible-playbook deploy-provision-instance.yml -i inventory.yml
+```
+
+- Setup Docker Containers in the  Compute Instance
+```
+ansible-playbook deploy-setup-containers.yml -i inventory.yml
+```
+
+- Setup Webserver on the Compute Instance
+```
+ansible-playbook deploy-setup-webserver.yml -i inventory.yml
+```
+Once the command runs go to `http://<External IP>/` to interact with the website.
+
+**Deployment to Kubernetes**
+Kubernetes (K8s) is an open-source container orchestration system for automated scaling and management. We use Kubernetes to deploy our app on multiple servers with automatic load balancing and failovers.
+
+Here is our deployed app on the GCP Kubernetes Engine:
+<img width="573" alt="image" src="https://github.com/casgari/AC215_G4/assets/37743253/8839e8d7-f7b7-4462-b948-f3e43ea94011">
+
+To create the Kubernetes Cluster, we enable the relevant APIs, and complete the following steps:
+```
+cd deployment
+```
+```
+sh docker-shell.sh
+```
+```
+gcloud container clusters create test-cluster --num-nodes 2 --zone us-east1-c
+```
+Deploy the app 
+```
+kubectl apply -f deploy-k8s-tic-tac-toe.yml
+```
+Copy the External IP from the kubectl get services
+Go to `http://<YOUR EXTERNAL IP>`
+
