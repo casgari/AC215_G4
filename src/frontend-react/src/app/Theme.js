@@ -33,19 +33,16 @@ const Theme = createTheme({
         h7: {
             color: "#000000",
             fontSize: "3.8rem",
-            fontFamily: "Rubik, sans-serif",
             fontWeight: 2000
         },
         h6: {
             color: "#000000",
             fontSize: "1.8rem",
-            fontFamily: "Rubik, sans-serif",
             fontWeight: 800
         },
         h4: {
             color: "#FFFFFF",
             fontSize: "1.1rem",
-            fontFamily: "Rubik, sans-serif",
             fontWeight: 800
         },
         

@@ -70,6 +70,7 @@ const styles = theme => ({
         margin: "40px",
         color: "#000000",
         backgroundColor: "none",
+        fontFamily: "Rubik+Bubbles",
     },
     textm: {
         flex: 1.0,
